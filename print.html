@@ -36,10 +36,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-60131383.js";
+            window.path_to_searchindex_js = "searchindex-e1019d21.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-ab435950.js"></script>
+        <script src="toc-ad0f4ae9.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -865,7 +865,7 @@ impl Plugin for CustomPlugin {
 <h2 id="112-物理引擎"><a class="header" href="#112-物理引擎">1.12 物理引擎</a></h2>
 <p>通过前面的介绍你可能已经注意到了，我们的目光一直放在如何显示和操控上，而并没有关心真正的物理效应例如碰撞，重力等，而这些物理效果和交互，则是由物理引擎来进行处理。</p>
 <p>物理引擎是一种用于在虚拟环境中模拟现实世界物理现象的核心软件组件。 它负责处理物体间的碰撞检测、动力学模拟、刚体运动、重力、摩擦力、关节约束等物理效果，使得游戏中的物体能够以真实或符合游戏设定的方式相互作用。</p>
-<p>Bevy没有官方的物理引擎，其将物理引擎的选择交给了用户，用户可以自由选择rust生态中的一些物理引擎，不过主流的选择是<code>Avian</code>或<code>Rapier</code>，其前者致力于与Bevy进行集成，后者则是与Bevy分离的单独项目。由于<code>Avian</code>其实已经实质上成为了Bevy的首选物理引擎，因此在之后的章节中我们将详细介绍<code>Avian</code>，至于<code>Rapier</code>读者可以自行阅读文档进行学习。</p>
+<p>Bevy没有官方的物理引擎，其将物理引擎的选择交给了用户，用户可以自由选择rust生态中的一些物理引擎，不过主流的选择是<code>Avian</code>或<code>Rapier</code>，其前者致力于与Bevy进行集成，后者则是与Bevy分离的单独项目。读者可以自行阅读文档进行学习。</p>
 <h2 id="113-反射与依赖注入"><a class="header" href="#113-反射与依赖注入">1.13 反射与依赖注入</a></h2>
 <p>反射指的是程序在运行时能够访问、检测和修改程序本身状态或行为的一种能力。通过反射，我们<strong>可以在程序运行时修改类型的内容并使用字符串进行动态的字段访问。</strong></p>
 <p>在Bevy中，广泛使用了一种叫<strong>依赖注入</strong>的技术，这种技术使我们在编译时能够抹除数据的真实类型而在程序运行时动态的指定数据，其就是利用了反射来实现这样的效果。这也就是为什么虽然我们在编写<code>System</code>时并没有告诉Bevy其参数的个数与类型而仅只是声明在了函数定义中，但是Bevy仍然能够将正确的参数传递给<code>System</code>的原因。</p>
@@ -4889,7 +4889,8 @@ fn sync_weights(mut query: Query&lt;(&amp;mut AnimationPlayer, &amp;ExampleAnima
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="第-10-章反射-p1"><a href="#第-10-章反射-p1" class="header">第 10 章：反射-P1</a></h1>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
-<p><em>首先，谢谢你能陪我一直读到这里，现在，你已经对bevy有了更详细的认知，凭借之前的知识，现在你应该可以自己写出一些简单的游戏了。不过如果你细心，那你可能察觉到我漏掉了关于物理引擎的这一部分，我们在本书中不会详细介绍，因为这不属于bevy的组成部分（或许以后我可能会专门再写一本书研究如何从0写一个物理引擎&gt;-&lt;），读者可以查看别的相关资料，我们这里就不再赘述了。</em></p>
+<p><em>首先，谢谢你能陪我一直读到这里，。</em></p>
+<p><em>现在，你已经对bevy有了更详细的认知，凭借之前的知识，现在你应该可以自己写出一些简单的游戏了。不过如果你细心，那你可能察觉到我漏掉了关于物理引擎的这一部分，我们在本书中不会详细介绍，因为这不属于bevy的组成部分（或许以后我可能会专门再写一本书研究如何从0写一个物理引擎&gt;-&lt;），读者可以查看别的相关资料，我们这里就不再赘述了。</em></p>
 <p><em>在这里我们正式进入第二部分，即bevy最复杂最核心的反射与ecs系统，我将会花几个章节的篇幅先把反射讲清楚，然后揭开bevy_reflect与bevy_ecs的核心秘密。</em></p>
 <p><em>让我们把话题拉到更宏大历史进程中，来进一步认识我们平时的工作吧！Bevy 的反射与 ECS 极其复杂，是出了名的难懂，这是因为它在试图解决『图灵机的并发安全困境』与『静态语言缺乏运行时灵活度』这两个大难题。</em></p>
 <p><em>而解答这两个难题的钥匙，就是函数式编程与元编程。（以下话题大多数为闲聊话题，非代码部分，如果不想看也可以不看，不过看了之后会帮助你对于编程有一个全新的理解）。</em></p>
@@ -5338,6 +5339,212 @@ const IntList = List(i32); // 在编译期把 i32 类型传进去，直接生成
 </ul>
 <p>符号和逻辑能捕获的，仅仅是那个被“脱水”的事实世界。而超越编程之外的——那些关于生命的痛苦、美、爱、以及存在本身的意义，它们无法被写进 <code>if-else</code>，无法被封装进类与函数，它们属于那片“不可言说的领域”。</p>
 <p>沃尔玛你程序员们用尽一生的逻辑去编写程序，去穷尽这个符号世界的所有可能。而当我们终于合上电脑、抬起头，望向窗外真实、充满不确定性的复杂世界时，才会发现超越编程之外的，是那些代码无法触及的生命色彩，对于这些我们能做的，只有带着最深的敬畏，保持沉默。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="第-11-章反射-p2"><a href="#第-11-章反射-p2" class="header">第 11 章：反射-P2</a></h1>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h2 id="111-bevy中的反射"><a class="header" href="#111-bevy中的反射">11.1 Bevy中的反射</a></h2>
+<p>在前面我们说到，元编程的实现类型多种多样，有运行时反射、编译期宏、还有UE5那样的外挂反射和zig这种独树一帜的<code>comptime</code>关键字等等。那么Bevy里主要利用了什么？</p>
+<p>答案是前两种。Bevy即为我们提供了运行时反射的能力，又利用宏和Rust强大的泛型能力实现了<strong>编译期单态化与静态分发</strong>。其中前者由bevy_reflect这个crate提供，后者则主要在bevy_ecs中实现。</p>
+<blockquote class="blockquote-tag blockquote-tag-note">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
+<p>想一想，为什么只使用运行时反射或编译期宏？（提示：运行时反射的优点和代价是什么）</p>
+</blockquote>
+<p>首先让我们从比较容易理解的运行时反射来研究一下，bevy_reflect该如何使用？他的内部工作原理又是什么？</p>
+<h2 id="112-基本概念"><a class="header" href="#112-基本概念">11.2 基本概念</a></h2>
+<h3 id="reflect与partialreflect"><a class="header" href="#reflect与partialreflect">Reflect与PartialReflect</a></h3>
+<p>bevy_reflect的功能建立在两个trait上，即<code>Reflect</code>和<code>PartialReflect</code>，并且利用类型擦除来存储实现了这些trait并且需要反射的数据，要认识反射就必须先搞懂这两个trait到底是用来做什么的。</p>
+<p>看到这两个名字你可能会想到Rust标准库中 <code>Eq</code> 与 <code>PartialEq</code>（以及 <code>Ord</code> 与 <code>PartialOrd</code>），<code>Partial</code> 这个前缀代表着“弱化版的约束”或“不完全的语义”。显然在这里Bevy借鉴了Rust标准库中的这些命名，仅仅是通过这些名字和Rust的传统我们就能意识到这样一件事：<strong>任何一个实现了Reflect的类型肯定也实现了PartialReflect</strong></p>
+<p>为什么要区分二者呢？这是因为在编写游戏时，经常会遇到这样的一个需求：需要根据配置文件（可能是json或者任何序列化的文本）在游戏中生成一个合适的实体或者结构体以供后面的代码使用。然而，Rust是一门编译语言，所有类型的结构体已经在编译期完全确定了，所以<strong>你不可能在不重新编译的前提下，真的生成一个全新的结构体定义并实例化。</strong></p>
+<p>为了能够用代码动态捏造出一个原本在Rust代码里根本不存在的结构体，这时候你就必须拥有一个<strong>能够动态创建并任意添加和修改</strong>的某种东西，而<code>PartialReflect</code>的<code>Partial</code>含义即在此，一个能够动态捏造的<strong>假类型</strong>。</p>
+<p><code>Reflect</code>与<code>PartialReflect</code>的区别关键就在于此，<code>Reflect</code>代表的是真实Rust类型，你可以把一个<code>dyn Reflect</code> 转回（Downcast）原始的真实的结构体。</p>
+<blockquote class="blockquote-tag blockquote-tag-note">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
+<p>在以前的早期版本中，其实只有<code>Reflect</code>并没有<code>PartialReflect</code>，当时遇到的问题是：当你从JSON反序列化或者用代码动态创建一个结构体时，它本质上只是个HashMap。如果强行让它实现 <code>Reflect</code>，当你尝试把这个 HashMap转换成真正的 <code>struct</code> 时就会崩溃。</p>
+</blockquote>
+<p>顺便一提，你还可以在二者之间进行来回的转换，二者的转换关系如下，不言而喻，把一个Reflect转换成PartialReflect是没问题的，但是反过来就有可能失败。</p>
+<ul>
+<li>
+<p><a href="https://docs.rs/bevy_reflect/latest/bevy_reflect/trait.PartialReflect.html#tymethod.as_partial_reflect"><code>PartialReflect::as_partial_reflect</code></a> for <code>&amp;dyn PartialReflect</code></p>
+</li>
+<li>
+<p><a href="https://docs.rs/bevy_reflect/latest/bevy_reflect/trait.PartialReflect.html#tymethod.as_partial_reflect_mut"><code>PartialReflect::as_partial_reflect_mut</code></a> for <code>&amp;mut dyn PartialReflect</code></p>
+</li>
+<li>
+<p><a href="https://docs.rs/bevy_reflect/latest/bevy_reflect/trait.PartialReflect.html#tymethod.into_partial_reflect"><code>PartialReflect::into_partial_reflect</code></a> for <code>Box&lt;dyn PartialReflect&gt;</code></p>
+</li>
+<li>
+<p><a href="https://docs.rs/bevy_reflect/latest/bevy_reflect/trait.PartialReflect.html#tymethod.try_as_reflect"><code>PartialReflect::try_as_reflect</code></a> for <code>&amp;dyn Reflect</code></p>
+</li>
+<li>
+<p><a href="https://docs.rs/bevy_reflect/latest/bevy_reflect/trait.PartialReflect.html#tymethod.try_as_reflect_mut"><code>PartialReflect::try_as_reflect_mut</code></a> for <code>&amp;mut dyn Reflect</code></p>
+</li>
+<li>
+<p><a href="https://docs.rs/bevy_reflect/latest/bevy_reflect/trait.PartialReflect.html#tymethod.try_into_reflect"><code>PartialReflect::try_into_reflect</code></a> for <code>Box&lt;dyn Reflect&gt;</code></p>
+</li>
+</ul>
+<h3 id="derivereflect"><a class="header" href="#derivereflect">#[derive(Reflect)]</a></h3>
+<p>为一个结构体或枚举等实现 <code>Reflect</code> 非常简单，直接使用派生宏即可。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use bevy::reflect::Reflect;
+
+#[derive(Reflect)]
+struct MyStruct {
+    foo: i32
+}
+<span class="boring">}</span></code></pre>
+<p>当你给一个 <code>struct</code> 或 <code>enum</code> 打上 <code>#[derive(Reflect)]</code> 时，它不仅会自动实现 <code>Reflect</code> 和 <code>PartialReflect</code>，还会暗中为你自动实现另外几个底层反射Trait。</p>
+<ul>
+<li>
+<p><strong><code>GetTypeRegistration</code></strong>：允许类型将自己注册到 Bevy 的类型注册表（<code>TypeRegistry</code>）中。</p>
+</li>
+<li>
+<p><strong><code>Typed</code></strong>：提供该类型的编译期与运行时元数据（如类型名称、路径、包含哪些字段等）。</p>
+</li>
+<li>
+<p>根据你的类型形态，自动实现 <code>Struct</code>、<code>TupleStruct</code>或 <code>Enum</code>。</p>
+</li>
+</ul>
+<p>注意！这里说的<code>Struct</code>和另外两个，是bevy_reflect中的一个用来代表数据类型的枚举，用来将一个<code>PartialReflect</code>当作相应的Rust中的原生类型并提供一些特定的方法，这样就不用在通用的<code>PartialReflect</code>进行很多危险的操作了。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 对反射类型的“种类”进行不可变枚举。
+// 每个变体都包含一个特性对象，该特性对象具有特定于某种类型的方法。
+// 通过以下方式获得PartialReflect::reflect_ref。
+
+pub enum ReflectRef&lt;'a&gt; {
+    Struct(&amp;'a dyn Struct),
+    TupleStruct(&amp;'a dyn TupleStruct),
+    Tuple(&amp;'a dyn Tuple),
+    List(&amp;'a dyn List),
+    Array(&amp;'a dyn Array),
+    Map(&amp;'a dyn Map),
+    Set(&amp;'a dyn Set),
+    Enum(&amp;'a dyn Enum),
+    #[cfg(feature = "functions")]
+    Function(&amp;'a dyn Function),
+    Opaque(&amp;'a dyn PartialReflect),
+}
+<span class="boring">}</span></code></pre>
+<p>并<strong>不是所有</strong>Rust类型都能直接 <code>#[derive(Reflect)]</code>，必须满足以下条件。</p>
+<ul>
+<li>
+<p>类型必须同时实现 <code>Any + Send + Sync</code>。类型本身不能包含非静态的引用（例如不能包含 <code>&amp;'a str</code>，必须是 <code>String</code>）。这是因为反射系统需要在运行时动态识别类型，不能有随时会失效的临时引用。</p>
+</li>
+<li>
+<p>结构体或枚举里的每一个字段（和子元素），本身也必须实现了 <code>Reflect</code>。如果某个字段无法或不需要反射（比如第三方库的复杂类型、指针等），可以在字段上加 <code>#[reflect(ignore)]</code> 忽略该字段。</p>
+</li>
+<li>
+<p>如果是在枚举（<code>enum</code>）上使用 <code>#[derive(Reflect)]</code>，所有字段和子元素必须实现 <code>FromReflect</code>。这是因为枚举在 Rust中占用的内存大小取决于最大变体，且带有辨识 Tag。动态构建或还原一个枚举变体时，必须能够把反射数据完全还原为真实的Rust值，因此强制要求 <code>FromReflect</code>。</p>
+</li>
+</ul>
+<p>在第二条前面我们提了一嘴<code>#[reflect(ignore)]</code>，<code>#[reflect(...)]</code>可以作用整个结构体或枚举的顶部，也可以只作用于某些特殊的字段上，在这里我们主要只列举出几个用法并在后文详细给出用法，至于全部的用法读者可以查看<a href="https://docs.rs/bevy_reflect/latest/bevy_reflect/derive.Reflect.html">文档</a>。</p>
+<ul>
+<li><code>#[reflect(TypeData)]</code>。例如 <code>#[reflect(Debug, PartialEq)]</code>，会把该类型的 <code>ReflectDebug</code> 和 <code>ReflectPartialEq</code> 注册到元数据中。这常配合 <code>#[reflect_trait]</code> 宏使用，让系统可以在只有 <code>dyn Reflect</code> 的情况下调用具体trait的方法。（在后面讲到反射如何配合trait使用时我们将再次回顾这件事）</li>
+<li><code>#[reflect(@expr)]</code>。注入自定义元数据。接受<code>@</code>符号后的任何表达式，该表达式解析为实现该表达式的值<code>Reflect</code>。如果注册了两个相同类型的属性，则后注册的属性会覆盖前者。</li>
+</ul>
+<h2 id="113-反射用例"><a class="header" href="#113-反射用例">11.3 反射用例</a></h2>
+<p>现在，让我们来真正看看到底该如何真正的使用bevy_reflect吧。</p>
+<h3 id="结构体枚举元组反射"><a class="header" href="#结构体枚举元组反射">结构体/枚举/元组反射</a></h3>
+<p>首先，让我们来看看如何利用反射来给结构体和枚举等添加一些自定义属性，利用这个功能我们可以方便的添加一些附加元数据在结构体上，观看以下示例：</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[derive(Reflect)]
+struct Slider {
+    #[reflect(@RangeInclusive::&lt;f32&gt;::new(0.0, 1.0))]
+    // 使用#[reflect(@expr)]属性注入元数据
+    #[reflect(@0.0..=1.0_f32)]
+    value: f32,
+}
+
+// 获得反射的编译时类型信息
+let TypeInfo::Struct(type_info) = Slider::type_info() else {
+    panic!("expected struct");
+};
+// 获得对应的字段
+let field = type_info.field("value").unwrap();
+// 将我们前面存进去的元数据信息重新拿出来
+let range = field.get_attribute::&lt;RangeInclusive&lt;f32&gt;&gt;().unwrap();
+
+assert_eq!(*range, 0.0..=1.0);
+<span class="boring">}</span></code></pre>
+<p>乍一看，如果你习惯使用诸如<code>js</code>或者<code>python</code>这样的动态类型语言，你可能觉得这些代码有些面熟感觉。没错，就是有一种qt里的属性的既视感，其实qt里的<code>Q_PROPERTY</code>宏，以及它背后的元对象系统，本质上和这些代码所做的事情没有区别。而在动态类型语言里，这些完全就是天生的功能（比如python的装饰器语法或js的反射可以直接操纵函数或者类定义）。</p>
+<p>对于枚举，我们可以这样使用<code>#[reflect(@expr)]</code>，将一些额外的结构体元数据添加到对应的枚举上，不过要记住，这些结构体元数据也必须是<code>#[derive(Reflect)]</code>的。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 可以是实现Reflect的任何类型：
+#[derive(Reflect)]
+struct Required;
+#[derive(Reflect, PartialEq, Debug)]
+struct Tooltip(String);
+impl Tooltip {
+    fn new(text: &amp;str) -&gt; Self {
+        Self(text.to_string())
+    }
+}
+
+#[derive(Reflect)]
+#[reflect(@Required, @Tooltip::new("An ID is required!"))]
+struct Id(u8);
+
+let TypeInfo::TupleStruct(type_info) = Id::type_info() else {
+    panic!("expected struct");
+};
+
+// 可以检查该结构体上是否拥有该类型的元数据属性信息
+assert!(type_info.has_attribute::&lt;Required&gt;());
+
+// 动态的获得相应的id
+let some_type_id = TypeId::of::&lt;Tooltip&gt;();
+
+let tooltip: &amp;dyn Reflect = type_info.get_attribute_by_id(some_type_id).unwrap();
+assert_eq!(
+    // 这里我们尝试直接下转为真正的类型
+    tooltip.downcast_ref::&lt;Tooltip&gt;(),
+    Some(&amp;Tooltip::new("An ID is required!"))
+);
+<span class="boring">}</span></code></pre>
+<p>另外，让我们再补充一下，所谓的<code>TypeInfo</code>和<code>TypeId</code>到底是什么？</p>
+<p>对于<code>TypeInfo</code>，这是bevy_reflect里用于标识元数据属性信息的一个枚举，就类似于之前我们看到的<code>ReflectRef</code>那样，让我们能够将一个类型的元数据属性信息转换成正确的形式。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub enum TypeInfo {
+    Struct(StructInfo),
+    TupleStruct(TupleStructInfo),
+    Tuple(TupleInfo),
+    List(ListInfo),
+    Array(ArrayInfo),
+    Map(MapInfo),
+    Set(SetInfo),
+    Enum(EnumInfo),
+    Opaque(OpaqueInfo),
+}
+<span class="boring">}</span></code></pre>
+<p>对于任何给定的类型，我们可以通过以下四种方式之一检索此值。在前面我们正是使用了第一种方式来获得相应的<code>TypeInfo</code>，同样如果我们拥有<code>TypeRegistry</code>或对应实例，也可以获得相应的元数据属性。</p>
+<ul>
+<li>
+<p><a href="https://docs.rs/bevy_reflect/latest/bevy_reflect/trait.Typed.html#tymethod.type_info"><code>Typed::type_info</code></a></p>
+</li>
+<li>
+<p><a href="https://docs.rs/bevy_reflect/latest/bevy_reflect/trait.DynamicTyped.html#tymethod.reflect_type_info"><code>DynamicTyped::reflect_type_info</code></a></p>
+</li>
+<li>
+<p><a href="https://docs.rs/bevy_reflect/latest/bevy_reflect/trait.PartialReflect.html#tymethod.get_represented_type_info"><code>PartialReflect::get_represented_type_info</code></a></p>
+</li>
+<li>
+<p><a href="https://docs.rs/bevy_reflect/latest/bevy_reflect/struct.TypeRegistry.html#method.get_type_info"><code>TypeRegistry::get_type_info</code></a></p>
+</li>
+</ul>
+<p>而<code>TypeId</code> 是Rust标准库提供的一个极其底层的机制，大多数时候你都不用接触他，但一旦要用到它时就变得非常重要。简而言之，<code>TypeId</code> 就是Rust编译器在编译期为每一个类型生成的唯一身份证号（u128类型）。比如在Bevy中，所有的Component都存放在<code>World</code>里。<code>World</code> 底层的哈希表就是以<code>TypeId</code>作为Key的。</p>
+<p>而上面的 <code>tooltip.downcast_ref::&lt;Tooltip&gt;()</code>这一行代码，实际上就是在比较泛型参数 <code>Tooltip</code> 的 <code>TypeId::of::&lt;Tooltip&gt;()</code>和内部的Id是否一致。</p>
+<hr>
+<p>//TODO: 动态字符串访问和属性修改</p>
+<h3 id="函数反射"><a class="header" href="#函数反射">函数反射</a></h3>
+<p>//TODO</p>
+<h3 id="动态类型反射"><a class="header" href="#动态类型反射">动态类型反射</a></h3>
+<p>//TODO</p>
+<h3 id="trait反射"><a class="header" href="#trait反射">trait反射</a></h3>
+<p>//TODO</p>
 
                     </main>
 
@@ -5362,22 +5569,6 @@ const IntList = List(i32); // 在编译期把 i32 类型传进去，直接生成
         <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
         <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
 
-        <!-- Livereload script (if served using the cli tool) -->
-        <script>
-            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
-            const socket = new WebSocket(wsAddress);
-            socket.onmessage = function (event) {
-                if (event.data === "reload") {
-                    socket.close();
-                    location.reload();
-                }
-            };
-
-            window.onbeforeunload = function() {
-                socket.close();
-            }
-        </script>
 
 
         <script>

@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-60131383.js";
+            window.path_to_searchindex_js = "searchindex-e1019d21.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-ab435950.js"></script>
+        <script src="toc-ad0f4ae9.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -834,7 +834,7 @@ impl Plugin for CustomPlugin {
 <h2 id="112-物理引擎"><a class="header" href="#112-物理引擎">1.12 物理引擎</a></h2>
 <p>通过前面的介绍你可能已经注意到了，我们的目光一直放在如何显示和操控上，而并没有关心真正的物理效应例如碰撞，重力等，而这些物理效果和交互，则是由物理引擎来进行处理。</p>
 <p>物理引擎是一种用于在虚拟环境中模拟现实世界物理现象的核心软件组件。 它负责处理物体间的碰撞检测、动力学模拟、刚体运动、重力、摩擦力、关节约束等物理效果，使得游戏中的物体能够以真实或符合游戏设定的方式相互作用。</p>
-<p>Bevy没有官方的物理引擎，其将物理引擎的选择交给了用户，用户可以自由选择rust生态中的一些物理引擎，不过主流的选择是<code>Avian</code>或<code>Rapier</code>，其前者致力于与Bevy进行集成，后者则是与Bevy分离的单独项目。由于<code>Avian</code>其实已经实质上成为了Bevy的首选物理引擎，因此在之后的章节中我们将详细介绍<code>Avian</code>，至于<code>Rapier</code>读者可以自行阅读文档进行学习。</p>
+<p>Bevy没有官方的物理引擎，其将物理引擎的选择交给了用户，用户可以自由选择rust生态中的一些物理引擎，不过主流的选择是<code>Avian</code>或<code>Rapier</code>，其前者致力于与Bevy进行集成，后者则是与Bevy分离的单独项目。读者可以自行阅读文档进行学习。</p>
 <h2 id="113-反射与依赖注入"><a class="header" href="#113-反射与依赖注入">1.13 反射与依赖注入</a></h2>
 <p>反射指的是程序在运行时能够访问、检测和修改程序本身状态或行为的一种能力。通过反射，我们<strong>可以在程序运行时修改类型的内容并使用字符串进行动态的字段访问。</strong></p>
 <p>在Bevy中，广泛使用了一种叫<strong>依赖注入</strong>的技术，这种技术使我们在编译时能够抹除数据的真实类型而在程序运行时动态的指定数据，其就是利用了反射来实现这样的效果。这也就是为什么虽然我们在编写<code>System</code>时并没有告诉Bevy其参数的个数与类型而仅只是声明在了函数定义中，但是Bevy仍然能够将正确的参数传递给<code>System</code>的原因。</p>
@@ -885,22 +885,6 @@ impl Plugin for CustomPlugin {
         <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
         <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
 
-        <!-- Livereload script (if served using the cli tool) -->
-        <script>
-            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
-            const socket = new WebSocket(wsAddress);
-            socket.onmessage = function (event) {
-                if (event.data === "reload") {
-                    socket.close();
-                    location.reload();
-                }
-            };
-
-            window.onbeforeunload = function() {
-                socket.close();
-            }
-        </script>
 
 
         <script>

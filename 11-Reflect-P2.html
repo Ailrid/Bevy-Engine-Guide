@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>第 4 章：时间与定时器 - Bevy游戏引擎指南</title>
+        <title>第 11 章：反射-P2 - Bevy游戏引擎指南</title>
 
 
         <!-- Custom HTML head -->
@@ -175,178 +175,218 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
-<h2 id="41-timer"><a class="header" href="#41-timer">4.1 Timer</a></h2>
-<p>一个<code>Timer</code>是一个bevy_time子crate中的类型，代表了bevy中的定时器，通过该类型，我们可以实现计时功能，其主要的两个构造方式如下：</p>
-<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>pub fn new (duration: Duration , mode: TimerMode ) -&gt; Self
-pub fn from_seconds (duration: f32 , mode: TimerMode ) -&gt; Self
-
-//其中TimerMode的定义如下
-pub enum TimerMode {
-    Once,
-    Repeating,
-}
-<span class="boring">}</span></code></pre>
-<p><code>Timer</code>并不关心时间的起点，而更关心时间差，其<code>TimerMode</code>指定了<code>Timer</code>的模式，这个模式的含义如下：</p>
+<h2 id="111-bevy中的反射"><a class="header" href="#111-bevy中的反射">11.1 Bevy中的反射</a></h2>
+<p>在前面我们说到，元编程的实现类型多种多样，有运行时反射、编译期宏、还有UE5那样的外挂反射和zig这种独树一帜的<code>comptime</code>关键字等等。那么Bevy里主要利用了什么？</p>
+<p>答案是前两种。Bevy即为我们提供了运行时反射的能力，又利用宏和Rust强大的泛型能力实现了<strong>编译期单态化与静态分发</strong>。其中前者由bevy_reflect这个crate提供，后者则主要在bevy_ecs中实现。</p>
+<blockquote class="blockquote-tag blockquote-tag-note">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
+<p>想一想，为什么只使用运行时反射或编译期宏？（提示：运行时反射的优点和代价是什么）</p>
+</blockquote>
+<p>首先让我们从比较容易理解的运行时反射来研究一下，bevy_reflect该如何使用？他的内部工作原理又是什么？</p>
+<h2 id="112-基本概念"><a class="header" href="#112-基本概念">11.2 基本概念</a></h2>
+<h3 id="reflect与partialreflect"><a class="header" href="#reflect与partialreflect">Reflect与PartialReflect</a></h3>
+<p>bevy_reflect的功能建立在两个trait上，即<code>Reflect</code>和<code>PartialReflect</code>，并且利用类型擦除来存储实现了这些trait并且需要反射的数据，要认识反射就必须先搞懂这两个trait到底是用来做什么的。</p>
+<p>看到这两个名字你可能会想到Rust标准库中 <code>Eq</code> 与 <code>PartialEq</code>（以及 <code>Ord</code> 与 <code>PartialOrd</code>），<code>Partial</code> 这个前缀代表着“弱化版的约束”或“不完全的语义”。显然在这里Bevy借鉴了Rust标准库中的这些命名，仅仅是通过这些名字和Rust的传统我们就能意识到这样一件事：<strong>任何一个实现了Reflect的类型肯定也实现了PartialReflect</strong></p>
+<p>为什么要区分二者呢？这是因为在编写游戏时，经常会遇到这样的一个需求：需要根据配置文件（可能是json或者任何序列化的文本）在游戏中生成一个合适的实体或者结构体以供后面的代码使用。然而，Rust是一门编译语言，所有类型的结构体已经在编译期完全确定了，所以<strong>你不可能在不重新编译的前提下，真的生成一个全新的结构体定义并实例化。</strong></p>
+<p>为了能够用代码动态捏造出一个原本在Rust代码里根本不存在的结构体，这时候你就必须拥有一个<strong>能够动态创建并任意添加和修改</strong>的某种东西，而<code>PartialReflect</code>的<code>Partial</code>含义即在此，一个能够动态捏造的<strong>假类型</strong>。</p>
+<p><code>Reflect</code>与<code>PartialReflect</code>的区别关键就在于此，<code>Reflect</code>代表的是真实Rust类型，你可以把一个<code>dyn Reflect</code> 转回（Downcast）原始的真实的结构体。</p>
+<blockquote class="blockquote-tag blockquote-tag-note">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
+<p>在以前的早期版本中，其实只有<code>Reflect</code>并没有<code>PartialReflect</code>，当时遇到的问题是：当你从JSON反序列化或者用代码动态创建一个结构体时，它本质上只是个HashMap。如果强行让它实现 <code>Reflect</code>，当你尝试把这个 HashMap转换成真正的 <code>struct</code> 时就会崩溃。</p>
+</blockquote>
+<p>顺便一提，你还可以在二者之间进行来回的转换，二者的转换关系如下，不言而喻，把一个Reflect转换成PartialReflect是没问题的，但是反过来就有可能失败。</p>
 <ul>
-<li>Once：在经过<code>Duration</code>时间后，计时器将停止跟踪并保持在完成状态，直到重置为止。</li>
-<li>Repeating：在经过<code>Duration</code>时间后，计时器不会保持状态，而是可以继续计时，再经过<code>Duration</code>时间后还会触发，并且仍然可以在任何给定点重置。</li>
+<li>
+<p><a href="https://docs.rs/bevy_reflect/latest/bevy_reflect/trait.PartialReflect.html#tymethod.as_partial_reflect"><code>PartialReflect::as_partial_reflect</code></a> for <code>&amp;dyn PartialReflect</code></p>
+</li>
+<li>
+<p><a href="https://docs.rs/bevy_reflect/latest/bevy_reflect/trait.PartialReflect.html#tymethod.as_partial_reflect_mut"><code>PartialReflect::as_partial_reflect_mut</code></a> for <code>&amp;mut dyn PartialReflect</code></p>
+</li>
+<li>
+<p><a href="https://docs.rs/bevy_reflect/latest/bevy_reflect/trait.PartialReflect.html#tymethod.into_partial_reflect"><code>PartialReflect::into_partial_reflect</code></a> for <code>Box&lt;dyn PartialReflect&gt;</code></p>
+</li>
+<li>
+<p><a href="https://docs.rs/bevy_reflect/latest/bevy_reflect/trait.PartialReflect.html#tymethod.try_as_reflect"><code>PartialReflect::try_as_reflect</code></a> for <code>&amp;dyn Reflect</code></p>
+</li>
+<li>
+<p><a href="https://docs.rs/bevy_reflect/latest/bevy_reflect/trait.PartialReflect.html#tymethod.try_as_reflect_mut"><code>PartialReflect::try_as_reflect_mut</code></a> for <code>&amp;mut dyn Reflect</code></p>
+</li>
+<li>
+<p><a href="https://docs.rs/bevy_reflect/latest/bevy_reflect/trait.PartialReflect.html#tymethod.try_into_reflect"><code>PartialReflect::try_into_reflect</code></a> for <code>Box&lt;dyn Reflect&gt;</code></p>
+</li>
 </ul>
-<p><code>Timer</code>的用法非常简单，读者可以查看<a href="https://docs.rs/bevy_time/0.17.3/bevy_time/struct.Timer.html#method.from_seconds">文档</a>，这里只介绍以下几个方法。</p>
+<h3 id="derivereflect"><a class="header" href="#derivereflect">#[derive(Reflect)]</a></h3>
+<p>为一个结构体或枚举等实现 <code>Reflect</code> 非常简单，直接使用派生宏即可。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>//将计时器的时间往前拨动
-//如果拨动的时间大于Timer内的Duration，Once类型的计时器会卡最大的Duration，Repeating类型的计时器不会被影响
-pub fn tick (&amp;mut self, delta: Duration ) -&gt; &amp;Self
+</span>use bevy::reflect::Reflect;
 
-//计时器从创建，到上一次tick为止，是否已经到达持续时间
-pub fn is_finished (&amp;self) -&gt; bool
-
-//仅在上次调用tick方法后，计时器到达Duration的情况下，才返回true
-pub fn just_finished (&amp;self) -&gt; bool
-<span class="boring">}</span></code></pre>
-<p><code>is_finished</code>与<code>just_finished</code>的区别可能有些微妙，这可以通过以下代码来演示。一般而言我们会在<code>Repeating</code>模式下使用<code>just_finished</code>，在<code>Once</code>模式下使用<code>is_finished</code>。</p>
-<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>//Repeating模式下使用just_finished
-let mut timer = Timer::from_seconds(1.0, TimerMode::Repeating);
-//我们在这里拨动了1.1s的时间，大于1.0秒，因此在这个tick里满足了条件
-timer.tick(Duration::from_secs_f32(1.1));
-assert_eq!(timer.just_finished(), true);
-//我们又在一个新的tick里拨动了0.5s，现在一共是1.6s，还没达到第二个时间点(2s)
-//所以下面会返回false
-timer.tick(Duration::from_secs_f32(0.5));
-assert_eq!(timer.just_finished(), false);
-
-//Once模式下使用is_finished
-//在第一次就已经拨到了1.1s,大于1.0s，因此该始时钟停留在1.0s
-//所以is_finished的返回值一直都是true
-let mut timer = Timer::from_seconds(1.0, TimerMode::Once);
-timer.tick(Duration::from_secs_f32(1.1));
-assert_eq!(timer.is_finished(), true);
-timer.tick(Duration::from_secs_f32(0.5));
-assert_eq!(timer.is_finished(), true);
-<span class="boring">}</span></code></pre>
-<h2 id="42--time"><a class="header" href="#42--time">4.2  Time</a></h2>
-<p>Bevy中内置了一些时间信息，其定义如下，这些<code>Time</code><strong>以全局资源的形式存在</strong>，通过这些我们可以获得Bevy的时间信息，从而指定时间相关的任务，例如定时运行某些系统等。</p>
-<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>pub struct Time&lt;T: Default = ()&gt; {
-    context: T,
-    wrap_period: Duration,
-    delta: Duration,
-    delta_secs: f32,
-    delta_secs_f64: f64,
-    elapsed: Duration,
-    elapsed_secs: f32,
-    elapsed_secs_f64: f64,
-    elapsed_wrapped: Duration,
-    elapsed_secs_wrapped: f32,
-    elapsed_secs_wrapped_f64: f64,
+#[derive(Reflect)]
+struct MyStruct {
+    foo: i32
 }
 <span class="boring">}</span></code></pre>
-<p>Bevy中存在四种<code>Time</code>，这些时钟是我们在调用<code>DefaultPlugins</code>时内部的 <a href="https://docs.rs/bevy_time/0.17.3/bevy_time/struct.TimePlugin.html"><code>TimePlugin</code></a>为我们插入的，并且还为我们创建好了更新这些信息的，他们分别是：</p>
+<p>当你给一个 <code>struct</code> 或 <code>enum</code> 打上 <code>#[derive(Reflect)]</code> 时，它不仅会自动实现 <code>Reflect</code> 和 <code>PartialReflect</code>，还会暗中为你自动实现另外几个底层反射Trait。</p>
 <ul>
-<li>Time<real>：记录实际经过的时间</real></li>
-<li>Time<virtual>：记录虚拟游戏时间，该时间可以暂停或调整</virtual></li>
-<li>Time<fixed>：根据虚拟时间跟踪固定时间步长</fixed></li>
-<li>Time：一个通用时钟，对应于系统的“当前”或“默认”时间</li>
+<li>
+<p><strong><code>GetTypeRegistration</code></strong>：允许类型将自己注册到 Bevy 的类型注册表（<code>TypeRegistry</code>）中。</p>
+</li>
+<li>
+<p><strong><code>Typed</code></strong>：提供该类型的编译期与运行时元数据（如类型名称、路径、包含哪些字段等）。</p>
+</li>
+<li>
+<p>根据你的类型形态，自动实现 <code>Struct</code>、<code>TupleStruct</code>或 <code>Enum</code>。</p>
+</li>
 </ul>
-<p>​	Bevy是如何做到这些的？简而言之，<code>TimePlugin</code>插件在<code>First</code>调度中（还记得<code>First</code>吗？那是游戏循环的第一个阶段）更新了<code>Time&lt;Real&gt;</code>（使用渲染app传递的时间或者直接调用<code>Instant::now()</code>），然后使用了这个时间来更新了<code>Time</code>和<code>Time&lt;Virtual&gt;</code>。</p>
-<p>bevy_time的源码里是这么写的，利用<code>Time&lt;Real&gt;</code>两次更新的时间差来更新<code>Time&lt;Virtual&gt;</code>，然后直接拷贝了一份给<code>Time</code>。这说明其实<code>Time</code>和<code>Time&lt;Virtual&gt;</code>里的时间其实是一样的（除非在<code>FixedMain</code>调度里）。</p>
+<p>注意！这里说的<code>Struct</code>和另外两个，是bevy_reflect中的一个用来代表数据类型的枚举，用来将一个<code>PartialReflect</code>当作相应的Rust中的原生类型并提供一些特定的方法，这样就不用在通用的<code>PartialReflect</code>进行很多危险的操作了。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>pub fn update_virtual_time(current: &amp;mut Time, virt: &amp;mut Time&lt;Virtual&gt;, real: &amp;Time&lt;Real&gt;) {
-    let raw_delta = real.delta();
-    virt.advance_with_raw_delta(raw_delta);
-    *current = virt.as_generic();
+</span>// 对反射类型的“种类”进行不可变枚举。
+// 每个变体都包含一个特性对象，该特性对象具有特定于某种类型的方法。
+// 通过以下方式获得PartialReflect::reflect_ref。
+
+pub enum ReflectRef&lt;'a&gt; {
+    Struct(&amp;'a dyn Struct),
+    TupleStruct(&amp;'a dyn TupleStruct),
+    Tuple(&amp;'a dyn Tuple),
+    List(&amp;'a dyn List),
+    Array(&amp;'a dyn Array),
+    Map(&amp;'a dyn Map),
+    Set(&amp;'a dyn Set),
+    Enum(&amp;'a dyn Enum),
+    #[cfg(feature = "functions")]
+    Function(&amp;'a dyn Function),
+    Opaque(&amp;'a dyn PartialReflect),
 }
 <span class="boring">}</span></code></pre>
-<p>在<code>FixedMain</code>调度里，Bevy会更改Time，这是通过调用下面这个特殊的系统来实现的。这个系统利用<code>Time&lt;Virtual&gt;</code>更新了<code>Time&lt;Fixed&gt;</code>，然后在<code>FixedMain</code>阶段里直接修改了<code>Time</code>的时间与<code>Time&lt;Fixed&gt;</code>相同，来让我们在运行<code>FixedMain</code>中的系统时，调用<code>Time</code>看到的时间是<code>Time&lt;Fixed&gt;</code>。最后，当离开这个调度后，我们又将其更正为<code>Time&lt;Virtual&gt;</code>，一切就这样恢复原样，剩下的系统看到的<code>Time</code>不会发生任何改变。</p>
+<p>并<strong>不是所有</strong>Rust类型都能直接 <code>#[derive(Reflect)]</code>，必须满足以下条件。</p>
+<ul>
+<li>
+<p>类型必须同时实现 <code>Any + Send + Sync</code>。类型本身不能包含非静态的引用（例如不能包含 <code>&amp;'a str</code>，必须是 <code>String</code>）。这是因为反射系统需要在运行时动态识别类型，不能有随时会失效的临时引用。</p>
+</li>
+<li>
+<p>结构体或枚举里的每一个字段（和子元素），本身也必须实现了 <code>Reflect</code>。如果某个字段无法或不需要反射（比如第三方库的复杂类型、指针等），可以在字段上加 <code>#[reflect(ignore)]</code> 忽略该字段。</p>
+</li>
+<li>
+<p>如果是在枚举（<code>enum</code>）上使用 <code>#[derive(Reflect)]</code>，所有字段和子元素必须实现 <code>FromReflect</code>。这是因为枚举在 Rust中占用的内存大小取决于最大变体，且带有辨识 Tag。动态构建或还原一个枚举变体时，必须能够把反射数据完全还原为真实的Rust值，因此强制要求 <code>FromReflect</code>。</p>
+</li>
+</ul>
+<p>在第二条前面我们提了一嘴<code>#[reflect(ignore)]</code>，<code>#[reflect(...)]</code>可以作用整个结构体或枚举的顶部，也可以只作用于某些特殊的字段上，在这里我们主要只列举出几个用法并在后文详细给出用法，至于全部的用法读者可以查看<a href="https://docs.rs/bevy_reflect/latest/bevy_reflect/derive.Reflect.html">文档</a>。</p>
+<ul>
+<li><code>#[reflect(TypeData)]</code>。例如 <code>#[reflect(Debug, PartialEq)]</code>，会把该类型的 <code>ReflectDebug</code> 和 <code>ReflectPartialEq</code> 注册到元数据中。这常配合 <code>#[reflect_trait]</code> 宏使用，让系统可以在只有 <code>dyn Reflect</code> 的情况下调用具体trait的方法。（在后面讲到反射如何配合trait使用时我们将再次回顾这件事）</li>
+<li><code>#[reflect(@expr)]</code>。注入自定义元数据。接受<code>@</code>符号后的任何表达式，该表达式解析为实现该表达式的值<code>Reflect</code>。如果注册了两个相同类型的属性，则后注册的属性会覆盖前者。</li>
+</ul>
+<h2 id="113-反射用例"><a class="header" href="#113-反射用例">11.3 反射用例</a></h2>
+<p>现在，让我们来真正看看到底该如何真正的使用bevy_reflect吧。</p>
+<h3 id="结构体枚举元组反射"><a class="header" href="#结构体枚举元组反射">结构体/枚举/元组反射</a></h3>
+<p>首先，让我们来看看如何利用反射来给结构体和枚举等添加一些自定义属性，利用这个功能我们可以方便的添加一些附加元数据在结构体上，观看以下示例：</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>pub fn run_fixed_main_schedule(world: &amp;mut World) {
-    let delta = world.resource::&lt;Time&lt;Virtual&gt;&gt;().delta();
-    world.resource_mut::&lt;Time&lt;Fixed&gt;&gt;().accumulate(delta);
-
-    // Run the schedule until we run out of accumulated time
-    let _ = world.try_schedule_scope(FixedMain, |world, schedule| {
-        while world.resource_mut::&lt;Time&lt;Fixed&gt;&gt;().expend() {
-            *world.resource_mut::&lt;Time&gt;() = world.resource::&lt;Time&lt;Fixed&gt;&gt;().as_generic();
-            schedule.run(world);
-        }
-    });
-
-    *world.resource_mut::&lt;Time&gt;() = world.resource::&lt;Time&lt;Virtual&gt;&gt;().as_generic();
+</span>#[derive(Reflect)]
+struct Slider {
+    #[reflect(@RangeInclusive::&lt;f32&gt;::new(0.0, 1.0))]
+    // 使用#[reflect(@expr)]属性注入元数据
+    #[reflect(@0.0..=1.0_f32)]
+    value: f32,
 }
+
+// 获得反射的编译时类型信息
+let TypeInfo::Struct(type_info) = Slider::type_info() else {
+    panic!("expected struct");
+};
+// 获得对应的字段
+let field = type_info.field("value").unwrap();
+// 将我们前面存进去的元数据信息重新拿出来
+let range = field.get_attribute::&lt;RangeInclusive&lt;f32&gt;&gt;().unwrap();
+
+assert_eq!(*range, 0.0..=1.0);
 <span class="boring">}</span></code></pre>
-<p>说了这么多，其实只告诉了我们下面三件事：</p>
-<p><strong>在<code>RunFixedMainLoop</code>阶段执行的系统，我们看到的<code>Time</code>是<code>Time&lt;Fixed&gt;</code>。</strong></p>
-<p><strong>在<code>Update</code>阶段执行的系统，我们看到的<code>Time</code>是<code>Time&lt;Virtual&gt;</code>。</strong></p>
-<p><strong>如果需要获得现实世界的时间，我们则需要使用<code>Time&lt;Real&gt;</code>。</strong></p>
-<h2 id="43-time与timer的配合使用"><a class="header" href="#43-time与timer的配合使用">4.3 Time与Timer的配合使用</a></h2>
-<h3 id="431-定时执行系统"><a class="header" href="#431-定时执行系统">4.3.1 定时执行系统</a></h3>
-<p>很多时候，我们想要创建一个定时任务，利用Timer和Time，我们可以轻轻松松完成这件事，例如下面这样。</p>
+<p>乍一看，如果你习惯使用诸如<code>js</code>或者<code>python</code>这样的动态类型语言，你可能觉得这些代码有些面熟感觉。没错，就是有一种qt里的属性的既视感，其实qt里的<code>Q_PROPERTY</code>宏，以及它背后的元对象系统，本质上和这些代码所做的事情没有区别。而在动态类型语言里，这些完全就是天生的功能（比如python的装饰器语法或js的反射可以直接操纵函数或者类定义）。</p>
+<p>对于枚举，我们可以这样使用<code>#[reflect(@expr)]</code>，将一些额外的结构体元数据添加到对应的枚举上，不过要记住，这些结构体元数据也必须是<code>#[derive(Reflect)]</code>的。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>//返回一个闭包，这个闭包会在每次游戏循环里被执行，当返回true时系统将会执行
-pub fn on_real_timer(duration: Duration) -&gt; impl FnMut(Res&lt;Time&lt;Real&gt;&gt;) -&gt; bool + Clone {
-  	//创建一个定时器
-    let mut timer = Timer::new(duration, TimerMode::Repeating);
-  	//闭包获取Time&lt;Real&gt;，并拨动始终，判断是否经过了一段时间
-    move |time: Res&lt;Time&lt;Real&gt;&gt;| {
-        timer.tick(time.delta());
-        timer.just_finished()
+</span>// 可以是实现Reflect的任何类型：
+#[derive(Reflect)]
+struct Required;
+#[derive(Reflect, PartialEq, Debug)]
+struct Tooltip(String);
+impl Tooltip {
+    fn new(text: &amp;str) -&gt; Self {
+        Self(text.to_string())
     }
 }
 
-//利用run_if，可以使用这个方法
-app.add_system(Update,some_system.run_if(on_real_timer(Durarion::from_sec_32(1.0))))
-<span class="boring">}</span></code></pre>
-<p>我们不需要重复编写这些功能，Bevy在bevy_time中已经为我们提供了一套常用的conditions，读者可以查看<a href="https://docs.rs/bevy_time/0.17.3/bevy_time/common_conditions/index.html">文档</a>。</p>
-<h3 id="432-定时执行系统进阶"><a class="header" href="#432-定时执行系统进阶">4.3.2 定时执行系统（进阶）</a></h3>
-<p>上面的方式只适用于简单的情况，更多时候我们还需要进行一定的控制，这时我们也可以使用上面的方式，但是我们这时候需要利用一个<code>Component</code>来存储<code>Timer</code>并手动利用<code>tick</code>更新时间，就像下面这样。</p>
-<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>#[derive(Component, Deref, DerefMut)]
-struct AnimationTimer(Timer);
+#[derive(Reflect)]
+#[reflect(@Required, @Tooltip::new("An ID is required!"))]
+struct Id(u8);
 
-fn animate_sprite(
-    time: Res&lt;Time&gt;,
-    mut query: Query&lt;&amp;mut AnimationTimer&gt;,
-) {
-    for mut timer in &amp;mut query {
-        timer.tick(time.delta());
-        if timer.just_finished(){
-          //执行一些操作
-        }
-    }
-}
+let TypeInfo::TupleStruct(type_info) = Id::type_info() else {
+    panic!("expected struct");
+};
+
+// 可以检查该结构体上是否拥有该类型的元数据属性信息
+assert!(type_info.has_attribute::&lt;Required&gt;());
+
+// 动态的获得相应的id
+let some_type_id = TypeId::of::&lt;Tooltip&gt;();
+
+let tooltip: &amp;dyn Reflect = type_info.get_attribute_by_id(some_type_id).unwrap();
+assert_eq!(
+    // 这里我们尝试直接下转为真正的类型
+    tooltip.downcast_ref::&lt;Tooltip&gt;(),
+    Some(&amp;Tooltip::new("An ID is required!"))
+);
 <span class="boring">}</span></code></pre>
-<h3 id="433-时间相关的变量"><a class="header" href="#433-时间相关的变量">4.3.3 时间相关的变量</a></h3>
-<p>Bevy的示例中充满了这种用法，我们可以获得<code>Time</code>，然后利用<code>Time</code>来更新某些变量。例如我们可以通过<code>delta_secs</code>方法获得每帧相隔的时间，然后乘以系数并不断累加到某个位置，这可以做到让该变量随着时间不断更新的效果。</p>
+<p>另外，让我们再补充一下，所谓的<code>TypeInfo</code>和<code>TypeId</code>到底是什么？</p>
+<p>对于<code>TypeInfo</code>，这是bevy_reflect里用于标识元数据属性信息的一个枚举，就类似于之前我们看到的<code>ReflectRef</code>那样，让我们能够将一个类型的元数据属性信息转换成正确的形式。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>fn animate(mut state: ResMut&lt;AnimationState&gt;, time: Res&lt;Time&gt;) {
-    if state.current &gt;= state.max || state.current &lt;= state.min {
-        state.speed = -state.speed;
-    };
-    state.current += state.speed * time.delta_secs();
+</span>pub enum TypeInfo {
+    Struct(StructInfo),
+    TupleStruct(TupleStructInfo),
+    Tuple(TupleInfo),
+    List(ListInfo),
+    Array(ArrayInfo),
+    Map(MapInfo),
+    Set(SetInfo),
+    Enum(EnumInfo),
+    Opaque(OpaqueInfo),
 }
 <span class="boring">}</span></code></pre>
+<p>对于任何给定的类型，我们可以通过以下四种方式之一检索此值。在前面我们正是使用了第一种方式来获得相应的<code>TypeInfo</code>，同样如果我们拥有<code>TypeRegistry</code>或对应实例，也可以获得相应的元数据属性。</p>
+<ul>
+<li>
+<p><a href="https://docs.rs/bevy_reflect/latest/bevy_reflect/trait.Typed.html#tymethod.type_info"><code>Typed::type_info</code></a></p>
+</li>
+<li>
+<p><a href="https://docs.rs/bevy_reflect/latest/bevy_reflect/trait.DynamicTyped.html#tymethod.reflect_type_info"><code>DynamicTyped::reflect_type_info</code></a></p>
+</li>
+<li>
+<p><a href="https://docs.rs/bevy_reflect/latest/bevy_reflect/trait.PartialReflect.html#tymethod.get_represented_type_info"><code>PartialReflect::get_represented_type_info</code></a></p>
+</li>
+<li>
+<p><a href="https://docs.rs/bevy_reflect/latest/bevy_reflect/struct.TypeRegistry.html#method.get_type_info"><code>TypeRegistry::get_type_info</code></a></p>
+</li>
+</ul>
+<p>而<code>TypeId</code> 是Rust标准库提供的一个极其底层的机制，大多数时候你都不用接触他，但一旦要用到它时就变得非常重要。简而言之，<code>TypeId</code> 就是Rust编译器在编译期为每一个类型生成的唯一身份证号（u128类型）。比如在Bevy中，所有的Component都存放在<code>World</code>里。<code>World</code> 底层的哈希表就是以<code>TypeId</code>作为Key的。</p>
+<p>而上面的 <code>tooltip.downcast_ref::&lt;Tooltip&gt;()</code>这一行代码，实际上就是在比较泛型参数 <code>Tooltip</code> 的 <code>TypeId::of::&lt;Tooltip&gt;()</code>和内部的Id是否一致。</p>
+<hr>
+<p>//TODO: 动态字符串访问和属性修改</p>
+<h3 id="函数反射"><a class="header" href="#函数反射">函数反射</a></h3>
+<p>//TODO</p>
+<h3 id="动态类型反射"><a class="header" href="#动态类型反射">动态类型反射</a></h3>
+<p>//TODO</p>
+<h3 id="trait反射"><a class="header" href="#trait反射">trait反射</a></h3>
+<p>//TODO</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="3-Assets.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="10-Reflect-P1.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="5-2D.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
-                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -354,13 +394,10 @@ fn animate_sprite(
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="3-Assets.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="10-Reflect-P1.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="5-2D.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
-                    </a>
             </nav>
 
         </div>
