@@ -322,4 +322,3 @@ fn read_message(mut messages: MessageReader<AssetEvent>) {
   }
 }
 ```
-

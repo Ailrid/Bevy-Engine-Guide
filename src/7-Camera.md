@@ -706,16 +706,3 @@ pub struct FreeCamera {
 ```
 
 具体的其他我们就不再赘述了，对更多相机的细节感兴趣的读者可以查看Bevy下的examples/camera下的各种示例，特别是其中有一个很好玩的first_person_view_model，利用了相机和`RenderLayers`实现了类似于我的世界一样的第一人称视角相机。
-
-
-
-
-
-
-
-
-
-
-
-
-
