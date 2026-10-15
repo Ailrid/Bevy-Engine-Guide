@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-ce11908a.js";
+            window.path_to_searchindex_js = "searchindex-3e25ad36.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-ad0f4ae9.js"></script>
@@ -410,10 +410,10 @@ assert_eq!(cloned.downcast_ref::&lt;Player&gt;(), Some(&amp;Player { id: 123 }))
     fn get_represented_struct_info(&amp;self) -&gt; Option&lt;&amp;'static StructInfo&gt; { ... }
 }
 <span class="boring">}</span></code></pre>
-<p>通过<code>dyn PartialReflect</code>对象上的<code>reflect_ref</code>或者<code>reflect_mut</code>方法，我们就可以得到这些对应的值，这些方法返回一个<code>ReflectRef</code>类型的枚举，包含了一个转换为上面的<code>Trait</code>对象的</p>
+<p>通过<code>dyn PartialReflect</code>对象上的<code>reflect_ref</code>或者<code>reflect_mut</code>方法，我们就可以得到这些对应的值，这些方法返回一个<code>ReflectRef</code>类型的枚举，包含了一个对应的<code>Trait</code>对象。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>// 每个变体都包含一个特性对象，该特性对象具有特定于某种类型的方法。
+</span>// 每个变体都包含一个trait对象，该特性对象具有特定于某种类型的方法。
 // 通过以下方式获得PartialReflect::reflect_ref（返回不可变引用）/PartialReflect::reflect_mut（返回可变引用）。
 pub enum ReflectRef&lt;'a&gt; {
     Struct(&amp;'a dyn Struct),
@@ -497,8 +497,218 @@ my_struct.apply(&amp;dynamic_struct);
 assert_eq!(my_struct, MyStruct { x: 1, y: 2, z: 3 });
 <span class="boring">}</span></code></pre>
 <p>对于元组、枚举等数据，和结构体的使用方法是类似的，这里就不再赘述了。</p>
+<p>最后，这里不得不提到的一件事就是，<strong>当我们使用<code>#[derive(Reflect)]</code>来给结构体/枚举添加反射功能时，所有的字段都的生命周期必须都是’static，因此，非静态借用数据无法实现反射。</strong></p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>
+#[derive(Reflect, Default, Debug, PartialEq)]
+struct Pos {
+    x: u32,
+    y: u32,
+    z: u32,
+}
+
+#[derive(Reflect, Default, Debug, PartialEq)]
+struct MyStruct&lt;'a&gt; {
+    pos: &amp;'a Pos,// 不能这样写❌
+}
+<span class="boring">}</span></code></pre>
 <h3 id="1132-函数反射"><a class="header" href="#1132-函数反射">11.3.2 函数反射</a></h3>
-<p>//TODO</p>
+<p>前面我们讲了这么几件事：<strong>如何使用反射给一个结构体/枚举本身/某个字段添加属性、如何在运行时通过字符串或索引，动态地访问、修改甚至凭空捏造数据。</strong></p>
+<p>现在我们来看看反射在函数上有什么用。要启用函数反射，首先要在cargo.toml中启用该功能。</p>
+<pre><code class="language-toml">bevy_reflect = {version = "1.95.0",features=["functions"]}
+</code></pre>
+<p>在开始之前，先让我们自己想一想，对一个函数而言，反射应该具备什么功能呢？很显然，对于一个函数来说，我们最关心的无非是下面几件东西：**函数标识、每个参数的类型、每个参数的位置、返回值类型。**稍后我们就会看到，完全如我们所料，这些在bevy_reflect里都有正确的对应对象或者获取方法。而且这也是在函数反射中，最为常用的功能之一。</p>
+<p>在前面我们说到，创建一个不存在的结构体，我们需要一个动态类型，而对于函数，我们也需要一个<a href="https://docs.rs/bevy/latest/bevy/reflect/func/struct.DynamicFunction.html"><code>DynamicFunction</code></a>，不过好消息是，大多数时候我们只需要对一个函数简单的调用<code>into_function</code>，在背后，这是通过一个<a href="https://docs.rs/bevy/latest/bevy/prelude/trait.IntoFunction.html"><code>IntoFunction</code></a> <code>trait</code>来实现的。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn add(a: i32, b: i32) -&gt; i32 {
+  a + b
+}
+
+// bevy_reflect为0-15个参数的函数、闭包均实现了 IntoFunction trait
+// 在这里必须强调的一点是，函数的所有参数的生命周期必须和返回值相同
+let mut func: DynamicFunction = add.into_function();
+<span class="boring">}</span></code></pre>
+<p>这个<code>DynamicFunction</code>类型上有一个重要的方法<code>pub fn info(&amp;self) -&gt; &amp;FunctionInfo</code>，其返回一个对于<a href="https://docs.rs/bevy/latest/bevy/reflect/func/struct.FunctionInfo.html">FunctionInfo</a>类型的引用，而这个<code>FunctionInfo</code>类型上，就拥有描述一个函数所需要的全部信息。前面我们说到的四种信息，可以通过<code>FunctionInfo</code>类型上的这几个方法来获得。</p>
+<ul>
+<li>
+<p><code>pub fn name(&amp;self) -&gt; Option&lt;&amp;Cow&lt;'static, str&gt;&gt;</code></p>
+</li>
+<li>
+<p><code>pub fn arg_count(&amp;self) -&gt; ArgCount</code></p>
+</li>
+<li>
+<p><code>pub fn signatures(&amp;self) -&gt; &amp;[SignatureInfo]</code></p>
+</li>
+</ul>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 实际上DynamicFunction上也有name方法，因此你可以直接这样func.name()
+let name: Option&lt;&amp;Cow&lt;'static, str&gt;&gt; = func.info().name() ;
+let arg_count:ArgCount = func.info().arg_count();
+let signatures:&amp;[SignatureInfo] = func.info().signatures();
+<span class="boring">}</span></code></pre>
+<p>让我们一个个来看看这些东西，首先是<code>name</code>，为何返回的是一个<code>Option</code>呢？这是因为，当<code>add</code>是闭包函数、匿名函数或函数指针是，<code>name</code>将会是<code>None</code>，对于重载函数，这是基础签名的名称（对于函数重载的讨论我们下面再进行）。</p>
+<p><code>arg_count</code>的类型是<a href="https://docs.rs/bevy/latest/bevy/reflect/func/args/struct.ArgCount.html">ArgCount</a>，<code>ArgCount</code>又是一个什么样的类型呢？为什么不直接返回一个<code>usize</code>类型呢？答案是，这还是和函数重载有关。由于一个函数可能有多个实现，这时他们的参数个数也会发生变化，因此你应该可以猜到，<code>ArgCount</code>的用法和一个二维数组非常相似，类似于这样。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>for arg_len in arg_count.iter(){
+    // 这时，arg_len才是一个usize类型
+}
+<span class="boring">}</span></code></pre>
+<p><code>signatures</code>的类型是<code>&amp;[SignatureInfo]</code>，你可能也已经猜到了为何这是一个数组切片了，原因同样是因为重载。<strong>不过，有意思的是，对比二者，我也想问，为何上面的<code>args</code>不是一个<code>&amp;[usize]</code>类型呢？</strong></p>
+<p><a href="https://docs.rs/bevy/latest/bevy/reflect/func/struct.SignatureInfo.html">SignatureInfo</a>是一个非常重要的数据类型，其中含有了对于我们最重要的参数和返回值相关的信息。于是我们为了获取这些信息，还需要再往内部嵌套一层，因此同样我们就有了下面的这些方法。</p>
+<ul>
+<li>
+<p><code>pub fn args(&amp;self) -&gt; &amp;[ArgInfo]</code></p>
+</li>
+<li>
+<p><code>pub fn return_info(&amp;self) -&gt; &amp;ReturnInfo</code></p>
+</li>
+</ul>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let args:&amp;[ArgInfo] =signatures.args();
+let return_info:&amp;ReturnInfo = signatures.return_info();
+// 实际上 SignatureInfo 也有 pub fn arg_count(&amp;self) -&gt; usize 方法
+// 而且，他还有pub fn name(&amp;self) -&gt; Option&lt;&amp;Cow&lt;'static, str&gt;&gt;方法
+// 于是我们可以发现一件事，DynamicFunction上的这两个方法实际上都只是简单的调用了 SignatureInfo 而已
+<span class="boring">}</span></code></pre>
+<p><a href="https://docs.rs/bevy/latest/bevy/reflect/func/args/struct.ArgInfo.html">ArgInfo</a>类型代表了一个确切的函数参数的信息，通过他，我们终于可以获得一个参数的类型信息、名称、在参数表中的位置了。bevy_reflect为我们提供了非常多有用的方法，包括下面这些。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>for arg in args.iter(){
+    // pub fn index(&amp;self) -&gt; usize 返回参数在参数列表中的位置索引
+    arg.index()
+    // fn ty(&amp;self) -&gt; &amp;Type 返回参数的Rust底层类型
+    arg.ty()
+    // fn type_id(&amp;self) -&gt; TypeId 返回参数类型的TypeId 
+    arg.type_id()
+    // 检查给出的类型是否匹配,这只比较了类型之间的 TypeId，并未验证它们是否共享相同的类型路径 
+    arg.is::&lt;T&gt;()
+}
+<span class="boring">}</span></code></pre>
+<p>对于<a href="https://docs.rs/bevy/latest/bevy/reflect/func/struct.ReturnInfo.html">ReturnInfo</a>，和<code>ArgInfo</code>的区别主要在于，其没有<code>index()</code>方法，因为函数的返回值一般只能有一个。</p>
+<hr>
+<p>在rust中，对于闭包的区分我们有<code>Fn</code>和 <code>FnMut</code>和<code>FnOnce</code>，你可能已经猜到了，我们前面的<code>DynamicFunction</code>对应的其实就是<code>Fn</code>，而<code>FnMut</code>，当然也有一个<code>DynamicFunctionMut</code>！</p>
+<p>他们的区别和<code>Fn</code>和 <code>FnMut</code>的区别几乎是一样的，当我们的闭包需要修改外部的变量时，我们就需要使用<code>into_function_mut()</code>方法生成一个<code>DynamicFunctionMut</code>。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span> let mut count = 0;
+ let increment = |amount: i32| count += amount;
+ let closure: DynamicFunctionMut = dbg!(increment.into_function_mut());
+<span class="boring">}</span></code></pre>
+<p>对于其余的获取参数和各种信息的方法，二者基本上是没有区别的，这里就不再赘述。</p>
+<hr>
+<p>现在，我们还要做另一件事。既然我们已经知道了怎么通过反射查询一个函数的参数信息，那我们便可以通过这些信息组装成一个合适的参数列表，然后动态调用函数。可是，<strong>我们该怎么组装这样一个列表然后调用这个反射的函数对象呢？</strong></p>
+<p>bevy_reflect为我们提供了一个<a href="https://docs.rs/bevy/latest/bevy/reflect/func/struct.ArgList.html">ArgList</a>类型，这就是我们需要的，一份可以传递给 <code>DynamicFunction</code>或<code>DynamicFunctionMut</code>的参数列表。我们可以像这样，创建一个参数列表。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let foo = 123;
+let bar = 456;
+let mut baz = 789;
+let args = ArgList::new()
+  // 移动所有权
+  .with_owned(foo)
+  // 移动所有权并创建一个堆指针
+  .with_boxed(Box::new(foo))
+  // 不可变引用
+  .with_ref(&amp;bar)
+  // 可变引用参数
+  .with_mut(&amp;mut baz)
+  // 一个ArgValue参数
+  .with_arg(ArgValue::Ref(&amp;3.14));
+
+// ArgValue参数是一个枚举类型，包含下列一些变体
+// pub enum ArgValue&lt;'a&gt; {
+//     Owned(Box&lt;dyn PartialReflect&gt;),
+//     Ref(&amp;'a (dyn PartialReflect + 'static)),
+//     Mut(&amp;'a mut (dyn PartialReflect + 'static)),
+// }
+<span class="boring">}</span></code></pre>
+<p>在<code>DynamicFunction</code>和<code>DynamicFunctionMut</code>上，我们有一个<code>call</code>方法，其正好接受一个<code>ArgList</code>类型的引用。</p>
+<ul>
+<li><code>pub fn call&lt;'a&gt;(&amp;self, args: ArgList&lt;'a&gt;) -&gt; Result&lt;Return&lt;'a&gt;, FunctionError&gt;</code></li>
+</ul>
+<p>而在<code>DynamicFunctionMut</code>上，我们还有一个额外的<code>call_once</code>方法。</p>
+<ul>
+<li><code>pub fn call_once&lt;'a&gt;(&amp;self, args: ArgList&lt;'a&gt;) -&gt; Result&lt;Return&lt;'a&gt;, FunctionError&gt;</code></li>
+</ul>
+<p>二者的区别在于，<code>DynamicFunctionMut</code>的<code>call</code>，会可变借用被捕获的变量，所以在手动<code>drop</code>掉<code>DynamicFunctionMut</code>之前，这些被闭包捕获的变量就无法再次使用了。如果你需要在调用函数之后继续使用被捕获的变量，那么就需要<code>call_once</code>来自动<code>drop</code>掉该对象。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let mut count = 0;
+let increment = |amount: i32| count += amount;
+let closure: DynamicFunctionMut = dbg!(increment.into_function_mut());
+let args = dbg!(ArgList::new().with_owned(5_i32));
+dbg!(closure.call_once(args).unwrap());
+<span class="boring">}</span></code></pre>
+<hr>
+<p>现在，让我们补充介绍一下，<strong>对于函数重载和泛型函数这些情况下该如何正确使用反射呢？</strong></p>
+<p>其实按照正确的说法，rust本身是<strong>不支持函数重载</strong>的。但是在bevy_reflect中，通过一些魔法，我们可以做到函数重载的功能。即一个<code>DynamicFunction</code>对象，能够拥有多个<code>SignatureInfo</code>和相应的实现，这和C++中的函数重载是相同的。</p>
+<p><code>DynamicFunction</code>和<code>DynamicFunctionMut</code>上有一个构造函数方法，其签名如下。这里的F是一个实现了<code>IntoFunction</code>的类型。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn with_overload&lt;'a, F, Marker&gt;(self, function: F) -&gt; DynamicFunction&lt;'a&gt;
+where
+    'env: 'a,
+    F: IntoFunction&lt;'a, Marker&gt;
+
+
+pub fn with_overload&lt;'a, F, Marker&gt;(self, function: F) -&gt; DynamicFunctionMut&lt;'a&gt;
+where
+    'env: 'a,
+    F: IntoFunctionMut&lt;'a, Marker&gt;
+<span class="boring">}</span></code></pre>
+<p>前面我们说到，bevy_reflect为0-15个参数的函数均实现了<code>IntoFunction</code>，也就是说，我们完全可以把任何一个函数拿过来，将两个函数完全<strong>合二为一</strong>，哪怕他们在rust里根本不是一个函数！于是我们就可以写出下面这样<strong>魔鬼般的代码。</strong></p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn add&lt;T: Add&lt;Output = T&gt;&gt;(a: T, b: T) -&gt; T {
+    a + b
+}
+
+let mut func = add::&lt;i32&gt;.into_function();
+
+// 直接把泛型化的两个函数单子合并塞到同一个DynamicFunction里！
+func = func.with_overload(add::&lt;f32&gt;);
+
+// 在调用call时候我们直接传入ArgList即可，bevy_reflect会为我们决定使用哪个变体
+let args = ArgList::default().with_owned(25_i32).with_owned(75_i32);
+let result = func.call(args).unwrap().unwrap_owned();
+assert_eq!(result.try_take::&lt;i32&gt;().unwrap(), 100);
+
+let args = ArgList::default().with_owned(25.0_f32).with_owned(75.0_f32);
+let result = func.call(args).unwrap().unwrap_owned();
+assert_eq!(result.try_take::&lt;f32&gt;().unwrap(), 100.0);
+
+
+
+fn add_2(a: i32, b: i32) -&gt; i32 {
+    a + b
+}
+
+fn add_3(a: i32, b: i32, c: i32) -&gt; i32 {
+    a + b + c
+}
+
+let mut func = add_2.into_function();
+
+// 或者直接合并两个完全不同的函数！
+func = func.with_overload(add_3);
+
+let args = ArgList::default().with_owned(25_i32).with_owned(75_i32);
+let result = func.call(args).unwrap().unwrap_owned();
+assert_eq!(result.try_take::&lt;i32&gt;().unwrap(), 100);
+
+let args = ArgList::default()
+    .with_owned(25_i32)
+    .with_owned(75_i32)
+    .with_owned(100_i32);
+let result = func.call(args).unwrap().unwrap_owned();
+assert_eq!(result.try_take::&lt;i32&gt;().unwrap(), 200);
+<span class="boring">}</span></code></pre>
+<p>而对于泛型函数，遗憾的是bevy_reflect无法直接对泛型函数进行反射，泛型函数在 Rust 里不是一个函数，而是一个<strong>函数模板</strong>。它没有独立的 <code>TypeId</code>，也没有唯一的签名。不过这并不是完全无法做到的，实际上正如我们能前面的代码中写的那样，<strong>通过手动单态化，仍然可以对单态化之后的泛型函数进行反射。</strong></p>
 <h3 id="1133-trait反射"><a class="header" href="#1133-trait反射">11.3.3 trait反射</a></h3>
 <p>//TODO</p>
 <h3 id="1134-序列化"><a class="header" href="#1134-序列化">11.3.4 序列化</a></h3>

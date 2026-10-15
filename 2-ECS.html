@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-ce11908a.js";
+            window.path_to_searchindex_js = "searchindex-3e25ad36.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-ad0f4ae9.js"></script>
@@ -945,7 +945,7 @@ pub struct MessageWriter&lt;'w, E: Message&gt; {
 }
 <span class="boring">}</span></code></pre>
 <p>当我们使用<code>MessageWriter</code>写入消息时，会调用<code>messages</code>上的<code>write</code>方法，该方法会将消息写入<code>messages_b</code>这个队列中。<code>MessageWriter</code>还有一些很有用的方法，这些方法包括<a href="https://docs.rs/bevy_ecs/0.17.3/bevy_ecs/message/struct.MessageWriter.html#method.write_default">write_default</a>和<a href="https://docs.rs/bevy_ecs/0.17.3/bevy_ecs/message/struct.MessageWriter.html#method.write_batch">write_batch</a>，前者可以写入一个空消息，后者可以批量写入消息。</p>
-<h3 id="263-messagereader"><a class="header" href="#263-messagereader">2.6.3 MessageReader</a></h3>
+<h3 id="264-messagereader"><a class="header" href="#264-messagereader">2.6.4 MessageReader</a></h3>
 <p><code>MessageReader</code>的实现也没有什么神奇的，几乎和<code>MessageWriter</code>相同，消息会在<code>messages</code>内读取。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
