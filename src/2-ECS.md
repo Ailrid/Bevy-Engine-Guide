@@ -838,7 +838,7 @@ pub struct MessageWriter<'w, E: Message> {
 
 当我们使用`MessageWriter`写入消息时，会调用`messages`上的`write`方法，该方法会将消息写入`messages_b`这个队列中。`MessageWriter`还有一些很有用的方法，这些方法包括[write_default](https://docs.rs/bevy_ecs/0.17.3/bevy_ecs/message/struct.MessageWriter.html#method.write_default)和[write_batch](https://docs.rs/bevy_ecs/0.17.3/bevy_ecs/message/struct.MessageWriter.html#method.write_batch)，前者可以写入一个空消息，后者可以批量写入消息。
 
-### 2.6.3 MessageReader
+### 2.6.4 MessageReader
 
 `MessageReader`的实现也没有什么神奇的，几乎和`MessageWriter`相同，消息会在`messages`内读取。
 
