@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-3e25ad36.js";
+            window.path_to_searchindex_js = "searchindex-9a37aa59.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-ad0f4ae9.js"></script>
@@ -178,31 +178,101 @@
                         <h1 id="序言"><a href="#序言" class="header">序言</a></h1>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h2 id="撰写本书的原因"><a class="header" href="#撰写本书的原因">撰写本书的原因</a></h2>
-<p>由于有关Bevy的系统的、完整的指南书到目前为止仍然欠缺，互联网上的许多指南和总结过于零散，关于Bevy的深入开发常常需要自行理解源码并查阅大量的Bevy文档，这消耗了程序员大量的时间且效率低下严重阻碍了Bevy生态的发展。Bevy经过5年的发展，距离真正的1.0版本完成度已接近8成，是时候撰写一本完善的指南来帮助程序员们快速理解Bevy的系统组成了。</p>
-<hr>
-<h2 id="本书适用人群"><a class="header" href="#本书适用人群">本书适用人群</a></h2>
-<p>本书的撰写目标是那些已经能够<strong>初步掌握Rust</strong>语言以及基本<strong>线性代数</strong>但<strong>之前从未接触过游戏开发与计算机图形学</strong>的开发者们，本书的章节将从0开始由浅入深介绍Bevy，系统介绍Bevy的架构和Bevy插件的深入的开发，虽然不会对Bevy进行面面俱到的介绍，但是也足以让读者能够深入了解Bevy的工作流程，即使在未来Bevy发生重大变化时，也能够轻松上手。</p>
-<p>本书的撰写风格为个人笔记式源码阅读。大量深入bevy的examples与源码。最终的目标是介绍bevy的设计哲学和内部原理而不是游戏编写。相信当你深入了解bevy的设计理念之后，设计游戏对你来说只是举手之劳而已。</p>
+<p>关于 Bevy 的系统性中文指南至今仍然欠缺，互联网上的资料零散、碎片化，且大多停留在如何做的层面，很少触及为什么这样设计。想要深入理解 Bevy 的内部机制，往往需要自行翻阅大量源码与文档，这消耗了开发者大量的时间，也严重阻碍了 Bevy 生态在中文社区的成长。</p>
+<p>Bevy 经过五年的发展，距离 1.0 完成度已接近八成，其架构设计也趋于稳定。加之作者本人对Bevy比较感兴趣，遂决定撰写一本从源码出发、深入设计哲学的指南（本书撰写始于2025年10月11日）。</p>
+<h2 id="本书是什么"><a class="header" href="#本书是什么">本书是什么</a></h2>
+<p>这是一本<strong>从源码出发、以理解引擎如何运作为目标的 Bevy 深度导读</strong>。</p>
+<p>本书不教你搓一个简单的游戏，而是带你拆开 Bevy 这个复杂系统，看它的每一块齿轮是怎么咬合的，本书的内容和目的是解释如下问题。</p>
+<ul>
+<li>
+<p>ECS 是如何在运行时管理成千上万个实体与组件</p>
+</li>
+<li>
+<p>反射是如何让静态语言获得动态能力的</p>
+</li>
+<li>
+<p>Bevy是如何做到无锁并行的</p>
+</li>
+<li>
+<p>宏是如何在编译期生成一整套 trait 实现的</p>
+</li>
+<li>
+<p>渲染管线是如何把数据从 CPU 搬到 GPU的</p>
+</li>
+<li>
+<p>GPU是如何把数据渲染成图像的</p>
+<p>……以及更多底层而复杂的问题。</p>
+</li>
+</ul>
+<h2 id="本书不是什么"><a class="header" href="#本书不是什么">本书不是什么</a></h2>
+<ul>
+<li><strong>不是游戏开发教程</strong>。作者自己其实很少玩游戏，这本书也不是来教做游戏的。读完本书，你不会得到一个完整的游戏 Demo。（或许以后会有？）</li>
+</ul>
+<ul>
+<li><strong>不是 API 手册</strong>。API 会随版本变化，但设计思想不会。本书关注的是后者。</li>
+</ul>
+<ul>
+<li><strong>不是面面俱到的百科全书</strong>。物理引擎、音频细节、UI 系统等内容，本书要么简略带过，要么留给其他资料。</li>
+</ul>
+<h2 id="读完本书你将能够"><a class="header" href="#读完本书你将能够">读完本书，你将能够</a></h2>
+<ul>
+<li>独立阅读 Bevy 的源码，理解它的模块划分与设计决策</li>
+<li>理解 ECS、反射、宏、调度图、渲染管线背后的核心机制</li>
+<li>在 Bevy 版本发生重大变化时，快速迁移自己的代码与理解</li>
+<li>具备进一步研究引擎、框架、系统级软件的底层能力</li>
+<li>对复杂系统如何被设计出来这件事，形成自己的判断力</li>
+</ul>
+<p>但你不会因此成为游戏开发者。<strong>这不是本书的目标。</strong></p>
+<h2 id="本书适合谁"><a class="header" href="#本书适合谁">本书适合谁</a></h2>
+<p>本书假设你：</p>
+<ul>
+<li>已经初步掌握 <strong>Rust</strong>（trait、泛型、所有权、生命周期）</li>
+<li>学过<strong>基本线性代数</strong>（矩阵乘法、向量点积）</li>
+<li>对<strong>游戏开发、图形学、GPU 编程没有先验要求</strong></li>
+</ul>
+<p>如果你属于以下任意一种人，本书会非常适合你：</p>
+<ul>
+<li>学过 Rust，但没见过一个真实的、大型的 Rust 项目是如何组织宏、trait 和模块的</li>
+<li>学过线性代数，但想知道矩阵变换在 3D 引擎里到底是怎么被用起来的</li>
+<li>对反射、宏、ECS、渲染管线这些魔法感到好奇，想知道它们是怎么被设计出来的</li>
+<li>想理解游戏引擎这个复杂系统</li>
+<li>未来想自己写引擎、写框架，或对系统级软件设计感兴趣</li>
+</ul>
+<p>如果你只是想快速做一个游戏出来，本书可能不适合你。但如果你<strong>想理解 Bevy 为什么这样设计</strong>，并且愿意和我一起从源码出发去追根究底，那么来对地方了～</p>
+<h2 id="本书的撰写风格"><a class="header" href="#本书的撰写风格">本书的撰写风格</a></h2>
+<p>本书采用<strong>个人笔记式的源码阅读</strong>风格。先自顶向下帮助读者建立对Bevy的API的初始印象，然后自底向上分析Bevy的底层逻辑与源代码，逐步展开背后的设计动机。</p>
+<ul>
+<li>我会大量地问为什么，然后去源码里找答案。</li>
+<li>我会在必要的地方从0给出数学推导，也会在更多地方给出直觉解释。</li>
+<li>我会承认自己没搞懂的地方，也会在后续版本中回头修正。</li>
+<li>我不会假装自己什么都知道，但我会尽量把自己走过的弯路讲清楚。</li>
+</ul>
+<p>最终目标不是让你记住 API，而是让你理解 <strong>Bevy 的设计哲学与内部原理</strong>。当你真正理解这套设计之后，API 的变化对你来说只是换了一层皮。即使未来 Bevy 发生了重大变化，你也能轻松上手。</p>
+<h2 id="本书结构"><a class="header" href="#本书结构">本书结构</a></h2>
 <p>本书计划分为上中下三册：</p>
 <ol>
-<li>上册为本书目前的计划内容。</li>
-<li>中册将深入介绍并分析bevy中的反射与有向无环并行图是如何工作和构建的。</li>
-<li>下册将深入bevy的渲染管线和wgpu渲染系统。</li>
+<li><strong>上册</strong>：自顶向下结构，Bevy 总览、ECS 架构、资产系统、时间、2D / 3D 渲染基础、空间变换、相机、动画、反射基础。上册的目标是让你能够读懂 Bevy examples 中的绝大部分内容。</li>
+<li><strong>中册</strong>：自顶向下 + 自底向上双模式，深入反射系统与有向无环并行图的构建与运作原理，包括 <code>bevy_reflect</code> 的 derive 宏实现、调度图的构建与执行、并行调度的冲突检测等。</li>
+<li><strong>下册</strong>：自顶向下 + 自底向上双模式，深入 Bevy 的渲染管线与 <code>wgpu</code> 渲染系统，包括渲染图、Extract 阶段、RenderCommand、着色器绑定等。</li>
 </ol>
-<h2 id="本书目标"><a class="header" href="#本书目标">本书目标</a></h2>
-<p>以下为本书的目标：</p>
-<p><strong>YES</strong>：成为新手的入门教程</p>
-<p><strong>YES</strong>：涉及Bevy的方方面面，从基础到最后的复杂开发</p>
-<p><strong>YES</strong>：持续更新跟进Bevy版本</p>
-<p><strong>YES</strong>：介绍Bevy生态中常用的crate</p>
+<h2 id="关于更新"><a class="header" href="#关于更新">关于更新</a></h2>
+<p>本书目前正在积极撰写中，也是我本人学习 Bevy 过程中的经验总结。由于事务缠身（导师横向、学术研究、其他项目），更新可能较慢，但<strong>绝不会弃坑</strong>。欢迎合作与贡献。</p>
 <h2 id="其他"><a class="header" href="#其他">其他</a></h2>
-<p>⚖️ 版权与许可</p>
-<p>我花了很多个深夜去磨这些章节，每一小节都要写作数个小时甚至半天，如果你觉得有用，那是对我最大的认可。</p>
-<p>为了保护这些心血不被滥用，本书文字、图片及示例代码均采用 知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议 (CC BY-NC-SA 4.0) 进行许可。</p>
+<p><strong>Github Pages</strong>：线上书籍在线观看。https://ailrid.github.io/Bevy-Engine-Guide/</p>
+<p><strong>virid</strong>：我的另一个项目，Bevy 思想的落地实践——使用类 ECS 实现的一站式重型 Electron 应用开发框架，将 Bevy 的设计哲学和 Rust 理念嵌入 TypeScript 与 Electron。https://github.com/Ailrid/virid</p>
+<h2 id="-版权与许可"><a class="header" href="#-版权与许可">⚖️ 版权与许可</a></h2>
+<p>我花了很多个深夜去磨这些章节，每一小节都要写作数个小时甚至半天。如果你觉得有用，那是对我最大的认可。</p>
+<p>为了保护这些心血不被滥用，本书文字、图片及示例代码均采用 <strong>知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议 (CC BY-NC-SA 4.0)</strong> 进行许可。</p>
 <p>这意味着：</p>
-<p>署名：您可以自由地转载、引用或基于本书进行二次创作，但必须保留原作者（Ailrid）的署名并提供本书链接。</p>
-<p>非商业性使用：您不得将本书内容或其衍生作品用于任何商业目的（如付费课程、出版获利、商业 AI 训练）。</p>
-<p>相同方式共享：如果您对本书进行了修改、转换或二次创作，您必须使用相同的许可协议分发您的贡献。</p>
+<ul>
+<li><strong>署名</strong>：您可以自由地转载、引用或基于本书进行二次创作，但必须保留原作者（Ailrid）的署名并提供本书链接。</li>
+<li><strong>非商业性使用</strong>：您不得将本书内容或其衍生作品用于任何商业目的（如付费课程、出版获利、商业 AI 训练）。</li>
+<li><strong>相同方式共享</strong>：如果您对本书进行了修改、转换或二次创作，您必须使用相同的许可协议分发您的贡献。</li>
+</ul>
+<blockquote class="blockquote-tag blockquote-tag-caution">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M4.47.22A.749.749 0 0 1 5 0h6c.199 0 .389.079.53.22l4.25 4.25c.141.14.22.331.22.53v6a.749.749 0 0 1-.22.53l-4.25 4.25A.749.749 0 0 1 11 16H5a.749.749 0 0 1-.53-.22L.22 11.53A.749.749 0 0 1 0 11V5c0-.199.079-.389.22-.53Zm.84 1.28L1.5 5.31v5.38l3.81 3.81h5.38l3.81-3.81V5.31L10.69 1.5ZM8 4a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 8 4Zm0 8a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Caution</p>
+<p>本书部分图像来自公开网络搜集，无法联系作者，若侵权请联系进行删除。</p>
+</blockquote>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="第-1-章bevy-总览"><a href="#第-1-章bevy-总览" class="header">第 1 章：Bevy 总览</a></h1>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
@@ -5747,14 +5817,22 @@ let return_info:&amp;ReturnInfo = signatures.return_info();
 </span><span class="boring">fn main() {
 </span>for arg in args.iter(){
     // pub fn index(&amp;self) -&gt; usize 返回参数在参数列表中的位置索引
-    arg.index()
+    arg.index();
     // fn ty(&amp;self) -&gt; &amp;Type 返回参数的Rust底层类型
-    arg.ty()
+    arg.ty();
     // fn type_id(&amp;self) -&gt; TypeId 返回参数类型的TypeId 
-    arg.type_id()
+    arg.type_id();
     // 检查给出的类型是否匹配,这只比较了类型之间的 TypeId，并未验证它们是否共享相同的类型路径 
-    arg.is::&lt;T&gt;()
+    arg.is::&lt;T&gt;();
+    // 检查参数是引用/可变引用还是所有权转移
+    args.ownership();
 }
+
+// pub enum Ownership {
+//     Ref,
+//     Mut,
+//     Owned,
+// }
 <span class="boring">}</span></code></pre>
 <p>对于<a href="https://docs.rs/bevy/latest/bevy/reflect/func/struct.ReturnInfo.html">ReturnInfo</a>，和<code>ArgInfo</code>的区别主要在于，其没有<code>index()</code>方法，因为函数的返回值一般只能有一个。</p>
 <hr>
@@ -5877,7 +5955,155 @@ assert_eq!(result.try_take::&lt;i32&gt;().unwrap(), 200);
 <span class="boring">}</span></code></pre>
 <p>而对于泛型函数，遗憾的是bevy_reflect无法直接对泛型函数进行反射，泛型函数在 Rust 里不是一个函数，而是一个<strong>函数模板</strong>。它没有独立的 <code>TypeId</code>，也没有唯一的签名。不过这并不是完全无法做到的，实际上正如我们能前面的代码中写的那样，<strong>通过手动单态化，仍然可以对单态化之后的泛型函数进行反射。</strong></p>
 <h3 id="1133-trait反射"><a class="header" href="#1133-trait反射">11.3.3 trait反射</a></h3>
-<p>//TODO</p>
+<p><code>trait</code>在编译后有两种形态，这两种形态决定了对于<code>trait</code>的反射是更加棘手的。</p>
+<p>在静态分发时，<code>trait</code>的约束在编译期用掉了，对于编译之后的代码而言，所有的调用都直接内联成了具体的函数地址，在这一点上他和普通的函数是一致的，我们在这里丢掉了<code>trait</code>本身的信息。</p>
+<p>在动态分发时，编译器会生成一张<code>vtable</code>表，里面保存了<code>trait</code>所有方法的函数指针，但是这个<code>vtable</code>只包含自己以及父<code>trait</code>的方法，并没有别的<code>trait</code>相关的信息。这就意味着你根本无法从一个<code>dyn trait</code>对象上得到任何其他<code>trait</code>的信息。</p>
+<p>为了把这些信息留到运行时，我们必须要采取一些额外的措施。</p>
+<p>假设我们有如下的一个<code>trait</code>，并为<code>Zombie</code>结构体实现了这个<code>trait</code>。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>trait Damageable {
+    type Health: Sized + core::ops::Mul&lt;i32, Output = Self::Health&gt;;
+    fn damage(&amp;mut self, damage: Self::Health);
+}
+
+#[derive(Reflect, PartialEq, Debug)]
+struct Zombie {
+    health: i32,
+}
+
+impl Damageable for Zombie {
+    type Health = i32;
+    fn damage(&amp;mut self, damage: Self::Health) {
+        self.health -= damage;
+    }
+}
+<span class="boring">}</span></code></pre>
+<p>一旦我们想要将其变为<code>dyn Reflect</code>来使用反射的功能，我们就会丢失掉该<code>trait</code>相关的信息。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span> let mut value: Box&lt;dyn Reflect&gt; = Box::new(Zombie { health: 100 });
+
+// 你根本写不出来这些代码,编译器会直接阻止你，因为这是一个dyn Reflect对象，而不是一个dyn Damageable对象
+// value.damage(10);
+<span class="boring">}</span></code></pre>
+<p>如何才能曲线救国呢？不管怎么样，我们必须通过某种方式把这个<code>trait</code>相关的信息保存到和类型<code>Zombie</code>相关的某种数据结构上。bevy_reflect为我们提供了这样一种数据结构，即<a href="https://docs.rs/bevy/latest/bevy/reflect/struct.TypeRegistry.html">TypeRegistry</a>。然而我们在前面说到，<code>trait</code>并不是一个具体的结构，甚至在静态分发下编译后直接消失了，我们该怎么保存这些数据呢？</p>
+<p>聪明的你肯定能想到，如果我们能够编写一个结构体，并为结构体实现一些方法，然后在结构体的这些方法内把调用转发给<code>trait</code>，我们就可以做到把<strong>无形变有形</strong>，这样以来就能够保存这些<code>trait</code>数据了。而<strong>这个用曲线保存trait信息的结构体，在这里就叫做<code>TypeData</code>。顾名思义，这是一个用来保存类型的数据结构，虽然其是一个结构体。</strong></p>
+<p>bevy_reflect为我们提供了这样一个泛型，只要我们实现他，bevy_reflect就可以为我们自动从一个struct里提取出一个</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub trait CreateTypeData&lt;T, Input = ()&gt;: TypeData {
+    /// 创建这个类型的TypeData
+    fn create_type_data(input: Input) -&gt; Self;
+}
+// TypeData只是一个能够下转为其他类型的记号，并没有什么很奇异的方法
+pub trait TypeData: Downcast + Send + Sync {
+    fn clone_type_data(&amp;self) -&gt; Box&lt;dyn TypeData&gt;;
+}
+<span class="boring">}</span></code></pre>
+<hr>
+<p>那么，让我们来尝试一下，应该如何来写这些代码呢？</p>
+<p>我们可不想为每个用到<code>Damageable</code>的<code>struct</code>都编写一个相应的适配，所以该怎么让才能让rust自己为我们来编写呢？在前面我们说到，一个<code>dyn Reflect</code>可以被<code>downcast_mut</code>为一个具体的类型，而这个方法正好是一个泛型，或许我们能够利用泛型参数来解决这个问题。</p>
+<p>让我们先拼凑出这些代码。当使用时，我们让rust编译器为我们根据泛型参数自动推断出应该转换为什么类型。可是这里的T应该是个什么类型才能让我们调用<code>trait</code>上的方法呢？嗯，没错，这里的T应该是我们上面说到的<code>TypeData</code>，我们先把这件事记下。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 这里的T应该是什么类型呢？他应该是我们的TypeData，这个TypeData应该能够转发damage方法调用给真正的trait
+let damageable = reflect.downcast_mut::&lt;T&gt;().unwrap();
+damageable.damage(damage);
+<span class="boring">}</span></code></pre>
+<p>由于我们需要转发这个调用，那我们就必须得把这些代码封装成一个闭包，考虑到闭包的参数，我们至少要有两个类型参数：<code>dyn Reflect</code>对象和真正的<code>trait</code>方法的参数，到这里我们发现我们要面临一个非常棘手的问题，这里的T应该怎么限定呢？</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[derive(Clone)]
+struct ReflectDamageable {
+    damage: fn(&amp;mut dyn Reflect, damage: Box&lt;dyn Reflect&gt;),
+}
+
+impl&lt;T&gt; CreateTypeData&lt;T&gt; for ReflectDamageable
+where
+    T: ?,// 这里的T应该是什么约束？
+{
+    fn create_type_data(_input: ()) -&gt; Self {
+        Self {
+            damage: |reflect, damage| {
+                let damageable = reflect.downcast_mut::&lt;T&gt;().unwrap();
+                let damage = damage.take::&lt;T::Health&gt;().unwrap(); 
+                damageable.damage(damage);
+            },
+        }
+    }
+}
+
+impl ReflectDamageable {
+    pub fn damage(&amp;self, reflect: &amp;mut dyn Reflect, damage: Box&lt;dyn Reflect&gt;) {
+        (self.damage)(reflect, damage);
+    }
+}
+<span class="boring">}</span></code></pre>
+<p>让我们来细细思索一下，假如我们已经能够通过一个<code>TypeRegistry</code>和<code>Zombie</code>拿到了<code>ReflectDamageable</code>这个结构体，这个T应该是一个什么呢？</p>
+<p>正确的答案是，这是一个实现了<code>Reflect</code>和<code>Damageable</code>两个<code>trait</code>的泛型。因为如果我们想在一个<code>Reflect</code>对象上调用<code>Damageable</code>的方法，这就是满足约束的条件。</p>
+<blockquote class="blockquote-tag blockquote-tag-caution">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M4.47.22A.749.749 0 0 1 5 0h6c.199 0 .389.079.53.22l4.25 4.25c.141.14.22.331.22.53v6a.749.749 0 0 1-.22.53l-4.25 4.25A.749.749 0 0 1 11 16H5a.749.749 0 0 1-.53-.22L.22 11.53A.749.749 0 0 1 0 11V5c0-.199.079-.389.22-.53Zm.84 1.28L1.5 5.31v5.38l3.81 3.81h5.38l3.81-3.81V5.31L10.69 1.5ZM8 4a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 8 4Zm0 8a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Caution</p>
+<p>这里的T必须是一个真实存在的结构体，不能是一个动态类型（如我们之前所说）</p>
+</blockquote>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>impl&lt;T&gt; CreateTypeData&lt;T&gt; for ReflectDamageable
+    where
+        T: Reflect + Damageable&lt;Health: Reflect&gt;,
+{
+    //...
+}
+<span class="boring">}</span></code></pre>
+<p>一旦我们完成了这些，我们就可以写出下面这些代码来。注意这里的约束是如何传递的。</p>
+<p><strong>impl ReflectDamageable中damage →struct ReflectDamageable中的damage</strong></p>
+<p>其中后者是bevy_reflect自动调用我们编写的<code>create_type_data</code>生成的。这时我们通过泛型紧箍咒强行把<code>Damageable</code>添加到了其中，这时rust编译器将从这里把这个约束传播并求解，于是编译器将会反推出 <code>Zombie: Reflect + Damageable</code> 必须成立。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 把这些信息注册到一个TypeRegistry里
+let mut registry = TypeRegistry::default();
+registry.register::&lt;Zombie&gt;();
+registry.register_type_data::&lt;Zombie, ReflectDamageable&gt;();
+// 通过反射对象身上的typeid拿到注册表中的type data
+let type_id = value.reflect_type_info().type_id();
+let reflect_damageable = registry
+    .get_type_data::&lt;ReflectDamageable&gt;(type_id)
+    .unwrap();
+
+// 直接通过转发操作，我们就能调用到真正的trait方法
+reflect_damageable.damage(value.as_reflect_mut(), Box::new(25i32));
+assert_eq!(value.take::&lt;Zombie&gt;().unwrap(), Zombie { health: 75 });
+<span class="boring">}</span></code></pre>
+<hr>
+<p>每次都要编写上面那些胶水代码来转发这些实现实在是太麻烦了，而且还极其容易出错，因此bevy_reflect为我们提供了一个 **#[reflect_trait]**指令，可以为我们自动实现这些功能，我们可以这样写。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[derive(Reflect)]
+struct Skeleton {
+    health: i32,
+}
+
+// 这一条指令自动为我们生成了ReflectHealth这个struct和上面的转发方法
+#[reflect_trait]
+trait Health {
+    fn health(&amp;self) -&gt; i32;
+}
+impl Health for Skeleton {
+    fn health(&amp;self) -&gt; i32 {
+        self.health
+    }
+}
+
+// 然后我们可以直接使用这个ReflectHealth对象
+// 注意⚠️我们这里看不到ReflectHealth的定义，他是隐含在#[reflect_trait]中的
+// 一般而言对于任何一个trait XXX，这个指令生成的TypeData是形如ReflectXXX的TypeData
+registry.register_type_data::&lt;Skeleton, ReflectHealth&gt;();
+let type_id = value.reflect_type_info().type_id();
+let reflect_health = registry.get_type_data::&lt;ReflectHealth&gt;(type_id).unwrap();
+let value: &amp;dyn Health = reflect_health.get(value.as_reflect()).unwrap();
+assert_eq!(value.health(), 50);
+<span class="boring">}</span></code></pre>
+<p>解决！</p>
 <h3 id="1134-序列化"><a class="header" href="#1134-序列化">11.3.4 序列化</a></h3>
 <p>//TODO</p>
 <h2 id="114-补充"><a class="header" href="#114-补充">11.4 补充</a></h2>
