@@ -423,14 +423,22 @@ let return_info:&ReturnInfo = signatures.return_info();
 ```rust
 for arg in args.iter(){
     // pub fn index(&self) -> usize 返回参数在参数列表中的位置索引
-    arg.index()
+    arg.index();
     // fn ty(&self) -> &Type 返回参数的Rust底层类型
-    arg.ty()
+    arg.ty();
     // fn type_id(&self) -> TypeId 返回参数类型的TypeId 
-    arg.type_id()
+    arg.type_id();
     // 检查给出的类型是否匹配,这只比较了类型之间的 TypeId，并未验证它们是否共享相同的类型路径 
-    arg.is::<T>()
+    arg.is::<T>();
+    // 检查参数是引用/可变引用还是所有权转移
+    args.ownership();
 }
+
+// pub enum Ownership {
+//     Ref,
+//     Mut,
+//     Owned,
+// }
 ```
 
 对于[ReturnInfo](https://docs.rs/bevy/latest/bevy/reflect/func/struct.ReturnInfo.html)，和`ArgInfo`的区别主要在于，其没有`index()`方法，因为函数的返回值一般只能有一个。
@@ -568,9 +576,180 @@ assert_eq!(result.try_take::<i32>().unwrap(), 200);
 
 而对于泛型函数，遗憾的是bevy_reflect无法直接对泛型函数进行反射，泛型函数在 Rust 里不是一个函数，而是一个**函数模板**。它没有独立的 `TypeId`，也没有唯一的签名。不过这并不是完全无法做到的，实际上正如我们能前面的代码中写的那样，**通过手动单态化，仍然可以对单态化之后的泛型函数进行反射。**
 
-### 11.3.3 trait反射
+###  11.3.3 trait反射
 
-//TODO
+`trait`在编译后有两种形态，这两种形态决定了对于`trait`的反射是更加棘手的。
+
+在静态分发时，`trait`的约束在编译期用掉了，对于编译之后的代码而言，所有的调用都直接内联成了具体的函数地址，在这一点上他和普通的函数是一致的，我们在这里丢掉了`trait`本身的信息。
+
+在动态分发时，编译器会生成一张`vtable`表，里面保存了`trait`所有方法的函数指针，但是这个`vtable`只包含自己以及父`trait`的方法，并没有别的`trait`相关的信息。这就意味着你根本无法从一个`dyn trait`对象上得到任何其他`trait`的信息。
+
+为了把这些信息留到运行时，我们必须要采取一些额外的措施。
+
+假设我们有如下的一个`trait`，并为`Zombie`结构体实现了这个`trait`。
+
+```rust
+trait Damageable {
+    type Health: Sized + core::ops::Mul<i32, Output = Self::Health>;
+    fn damage(&mut self, damage: Self::Health);
+}
+
+#[derive(Reflect, PartialEq, Debug)]
+struct Zombie {
+    health: i32,
+}
+
+impl Damageable for Zombie {
+    type Health = i32;
+    fn damage(&mut self, damage: Self::Health) {
+        self.health -= damage;
+    }
+}
+```
+
+一旦我们想要将其变为`dyn Reflect`来使用反射的功能，我们就会丢失掉该`trait`相关的信息。
+
+```rust
+ let mut value: Box<dyn Reflect> = Box::new(Zombie { health: 100 });
+
+// 你根本写不出来这些代码,编译器会直接阻止你，因为这是一个dyn Reflect对象，而不是一个dyn Damageable对象
+// value.damage(10);
+```
+
+如何才能曲线救国呢？不管怎么样，我们必须通过某种方式把这个`trait`相关的信息保存到和类型`Zombie`相关的某种数据结构上。bevy_reflect为我们提供了这样一种数据结构，即[TypeRegistry](https://docs.rs/bevy/latest/bevy/reflect/struct.TypeRegistry.html)。然而我们在前面说到，`trait`并不是一个具体的结构，甚至在静态分发下编译后直接消失了，我们该怎么保存这些数据呢？
+
+聪明的你肯定能想到，如果我们能够编写一个结构体，并为结构体实现一些方法，然后在结构体的这些方法内把调用转发给`trait`，我们就可以做到把**无形变有形**，这样以来就能够保存这些`trait`数据了。而**这个用曲线保存trait信息的结构体，在这里就叫做`TypeData`。顾名思义，这是一个用来保存类型的数据结构，虽然其是一个结构体。**
+
+bevy_reflect为我们提供了这样一个泛型，只要我们实现他，bevy_reflect就可以为我们自动从一个struct里提取出一个
+
+```rust
+pub trait CreateTypeData<T, Input = ()>: TypeData {
+    /// 创建这个类型的TypeData
+    fn create_type_data(input: Input) -> Self;
+}
+// TypeData只是一个能够下转为其他类型的记号，并没有什么很奇异的方法
+pub trait TypeData: Downcast + Send + Sync {
+    fn clone_type_data(&self) -> Box<dyn TypeData>;
+}
+```
+
+
+
+---
+
+那么，让我们来尝试一下，应该如何来写这些代码呢？
+
+我们可不想为每个用到`Damageable`的`struct`都编写一个相应的适配，所以该怎么让才能让rust自己为我们来编写呢？在前面我们说到，一个`dyn Reflect`可以被`downcast_mut`为一个具体的类型，而这个方法正好是一个泛型，或许我们能够利用泛型参数来解决这个问题。
+
+让我们先拼凑出这些代码。当使用时，我们让rust编译器为我们根据泛型参数自动推断出应该转换为什么类型。可是这里的T应该是个什么类型才能让我们调用`trait`上的方法呢？嗯，没错，这里的T应该是我们上面说到的`TypeData`，我们先把这件事记下。
+
+```rust
+// 这里的T应该是什么类型呢？他应该是我们的TypeData，这个TypeData应该能够转发damage方法调用给真正的trait
+let damageable = reflect.downcast_mut::<T>().unwrap();
+damageable.damage(damage);
+```
+
+由于我们需要转发这个调用，那我们就必须得把这些代码封装成一个闭包，考虑到闭包的参数，我们至少要有两个类型参数：`dyn Reflect`对象和真正的`trait`方法的参数，到这里我们发现我们要面临一个非常棘手的问题，这里的T应该怎么限定呢？
+
+```rust
+#[derive(Clone)]
+struct ReflectDamageable {
+    damage: fn(&mut dyn Reflect, damage: Box<dyn Reflect>),
+}
+
+impl<T> CreateTypeData<T> for ReflectDamageable
+where
+    T: ?,// 这里的T应该是什么约束？
+{
+    fn create_type_data(_input: ()) -> Self {
+        Self {
+            damage: |reflect, damage| {
+                let damageable = reflect.downcast_mut::<T>().unwrap();
+                let damage = damage.take::<T::Health>().unwrap(); 
+                damageable.damage(damage);
+            },
+        }
+    }
+}
+
+impl ReflectDamageable {
+    pub fn damage(&self, reflect: &mut dyn Reflect, damage: Box<dyn Reflect>) {
+        (self.damage)(reflect, damage);
+    }
+}
+```
+
+让我们来细细思索一下，假如我们已经能够通过一个`TypeRegistry`和`Zombie`拿到了`ReflectDamageable`这个结构体，这个T应该是一个什么呢？
+
+正确的答案是，这是一个实现了`Reflect`和`Damageable`两个`trait`的泛型。因为如果我们想在一个`Reflect`对象上调用`Damageable`的方法，这就是满足约束的条件。
+
+> [!CAUTION]
+>
+> 这里的T必须是一个真实存在的结构体，不能是一个动态类型（如我们之前所说）
+
+```rust
+impl<T> CreateTypeData<T> for ReflectDamageable
+    where
+        T: Reflect + Damageable<Health: Reflect>,
+{
+    //...
+}
+```
+
+一旦我们完成了这些，我们就可以写出下面这些代码来。注意这里的约束是如何传递的。
+
+**impl ReflectDamageable中damage →struct ReflectDamageable中的damage**
+
+其中后者是bevy_reflect自动调用我们编写的`create_type_data`生成的。这时我们通过泛型紧箍咒强行把`Damageable`添加到了其中，这时rust编译器将从这里把这个约束传播并求解，于是编译器将会反推出 `Zombie: Reflect + Damageable` 必须成立。
+
+```rust
+// 把这些信息注册到一个TypeRegistry里
+let mut registry = TypeRegistry::default();
+registry.register::<Zombie>();
+registry.register_type_data::<Zombie, ReflectDamageable>();
+// 通过反射对象身上的typeid拿到注册表中的type data
+let type_id = value.reflect_type_info().type_id();
+let reflect_damageable = registry
+    .get_type_data::<ReflectDamageable>(type_id)
+    .unwrap();
+
+// 直接通过转发操作，我们就能调用到真正的trait方法
+reflect_damageable.damage(value.as_reflect_mut(), Box::new(25i32));
+assert_eq!(value.take::<Zombie>().unwrap(), Zombie { health: 75 });
+```
+
+---
+
+每次都要编写上面那些胶水代码来转发这些实现实在是太麻烦了，而且还极其容易出错，因此bevy_reflect为我们提供了一个 **\#[reflect_trait]**指令，可以为我们自动实现这些功能，我们可以这样写。
+
+```rust
+#[derive(Reflect)]
+struct Skeleton {
+    health: i32,
+}
+
+// 这一条指令自动为我们生成了ReflectHealth这个struct和上面的转发方法
+#[reflect_trait]
+trait Health {
+    fn health(&self) -> i32;
+}
+impl Health for Skeleton {
+    fn health(&self) -> i32 {
+        self.health
+    }
+}
+
+// 然后我们可以直接使用这个ReflectHealth对象
+// 注意⚠️我们这里看不到ReflectHealth的定义，他是隐含在#[reflect_trait]中的
+// 一般而言对于任何一个trait XXX，这个指令生成的TypeData是形如ReflectXXX的TypeData
+registry.register_type_data::<Skeleton, ReflectHealth>();
+let type_id = value.reflect_type_info().type_id();
+let reflect_health = registry.get_type_data::<ReflectHealth>(type_id).unwrap();
+let value: &dyn Health = reflect_health.get(value.as_reflect()).unwrap();
+assert_eq!(value.health(), 50);
+```
+
+解决！
 
 ### 11.3.4 序列化
 
