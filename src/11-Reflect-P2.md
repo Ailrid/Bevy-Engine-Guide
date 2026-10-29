@@ -616,7 +616,11 @@ impl Damageable for Zombie {
 // value.damage(10);
 ```
 
-如何才能曲线救国呢？不管怎么样，我们必须通过某种方式把这个`trait`相关的信息保存到和类型`Zombie`相关的某种数据结构上。bevy_reflect为我们提供了这样一种数据结构，即[TypeRegistry](https://docs.rs/bevy/latest/bevy/reflect/struct.TypeRegistry.html)。然而我们在前面说到，`trait`并不是一个具体的结构，甚至在静态分发下编译后直接消失了，我们该怎么保存这些数据呢？
+如何才能曲线救国呢？不管怎么样，我们必须通过某种方式把这个`trait`相关的信息保存到和类型`Zombie`相关的某种数据结构上。
+
+bevy_reflect为我们提供了这样一种数据结构，即[`TypeRegistry`](https://docs.rs/bevy/latest/bevy/reflect/struct.TypeRegistry.html)。用一句话来概括：一个`TypeRegistry`的核心是一个键为`TypeId`值为 [`TypeRegistration`](https://docs.rs/bevy_reflect/latest/bevy_reflect/struct.TypeRegistration.html) >的`HashMap`，而一个`TypeRegistration` 则是一个键为`TypeId`值为Box<dyn  [`TypeData`](https://docs.rs/bevy_reflect/latest/bevy_reflect/trait.TypeData.html) >的`HashMap`。
+
+然而我们在前面说到，`trait`并不是一个具体的结构，甚至在静态分发下编译后直接消失了，我们该怎么保存这些数据呢？
 
 聪明的你肯定能想到，如果我们能够编写一个结构体，并为结构体实现一些方法，然后在结构体的这些方法内把调用转发给`trait`，我们就可以做到把**无形变有形**，这样以来就能够保存这些`trait`数据了。而**这个用曲线保存trait信息的结构体，在这里就叫做`TypeData`。顾名思义，这是一个用来保存类型的数据结构，虽然其是一个结构体。**
 
@@ -632,8 +636,6 @@ pub trait TypeData: Downcast + Send + Sync {
     fn clone_type_data(&self) -> Box<dyn TypeData>;
 }
 ```
-
-
 
 ---
 
@@ -753,8 +755,271 @@ assert_eq!(value.health(), 50);
 
 ### 11.3.4 序列化
 
-//TODO
+反射最直接的应用就是序列化，例如著名的 [`serde`](https://docs.rs/serde/1.0.229/x86_64-unknown-linux-gnu/serde/index.html) 库，就是依赖宏来对结构体实现反射以添加序列化保存和读取功能的。bevy_reflect同样为我们提供的更强的反射功能，通过反射，我们可实现从文本中读取数据并动态`spwan`实体与组件。
 
-## 11.4 补充
+首先来让我们看看如何序列化一个实体与之上的组件。要做到这件事，我们需要用到一个序列化器，bevy为我们提供了两种：[`ReflectSerializer`](https://docs.rs/bevy_reflect/latest/bevy_reflect/serde/struct.ReflectSerializer.html)与[`TypedReflectSerializer`](https://docs.rs/bevy_reflect/latest/bevy_reflect/serde/struct.TypedReflectSerializer.html)。从名称就可以直接看出，后一种序列化器会保存类型信息。
 
-//TODO
+```rust
+
+#[derive(Reflect, PartialEq, Debug)]
+#[type_path = "my_crate"] // 可以为结构体添加一个type_path，这是bevy_reflect添加的额外的路径信息，类似于命名空间
+struct MyStruct {
+  value: i32
+}
+
+let mut registry = TypeRegistry::default();
+registry.register::<MyStruct>();
+
+let input = MyStruct { value: 123 };
+
+// 使用ReflectSerializer时会添加完整的类型信息
+let reflect_serializer = ReflectSerializer::new(&input, &registry);
+let output = ron::to_string(&reflect_serializer).unwrap();
+assert_eq!(output, r#"{"my_crate::MyStruct":(value:123)}"#);
+
+// 使用TypedReflectSerializer时将不会含有类型信息
+let reflect_serializer = TypedReflectSerializer::new(&input, &registry);
+let output = ron::to_string(&reflect_serializer).unwrap();
+assert_eq!(output, r#"(value:123)"#);
+```
+
+在这里你可能会发现，我们还需要一个`TypeRegistry`，我们在其他语言里使用类似`JSON.stringfiy`的时候可没有需要过一个这个注册表。
+
+这是为什么呢？让我们来看看源代码中到底为什么需要这个`TypeRegistry`。
+
+我们可以发现，一个`ReflectSerializer`之所以能够序列化，是因为bevy_reflect为其实现了serde_core中的`Serialize`这个`trait`，此外还有一个重要发现是，原来`ReflectSerializer`的实现依靠了`TypedReflectSerializer`，也难怪`ReflectSerializer`相比`TypedReflectSerializer`只是添加了类型信息，而我们的`registry`就是在这里被需要的。
+
+```rust
+impl<P: ReflectSerializerProcessor> Serialize for ReflectSerializer<'_, P> {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let mut state = serializer.serialize_map(Some(1))?;
+        state.serialize_entry(
+            self.value
+                .get_represented_type_info()
+                .ok_or_else(|| {
+                    if self.value.is_dynamic() {
+                        make_custom_error(format_args!(
+                            "cannot serialize dynamic value without represented type: `{}`",
+                            self.value.reflect_type_path()
+                        ))
+                    } else {
+                        make_custom_error(format_args!(
+                            "cannot get type info for `{}`",
+                            self.value.reflect_type_path()
+                        ))
+                    }
+                })?
+                .type_path(),
+            &TypedReflectSerializer::new_internal(self.value, self.registry, self.processor),
+        )?;
+        state.end()
+    }
+}
+```
+
+于是问题就又变成了，为何`TypedReflectSerializer`需要`TypeRegistry`呢？让我们继续看下去。不出我们所料，`TypedReflectSerializer`也实现了`Serialize`，其最核心的内容正是为每一种基本类型都调用相应的`Serializer`。
+
+```rust
+impl<P: ReflectSerializerProcessor> Serialize for TypedReflectSerializer<'_, P> {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+       	// 让我们忽略这之前的代码  
+
+        let output = match self.value.reflect_ref() {
+            ReflectRef::Struct(struct_value) => StructSerializer {
+                struct_value,
+                registry: self.registry,
+                processor: self.processor,
+            }
+            .serialize(serializer),
+            ReflectRef::TupleStruct(tuple_struct) => TupleStructSerializer {
+                tuple_struct,
+                registry: self.registry,
+                processor: self.processor,
+            }
+            .serialize(serializer),
+            ReflectRef::Tuple(tuple) => TupleSerializer {
+                tuple,
+                registry: self.registry,
+                processor: self.processor,
+            }
+            .serialize(serializer),
+            ReflectRef::List(list) => ListSerializer {
+                list,
+                registry: self.registry,
+                processor: self.processor,
+            }
+            .serialize(serializer),
+            ReflectRef::Array(array) => ArraySerializer {
+                array,
+                registry: self.registry,
+                processor: self.processor,
+            }
+            .serialize(serializer),
+            ReflectRef::Map(map) => MapSerializer {
+                map,
+                registry: self.registry,
+                processor: self.processor,
+            }
+            .serialize(serializer),
+            ReflectRef::Set(set) => SetSerializer {
+                set,
+                registry: self.registry,
+                processor: self.processor,
+            }
+            .serialize(serializer),
+            ReflectRef::Enum(enum_value) => EnumSerializer {
+                enum_value,
+                registry: self.registry,
+                processor: self.processor,
+            }
+            .serialize(serializer),
+            #[cfg(feature = "functions")]
+            ReflectRef::Function(_) => Err(make_custom_error("functions cannot be serialized")),
+            ReflectRef::Opaque(_) => Err(error),
+        };
+
+        #[cfg(feature = "debug_stack")]
+        TYPE_INFO_STACK.with_borrow_mut(crate::type_info_stack::TypeInfoStack::pop);
+
+        output
+    }
+}
+```
+
+让我们以`StructSerializer`为例再来看看，不意外的，这里又再次调用了`TypedReflectSerializer`，这意味着我们的序列化过程是一个类似递归向下的过程，这也正是解析一个树形结构常用方法之一。
+
+```rust
+
+impl<P: ReflectSerializerProcessor> Serialize for StructSerializer<'_, P> {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let type_info = self
+            .struct_value
+            .get_represented_type_info()
+            .ok_or_else(|| {
+                make_custom_error(format_args!(
+                    "cannot get type info for `{}`",
+                    self.struct_value.reflect_type_path()
+                ))
+            })?;
+
+        let struct_info = match type_info {
+            TypeInfo::Struct(struct_info) => struct_info,
+            info => {
+                return Err(make_custom_error(format_args!(
+                    "expected struct type but received {info:?}"
+                )));
+            }
+        };
+
+        // 抓到你了！
+        let serialization_data = self
+            .registry
+            .get(type_info.type_id())
+            .and_then(|registration| registration.data::<SerializationData>());
+        
+        let ignored_len = serialization_data.map(SerializationData::len).unwrap_or(0);
+        let mut state = serializer.serialize_struct(
+            struct_info.type_path_table().ident().unwrap(),
+            self.struct_value.field_len() - ignored_len,
+        )?;
+
+        for (index, (_, value)) in self.struct_value.iter_fields().enumerate() {
+            if serialization_data.is_some_and(|data| data.is_field_skipped(index)) {
+                continue;
+            }
+            let key = struct_info.field_at(index).unwrap().name();
+            state.serialize_field(
+                key,
+                &TypedReflectSerializer::new_internal(value, self.registry, self.processor),
+            )?;
+        }
+        state.end()
+    }
+}
+
+```
+
+我们在这里终于抓到了为何需要`TypeRegistry`的原因。
+
+最终我们得到了这样一个数据结构：`registration.data::<SerializationData>()`。
+
+和这样一行关键的代码：`if serialization_data.is_some_and(|data| data.is_field_skipped(index)) { continue;}。`
+
+**这说明，我们可以通过配置元数据来让bevy为我们跳过某些不需要的字段的序列化。**
+
+```rust
+#[derive(Reflect)]
+struct MyStruct {
+  serialize_me: i32,
+  #[reflect(skip_serializing)]
+  skip_me: i32
+}
+
+let mut registry = TypeRegistry::new();
+registry.register::<MyStruct>();
+
+let my_struct = MyStruct {
+  serialize_me: 123,
+  skip_me: 321,
+};
+
+let serialization_data = registry.get_type_data::<SerializationData>(TypeId::of::<MyStruct>()).unwrap();
+
+for (idx, field) in my_struct.iter_fields().enumerate(){
+  if serialization_data.is_field_skipped(idx) {
+    // Skipped!
+    assert_eq!(1, idx);
+  } else {
+    // Not Skipped!
+    assert_eq!(0, idx);
+  }
+}
+```
+
+---
+
+对于反序列化，大体上和序列化之间的差异并不是非常大，我们仍然有[`ReflectDeserializer`](https://docs.rs/bevy_reflect/latest/bevy_reflect/serde/struct.ReflectDeserializer.html)和[`TypedReflectDeserializer`](https://docs.rs/bevy_reflect/latest/bevy_reflect/serde/struct.TypedReflectDeserializer.html)。
+
+不过，我们使用`ReflectDeserializer`最终的结果是一个`Box<dyn PartialReflect>`类型，在此之后需要我们手动转为相应的正确类型。
+
+```rust
+#[derive(Reflect, PartialEq, Debug)]
+#[type_path = "my_crate"]
+struct MyStruct {
+  value: i32
+}
+
+let mut registry = TypeRegistry::default();
+registry.register::<MyStruct>();
+
+let input = r#"{
+  "my_crate::MyStruct": (
+    value: 123
+  )
+}"#;
+
+let mut deserializer = ron::Deserializer::from_str(input).unwrap();
+let reflect_deserializer = ReflectDeserializer::new(&registry);
+
+let output: Box<dyn PartialReflect> = reflect_deserializer.deserialize(&mut deserializer).unwrap();
+
+//我们可以使用FromReflect转换回MyStruct。
+let value: MyStruct = <MyStruct as FromReflect>::from_reflect(output.as_partial_reflect()).unwrap();
+assert_eq!(value, MyStruct { value: 123 });
+
+// 我们还可以使用ReflectFromReflect动态地执行此操作。
+let type_id = output.get_represented_type_info().unwrap().type_id();
+let reflect_from_reflect = registry.get_type_data::<ReflectFromReflect>(type_id).unwrap();
+let value: Box<dyn Reflect> = reflect_from_reflect.from_reflect(output.as_partial_reflect()).unwrap();
+assert!(value.is::<MyStruct>());
+assert_eq!(value.take::<MyStruct>().unwrap(), MyStruct { value: 123 });
+```
