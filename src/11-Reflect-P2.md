@@ -618,7 +618,7 @@ impl Damageable for Zombie {
 
 如何才能曲线救国呢？不管怎么样，我们必须通过某种方式把这个`trait`相关的信息保存到和类型`Zombie`相关的某种数据结构上。
 
-bevy_reflect为我们提供了这样一种数据结构，即[`TypeRegistry`](https://docs.rs/bevy/latest/bevy/reflect/struct.TypeRegistry.html)。用一句话来概括：一个`TypeRegistry`的核心是一个键为`TypeId`值为 [`TypeRegistration`](https://docs.rs/bevy_reflect/latest/bevy_reflect/struct.TypeRegistration.html) >的`HashMap`，而一个`TypeRegistration` 则是一个键为`TypeId`值为Box<dyn  [`TypeData`](https://docs.rs/bevy_reflect/latest/bevy_reflect/trait.TypeData.html) >的`HashMap`。
+bevy_reflect为我们提供了这样一种数据结构，即[`TypeRegistry`](https://docs.rs/bevy/latest/bevy/reflect/struct.TypeRegistry.html)。用一句话来概括：一个`TypeRegistry`的核心是一个键为`TypeId`值为 [`TypeRegistration`](https://docs.rs/bevy_reflect/latest/bevy_reflect/struct.TypeRegistration.html) 的`HashMap`，而一个`TypeRegistration` 则是一个键为`TypeId`值为Box<dyn  [`TypeData`](https://docs.rs/bevy_reflect/latest/bevy_reflect/trait.TypeData.html) >的`HashMap`。
 
 然而我们在前面说到，`trait`并不是一个具体的结构，甚至在静态分发下编译后直接消失了，我们该怎么保存这些数据呢？
 
