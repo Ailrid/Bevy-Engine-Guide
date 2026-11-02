@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-227a0bde.js";
+            window.path_to_searchindex_js = "searchindex-6afc0c76.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-ad0f4ae9.js"></script>
+        <script src="toc-f9cb3a18.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -751,7 +751,7 @@ impl Damageable for Zombie {
 // value.damage(10);
 <span class="boring">}</span></code></pre>
 <p>如何才能曲线救国呢？不管怎么样，我们必须通过某种方式把这个<code>trait</code>相关的信息保存到和类型<code>Zombie</code>相关的某种数据结构上。</p>
-<p>bevy_reflect为我们提供了这样一种数据结构，即<a href="https://docs.rs/bevy/latest/bevy/reflect/struct.TypeRegistry.html"><code>TypeRegistry</code></a>。用一句话来概括：一个<code>TypeRegistry</code>的核心是一个键为<code>TypeId</code>值为 <a href="https://docs.rs/bevy_reflect/latest/bevy_reflect/struct.TypeRegistration.html"><code>TypeRegistration</code></a> &gt;的<code>HashMap</code>，而一个<code>TypeRegistration</code> 则是一个键为<code>TypeId</code>值为Box&lt;dyn  <a href="https://docs.rs/bevy_reflect/latest/bevy_reflect/trait.TypeData.html"><code>TypeData</code></a> &gt;的<code>HashMap</code>。</p>
+<p>bevy_reflect为我们提供了这样一种数据结构，即<a href="https://docs.rs/bevy/latest/bevy/reflect/struct.TypeRegistry.html"><code>TypeRegistry</code></a>。用一句话来概括：一个<code>TypeRegistry</code>的核心是一个键为<code>TypeId</code>值为 <a href="https://docs.rs/bevy_reflect/latest/bevy_reflect/struct.TypeRegistration.html"><code>TypeRegistration</code></a> 的<code>HashMap</code>，而一个<code>TypeRegistration</code> 则是一个键为<code>TypeId</code>值为Box&lt;dyn  <a href="https://docs.rs/bevy_reflect/latest/bevy_reflect/trait.TypeData.html"><code>TypeData</code></a> &gt;的<code>HashMap</code>。</p>
 <p>然而我们在前面说到，<code>trait</code>并不是一个具体的结构，甚至在静态分发下编译后直接消失了，我们该怎么保存这些数据呢？</p>
 <p>聪明的你肯定能想到，如果我们能够编写一个结构体，并为结构体实现一些方法，然后在结构体的这些方法内把调用转发给<code>trait</code>，我们就可以做到把<strong>无形变有形</strong>，这样以来就能够保存这些<code>trait</code>数据了。而<strong>这个用曲线保存trait信息的结构体，在这里就叫做<code>TypeData</code>。顾名思义，这是一个用来保存类型的数据结构，虽然其是一个结构体。</strong></p>
 <p>bevy_reflect为我们提供了这样一个泛型，只要我们实现他，bevy_reflect就可以为我们自动从一个struct里提取出一个</p>
@@ -1134,6 +1134,9 @@ assert_eq!(value.take::&lt;MyStruct&gt;().unwrap(), MyStruct { value: 123 });
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
+                            <a rel="next prefetch" href="12-Reflect-P3.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -1145,6 +1148,9 @@ assert_eq!(value.take::&lt;MyStruct&gt;().unwrap(), MyStruct { value: 123 });
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
+                    <a rel="next prefetch" href="12-Reflect-P3.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
             </nav>
 
         </div>
