@@ -56,7 +56,7 @@ enum AppError{
 }
 ```
 
-## f
+## 12.2 syn和quote
 
 几乎没有人真的去傻傻的去手工编写一个从`TokenStream`到`TokenStream`的生成算法，那实在是太麻烦了，让我们用一个简单的小例子来解释一下。
 
