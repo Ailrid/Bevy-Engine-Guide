@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-2627b320.js";
+            window.path_to_searchindex_js = "searchindex-8cf6e24d.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-f9cb3a18.js"></script>
@@ -221,7 +221,7 @@ enum AppError{
     Config(#[from] config::ConfigError),
 }
 <span class="boring">}</span></code></pre>
-<h2 id="f"><a class="header" href="#f">f</a></h2>
+<h2 id="122-syn和quote"><a class="header" href="#122-syn和quote">12.2 syn和quote</a></h2>
 <p>几乎没有人真的去傻傻的去手工编写一个从<code>TokenStream</code>到<code>TokenStream</code>的生成算法，那实在是太麻烦了，让我们用一个简单的小例子来解释一下。</p>
 <p>首先我们编写一个简单的过程宏，这个过程宏的唯一任务就是自动实现一个名为hello的方法。</p>
 <pre class="playground"><code class="language-rust">use proc_macro::TokenStream;
