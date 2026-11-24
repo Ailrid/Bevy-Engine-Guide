@@ -36,10 +36,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-8cf6e24d.js";
+            window.path_to_searchindex_js = "searchindex-3ca29663.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-f9cb3a18.js"></script>
+        <script src="toc-43a06fac.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -175,8 +175,8 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="序言"><a href="#序言" class="header">序言</a></h1>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+                        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="0-序言"><a class="header" href="#0-序言">0 序言</a></h1>
 <h2 id="撰写本书的原因"><a class="header" href="#撰写本书的原因">撰写本书的原因</a></h2>
 <p>关于 Bevy 的系统性中文指南至今仍然欠缺，互联网上的资料零散、碎片化，且大多停留在如何做的层面，很少触及为什么这样设计。想要深入理解 Bevy 的内部机制，往往需要自行翻阅大量源码与文档，这消耗了开发者大量的时间，也严重阻碍了 Bevy 生态在中文社区的成长。</p>
 <p>Bevy 经过五年的发展，距离 1.0 完成度已接近八成，其架构设计也趋于稳定。加之作者本人对Bevy比较感兴趣，遂决定撰写一本从源码出发、深入设计哲学的指南（本书撰写始于2025年10月11日）。</p>
@@ -273,9 +273,8 @@
 <p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M4.47.22A.749.749 0 0 1 5 0h6c.199 0 .389.079.53.22l4.25 4.25c.141.14.22.331.22.53v6a.749.749 0 0 1-.22.53l-4.25 4.25A.749.749 0 0 1 11 16H5a.749.749 0 0 1-.53-.22L.22 11.53A.749.749 0 0 1 0 11V5c0-.199.079-.389.22-.53Zm.84 1.28L1.5 5.31v5.38l3.81 3.81h5.38l3.81-3.81V5.31L10.69 1.5ZM8 4a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 8 4Zm0 8a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Caution</p>
 <p>本书部分图像来自公开网络搜集，无法联系作者，若侵权请联系进行删除。</p>
 </blockquote>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="第-1-章bevy-总览"><a href="#第-1-章bevy-总览" class="header">第 1 章：Bevy 总览</a></h1>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="1-总览"><a class="header" href="#1-总览">1 总览</a></h1>
 <h2 id="11-章节序言"><a class="header" href="#11-章节序言">1.1 章节序言</a></h2>
 <p><em>孔明在荆州，与石广元、徐元直、孟公威俱游学，三人务于精熟，而亮独观其大略。</em> <em>—— 《魏略》</em></p>
 <p>笔者一直认为，学习一件事要由粗入细，由浅入深，因此本章的目标主要是快速让读者对于Bevy能有一个大概的印象，了解Bevy程序的主要组成部分。大量的细节部分我都将略去，因此读者如现在遇到不理解的地方可以不求甚解，后续的章节将会依次仔细展开各个部分进行详细的介绍。</p>
@@ -950,9 +949,8 @@ impl Plugin for CustomPlugin {
 <li>在<code>RenderApp</code>的<code>Render</code>调度中的<code>Prepare</code>环节调用我们编写的<code>prepare</code>函数来准备渲染所需的数据，在这里定义我们的渲染管线的结构、缓冲区的布局等等。</li>
 <li>在<code>RenderApp</code>的<code>Render</code>调度中的<code>Queue</code>环节调用我们编写的<code>queue</code>函数来渲染数据</li>
 </ol>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="第-2-章ecs-架构"><a href="#第-2-章ecs-架构" class="header">第 2 章：ECS 架构</a></h1>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="2-ecs系统"><a class="header" href="#2-ecs系统">2 ECS系统</a></h1>
 <h2 id="21-entity"><a class="header" href="#21-entity">2.1 Entity</a></h2>
 <h3 id="211-entitycommands"><a class="header" href="#211-entitycommands">2.1.1 EntityCommands</a></h3>
 <p>在前面我们生成实体时，还记得我们使用了<code>Command.spawn()</code>方法生成了一个没有组件的实体，然后依次往该实体上插入了一些组件，可如何我们想在之后修改实体该怎么办？查看该方法返回的值，可以发现其返回了一个<code>EntityCommands</code>类型的值而不是一个<code>Entity</code>类型的值，如果要获得真正的<code>Entity</code>，我们需要调用<code>EntityCommands</code>上的<code>id</code>方法。</p>
@@ -1898,9 +1896,8 @@ fn main() {
 <p>其实利用bevy_app、bevy_ecs、bevy_time三个crate，就能实现一个最基本的应用程序框架，有时候这是非常有用的。</p>
 <p>例如你想编写一个没有窗口但是又不停运行的系统，但是又不想使用while和状态机来进行麻烦的状态管理，那么使用这三个crate就能解决你的问题。</p>
 </blockquote>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="第-3-章资产系统"><a href="#第-3-章资产系统" class="header">第 3 章：资产系统</a></h1>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="3-assets"><a class="header" href="#3-assets">3 Assets</a></h1>
 <h2 id="31-回顾asset"><a class="header" href="#31-回顾asset">3.1 回顾Asset</a></h2>
 <p>资产是需要加载到游戏中的资源，通常来自于各种硬盘里的文件，例如图像、模型、材质、字体、音频等等等等。由于这些资源的加载往往需要耗费大量时间，因此Bevy里这些资产的加载往往都是以异步的形式以避免阻塞游戏循环。在Bevy中，我们可以使用<code>AssetServer</code>从硬盘里加载资产，使用<code>Assets&lt;T&gt;</code>来存储已经加载的各类资产。</p>
 <p>与资产相关的内容主要在bevy_asset这个crate中，要使用这些内容，<strong>必须在App上调用其中的<a href="https://docs.rs/bevy_asset/0.17.3/bevy_asset/struct.AssetPlugin.html">AssetPlugin</a>这个插件才能访问<code>AssetServer</code>、<code>Assets</code>等类型，这个插件还提供了一些额外的设置，例如指定模式和路径等，该插件已经在DefaultPlugin内，不需要我们再手动安装。</strong></p>
@@ -2173,9 +2170,8 @@ fn main() {
   }
 }
 <span class="boring">}</span></code></pre>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="第-4-章时间与定时器"><a href="#第-4-章时间与定时器" class="header">第 4 章：时间与定时器</a></h1>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="4-time"><a class="header" href="#4-time">4 Time</a></h1>
 <h2 id="41-timer"><a class="header" href="#41-timer">4.1 Timer</a></h2>
 <p>一个<code>Timer</code>是一个bevy_time子crate中的类型，代表了bevy中的定时器，通过该类型，我们可以实现计时功能，其主要的两个构造方式如下：</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
@@ -2336,9 +2332,8 @@ fn animate_sprite(
     state.current += state.speed * time.delta_secs();
 }
 <span class="boring">}</span></code></pre>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="第-5-章2d-渲染"><a href="#第-5-章2d-渲染" class="header">第 5 章：2D 渲染</a></h1>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="5-2d"><a class="header" href="#5-2d">5 2D</a></h1>
 <h2 id="51-mesh2d"><a class="header" href="#51-mesh2d">5.1 Mesh2d</a></h2>
 <p>在Bevy中，有 <code>Mesh2d</code>与<code>Mesh3d</code>两种，前者是三角形、矩形、圆形等各种二维形状，后者代表立方体、网格模型等三维物体。<code>Mesh2d</code>与<code>Mesh3d</code>可以像一个普通的组件一样使用，就像下面一样。在这些代码里，我们生成了一个实体，并在其之上添加了一个<code>Mesh2d</code>与对应的<code>MeshMaterial2d</code>。同时，别忘了我们还需要指定一个<code>Camera2d</code>来渲染这些内容。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
@@ -2909,9 +2904,8 @@ fn create_texture_atlas(
     pub texture_ids: HashMap&lt;AssetId&lt;Image&gt;, usize&gt;,
 }
 <span class="boring">}</span></code></pre>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="第-6-章空间变换"><a href="#第-6-章空间变换" class="header">第 6 章：空间变换</a></h1>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="6-transforom"><a class="header" href="#6-transforom">6 Transforom</a></h1>
 <h2 id="61-向量与变换"><a class="header" href="#61-向量与变换">6.1 向量与变换</a></h2>
 <h3 id="611-向量"><a class="header" href="#611-向量">6.1.1 向量</a></h3>
 <p>在线性代数中，我们学习过，如果我们确定了一组线性无关的基，那么三维空间中的某个点坐标，可以使用一个向量来表示。一般而言，我们经常取一组空间相互正交的基，并令他们的模长为1，于是，我们的xyz三个轴的基向量分别表示为:<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5944em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathbf">e</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1611em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathbf mtight">x</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>、<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7305em;vertical-align:-0.2861em;"></span><span class="mord"><span class="mord mathbf">e</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1611em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathbf mtight" style="margin-right:0.01597em;">y</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span></span></span></span>、<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5944em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathbf">e</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1611em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathbf mtight">z</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>。且相互之间两两做点积为0。</p>
@@ -3356,9 +3350,8 @@ if keyboard.just_pressed(KeyCode::KeyT) {
 }
 <span class="boring">}</span></code></pre>
 <p>至于剩下的示例，相信你现在已经有足够的水平去看得懂了，这里就不再赘述。</p>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="第-7-章成像原理与相机"><a href="#第-7-章成像原理与相机" class="header">第 7 章：成像原理与相机</a></h1>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="7-camera"><a class="header" href="#7-camera">7 Camera</a></h1>
 <h2 id="71-针孔相机模型"><a class="header" href="#71-针孔相机模型">7.1 针孔相机模型</a></h2>
 <p>要介绍相机的成像原理，必须先讲清楚相机的成像模型。根据第六章中的内容，我们已经知道了在Bevy中坐标系的组成和变换公式，现在让我们做如下推理来看看相机到底是怎么成像的。</p>
 <p>假设我们的世界坐标是<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07847em;">X</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.0785em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.01968em;">l</span><span class="mord mathnormal mtight">oc</span><span class="mord mathnormal mtight">a</span><span class="mord mathnormal mtight" style="margin-right:0.01968em;">l</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>,<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">Y</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.01968em;">l</span><span class="mord mathnormal mtight">oc</span><span class="mord mathnormal mtight">a</span><span class="mord mathnormal mtight" style="margin-right:0.01968em;">l</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>,<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07153em;">Z</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.0715em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.01968em;">l</span><span class="mord mathnormal mtight">oc</span><span class="mord mathnormal mtight">a</span><span class="mord mathnormal mtight" style="margin-right:0.01968em;">l</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>，根据我们前面的知识，<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07153em;">Z</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.0715em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.01968em;">l</span><span class="mord mathnormal mtight">oc</span><span class="mord mathnormal mtight">a</span><span class="mord mathnormal mtight" style="margin-right:0.01968em;">l</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>由屏幕内指向我们，<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">Y</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.2222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.01968em;">l</span><span class="mord mathnormal mtight">oc</span><span class="mord mathnormal mtight">a</span><span class="mord mathnormal mtight" style="margin-right:0.01968em;">l</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>指向正上方，<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07847em;">X</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.0785em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.01968em;">l</span><span class="mord mathnormal mtight">oc</span><span class="mord mathnormal mtight">a</span><span class="mord mathnormal mtight" style="margin-right:0.01968em;">l</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>与前二者组成右手坐标系(即朝右侧)，如下图所示。</p>
@@ -3891,10 +3884,9 @@ pub struct FreeCamera {
 }
 <span class="boring">}</span></code></pre>
 <p>具体的其他我们就不再赘述了，对更多相机的细节感兴趣的读者可以查看Bevy下的examples/camera下的各种示例，特别是其中有一个很好玩的first_person_view_model，利用了相机和<code>RenderLayers</code>实现了类似于我的世界一样的第一人称视角相机。</p>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="第-8-章3d-基础"><a href="#第-8-章3d-基础" class="header">第 8 章：3D 基础</a></h1>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
-<p><em>本章节的主要内容在于对3D世界有一个一般的了解，由于3D部分过于复杂，大量的细节都将在后续章节中进行更为详细的讲解。</em></p>
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="8-3d"><a class="header" href="#8-3d">8 3D</a></h1>
+<p><em>本章节的主要内容在于对3D世界有一个一般的了解，由于3D部分过于复杂，大量的细节都将在后续(下册)章节中进行更为详细的讲解。</em></p>
 <h2 id="81-light"><a class="header" href="#81-light">8.1 Light</a></h2>
 <p>“上帝说：要有光，就有了光。”我们的三维世界也需要有光，否则渲染出来的屏幕将会漆黑一片。有关灯光的介绍是一个大主题，甚至能够写好几本书，在这里我们只会简要的介绍一下几种常见的灯光，以便我们能够首先看到点什么，剩下的内容将会在下一章内更仔细的介绍。</p>
 <h3 id="811-pointlight"><a class="header" href="#811-pointlight">8.1.1 PointLight</a></h3>
@@ -4542,9 +4534,8 @@ fn main() {
 <li><strong>检查拓扑结构</strong>：你可以直观地看到模型是否过于精细（面数爆炸），或者是否存在法线反转导致的破面。</li>
 <li><strong>确认层级关系</strong>：在处理像我们在 8.2.2 节中提到的那种复杂的 glTF 场景时，开启线框能帮你快速定位每一个子 Mesh 的具体边界。</li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="第-9-章3d动画"><a href="#第-9-章3d动画" class="header">第 9 章：3D动画</a></h1>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="9-animation"><a class="header" href="#9-animation">9 Animation</a></h1>
 <h2 id="91-动画总览"><a class="header" href="#91-动画总览">9.1 动画总览</a></h2>
 <p>要播放3D模型动画，不管怎样，我们都要先拿到模型，<strong>Gltf模型其实是一种Asset</strong>，因此我们在第三章中讨论的如何加载资产的那一整套，都可以完美的平移过来。</p>
 <p>首先我们需要一个<code>Resource</code>来存储句柄，以便在不同的系统之间传递。当然也可以传递一些别的东西，不过目前而言我们主要关心的是其中的<code>Handle</code>。</p>
@@ -4956,9 +4947,8 @@ fn sync_weights(mut query: Query&lt;(&amp;mut AnimationPlayer, &amp;ExampleAnima
     paused: bool,
 }
 <span class="boring">}</span></code></pre>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="第-10-章反射-p1"><a href="#第-10-章反射-p1" class="header">第 10 章：反射-P1</a></h1>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="10-meta-programming"><a class="header" href="#10-meta-programming">10 Meta Programming</a></h1>
 <p><em>首先，谢谢你能陪我一直读到这里，。</em></p>
 <p><em>现在，你已经对bevy有了更详细的认知，凭借之前的知识，现在你应该可以自己写出一些简单的游戏了。不过如果你细心，那你可能察觉到我漏掉了关于物理引擎的这一部分，我们在本书中不会详细介绍，因为这不属于bevy的组成部分（或许以后我可能会专门再写一本书研究如何从0写一个物理引擎&gt;-&lt;），读者可以查看别的相关资料，我们这里就不再赘述了。</em></p>
 <p><em>在这里我们正式进入第二部分，即bevy最复杂最核心的反射与ecs系统，我将会花几个章节的篇幅先把反射讲清楚，然后揭开bevy_reflect与bevy_ecs的核心秘密。</em></p>
@@ -5410,9 +5400,8 @@ const IntList = List(i32); // 在编译期把 i32 类型传进去，直接生成
 <p>符号和逻辑能捕获的，仅仅是那个被“脱水”的事实世界。而超越编程之外的——那些关于生命的痛苦、美、爱、以及存在本身的意义，它们无法被写进 <code>if-else</code>，无法被封装进类与函数。</p>
 <p>雨夜中外卖员们的艰辛、花朵绽放的时的香气、感情矛盾中的爱与恨、失去挚爱的痛，它们属于那片“不可言说的领域”。我们程序员们或许能轻而易举的将这些超越编程之外的事物纯粹化为数值和计算，用尽一生的逻辑去编写程序，穷尽这个符号世界的所有可能，但当我们终于合上电脑、抬起头，望向窗外真实、充满不确定性的复杂世界时，才会发现超越编程之外的，是那些代码无法触及的生命色彩，对于这些我们能做的，只有带着最深的敬畏，保持沉默。</p>
 <p>生命的意义和色彩，不在这场精密绝不出错的符号游戏中，超越编程之外的，才是真正的精彩丰富的世界。</p>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="第-11-章反射-p2"><a href="#第-11-章反射-p2" class="header">第 11 章：反射-P2</a></h1>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="11-bevy-reflect"><a class="header" href="#11-bevy-reflect">11 Bevy Reflect</a></h1>
 <h2 id="111-bevy中的反射"><a class="header" href="#111-bevy中的反射">11.1 Bevy中的反射</a></h2>
 <p>在前面我们说到，元编程的实现类型多种多样，有运行时反射、编译期宏、还有UE5那样的外挂反射和Zig这种独树一帜的<code>comptime</code>关键字等等。那么Bevy里主要利用了什么？</p>
 <p>答案是前两种。Bevy即为我们提供了运行时反射的能力，又利用宏和Rust强大的泛型能力实现了<strong>编译期单态化与静态分发</strong>。其中前者由bevy_reflect这个crate提供，后者则主要在bevy_ecs中实现。</p>
@@ -6363,9 +6352,8 @@ let value: Box&lt;dyn Reflect&gt; = reflect_from_reflect.from_reflect(output.as_
 assert!(value.is::&lt;MyStruct&gt;());
 assert_eq!(value.take::&lt;MyStruct&gt;().unwrap(), MyStruct { value: 123 });
 <span class="boring">}</span></code></pre>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="第-12-章反射-p3"><a href="#第-12-章反射-p3" class="header">第 12 章：反射-P3</a></h1>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="12-procedural-macro"><a class="header" href="#12-procedural-macro">12 Procedural Macro</a></h1>
 <h2 id="121-过程宏"><a class="header" href="#121-过程宏">12.1 过程宏</a></h2>
 <p>在前面我们说到，bevy依赖rust中的宏来实现反射，现在就让我们来真正看看到底一个宏是如何实现反射的吧。</p>
 <p>首先让我们来简明扼要的介绍一下过程宏，这个过程我不会过多的去讲解，因为这里已经有一本足够优秀的书更详细的讨论了关于宏的问题，<strong>如果读者不够熟悉宏，强烈建议阅读本章前先学习：</strong><a href="https://lukaswirth.dev/tlborm/introduction.html">The Little Book of Rust Macros</a>。</p>
@@ -6511,8 +6499,318 @@ TokenStream::from(expanded)
 <span class="boring">}</span></code></pre>
 <hr>
 <p>这就是我们的基本工具，至于关于这两个crate的更加详细的信息，读者可以查看<a href="https://docs.rs/syn/latest/syn/">syn</a>和<a href="https://docs.rs/quote/latest/quote/">quote</a>的文档以更好的理解其用法。</p>
-<h2 id="123-bevy_reflect_derive"><a class="header" href="#123-bevy_reflect_derive">12.3 bevy_reflect_derive</a></h2>
-<p>// TODO</p>
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="13-generic-injection"><a class="header" href="#13-generic-injection">13 Generic Injection</a></h1>
+<h2 id="131-基础数据结构"><a class="header" href="#131-基础数据结构">13.1 基础数据结构</a></h2>
+<p>在正式介绍<code>bevy_reflect</code>和<code>bevy_ecs</code>的底层之前，我们还有需要额外的补充一点说明。</p>
+<p>在<code>bevy_ecs</code>中你将会看到这种，利用纯粹的rust泛型支持来实现依赖注入的技巧，这种实现依赖注入的方式完全依赖rust强大的泛型系统而无需过程宏。</p>
+<p>让我们以一个<code>http</code>框架的依赖注入系统为例子，来解释一下该如何利用纯粹的泛型实现依赖注入功能。</p>
+<p>假设我们的<code>Request</code>和<code>Response</code>结构体长这个样子，这是一个最简单的情况之一。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 这是我们的Request结构体，包含body和Parts，Parts包含了http的请求头
+pub struct Parts { pub headers: Vec&lt;String&gt; }
+pub struct Body(pub String);
+pub struct Request { parts: Parts, body: Body }
+
+impl Request {
+    fn new(headers: Vec&lt;String&gt;, body: &amp;str) -&gt; Self {
+        Request { parts: Parts { headers }, body: Body(body.to_owned()) }
+    }
+    fn into_parts(self) -&gt; (Parts, Body) { (self.parts, self.body) }
+    fn from_parts(parts: Parts, body: Body) -&gt; Self { Request { parts, body } }
+}
+
+
+// 下面是Response结构体以及IntoResponse trait
+// 我们为常见的类型String、&amp;'static str、Result等实现了IntoResponse trait，这样我们就可以在返回这些类型时自动转换为我们的Response结构体
+pub struct Response(pub String);
+
+pub trait IntoResponse { 
+    fn into_response(self) -&gt; Response; 
+}
+impl IntoResponse for Response { 
+    fn into_response(self) -&gt; Response { self } 
+}
+impl IntoResponse for String { 
+    fn into_response(self) -&gt; Response { Response(self) } 
+}
+impl IntoResponse for &amp;'static str {
+    fn into_response(self) -&gt; Response { Response(self.to_owned()) }
+}
+impl&lt;T: IntoResponse, E: IntoResponse&gt; IntoResponse for Result&lt;T, E&gt; {
+    fn into_response(self) -&gt; Response {
+        match self {
+            Ok(v) =&gt; v.into_response(),
+            Err(e) =&gt; e.into_response(),
+        }
+    }
+}
+<span class="boring">}</span></code></pre>
+<p>这些代码简单到不言而喻，除了一点——为什么我们要区分<code>Body</code>和<code>Parts</code>?</p>
+<p>这是因为，<code>Body</code>和<code>Parts</code>在一个<code>http</code>请求的里的地位就是不同的，<code>Body</code>是一个流，而<code>Parts</code>是一个完整的请求头。一个流是无法被重复读取和解析的，因为流不负责保存之前的数据，这就像“滚滚长江东逝水”，长江只负责让水流过去而不负责记录流过去的水都有哪些。用rust里的话来讲，<strong><code>body</code>被消费一次后就不应该再被使用了，也就是所有权转移了。</strong></p>
+<p>在其他语言的框架里，当你二次消费body时，要么会发生异常，要么会发生请求挂起。而在稍后你就可以看，只需要稍加利用rust的所有权系统，就能让rust编译器为我们保证这件事。</p>
+<hr>
+<p>现在让我们来继续设计下去，对于类似<code>Header</code>或者<code>Query</code>或者<code>Cookies</code>之类的数据，我们应该从<code>Parts</code>中获得，对于<code>Body</code>我们则经常以<code>Json</code>的形式来在前端发送并在后端反序列化，同时除了来自http的数据，我们还有本地的一些应给被共享的<code>State</code>，例如数据库。</p>
+<p>于是我们可以顺理成章的写出来<code>FromRequestParts</code>和<code>FromRequest</code>两个<code>trait</code>，其中前者用于从<code>Parts</code>里转换数据，**后者则消费掉整个<code>Request</code>，从<code>Body</code>中构造出我们需要的数据。**这样，rust编译器就会替我们保证<code>body</code>只会被消费一次了。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 一个泛型trait，从Parts中提取出自己
+pub trait FromRequestParts&lt;S&gt;: Sized {
+    fn from_request_parts(parts: &amp;mut Parts, state: &amp;S) -&gt; Result&lt;Self, String&gt;;
+}
+
+// 一个泛型trait，消耗整个Request并提取出自己
+pub trait FromRequest&lt;S&gt;: Sized {
+    fn from_request(req: Request, state: &amp;S) -&gt; Result&lt;Self, String&gt;;
+}
+
+// 这是我们的公共数据中心，假设里面有来自sqlx的PgPool，这是一个数据库连接池，是一个Arc的共享指针
+#[derive(Clone)]
+pub struct AppState { pub db: PgPool }
+
+// 从Parts中提取出Header
+pub struct Header(pub String);
+impl&lt;S&gt; FromRequestParts&lt;S&gt; for Header {
+    fn from_request_parts(parts: &amp;mut Parts, _s: &amp;S) -&gt; Result&lt;Self, String&gt; {
+        // 在这里使用parts来构造一个Header结构体，具体的提取代码我们在此处省略
+    }
+}
+
+
+// 从Parts中提取出Query
+pub struct Query(pub String);
+impl&lt;S&gt; FromRequestParts&lt;S&gt; for Query {
+    fn from_request_parts(parts: &amp;mut Parts, _s: &amp;S) -&gt; Result&lt;Self, String&gt; {
+        // 在这里使用parts来构造一个Query结构体，具体的提取代码我们在此处省略
+    }
+}
+
+// 从Body中提取出JsonBody
+pub struct JsonBody(pub String);
+impl&lt;S&gt; FromRequest&lt;S&gt; for JsonBody {
+    fn from_request(req: Request, _s: &amp;S) -&gt; Result&lt;Self, String&gt; {
+       // 注意这里我们的直接消费了整个Request
+       Ok(JsonBody(req.body.0))
+    }
+}
+    
+pub struct Db(pub PgPool);
+// 从我们的AppState中提取出pgpool
+impl FromRequestParts&lt;AppState&gt; for Db {
+    fn from_request_parts(_p: &amp;mut Parts, s: &amp;AppState) -&gt; Result&lt;Self, String&gt; {
+        Ok(Db(s.db.clone()))
+    }
+}
+<span class="boring">}</span></code></pre>
+<h2 id="132-单参数注入"><a class="header" href="#132-单参数注入">13.2 单参数注入</a></h2>
+<p>看起来好像一切都很好，假如我们能够用某种方法实现依赖注入的话，我们好像就可以让下面的这样的函数能被自动调用和转换响应，那么我们该怎么办呢？</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>async fn two_args(h: Header, db: Db)-&gt;impl IntoResponse;
+<span class="boring">}</span></code></pre>
+<hr>
+<p>要实现这个魔法的核心关键是，<strong>我们需要找到某种办法，让rust的泛型系统能够根据参数所实现的trait是<code>FromRequestParts</code>还是<code>FromRequest</code>来自动生成正确的调用的代码。</strong></p>
+<p>为了实现这个目的，我们尝试着来写一下。</p>
+<p>首先可以想到的是，我们应该为某些<code>FnOnce</code>类型实现一个自定义的<code>trait</code>，然后通过这个<code>trait</code>取代<code>FnOnce</code>的<code>call</code>方法，这样我们可以解决第一个问题：怎么将<code>FnOnce</code>五花八门的参数来统一成<code>Request</code>和我们的<code>AppState</code>。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub type BoxFuture = Pin&lt;Box&lt;dyn Future&lt;Output = Response&gt; + Send&gt;&gt;;
+
+// 之后我们就通过我们的Handler的call方法来调用FnOnce
+pub trait Handler&lt;S&gt;: Clone + Send + 'static {
+    fn call(self, req: Request, state: S) -&gt; BoxFuture;
+}
+<span class="boring">}</span></code></pre>
+<p>我们需要玩一点有意思的泛型魔法，这也是我们的依赖注入中最核心的一步。</p>
+<p>让我们来降低一下难度，我们<strong>先考虑对于只接受一个参数</strong>并且这个参数消费了<code>Request</code>的<code>http handler</code>函数，我们的这个函数应该长什么什么样子？</p>
+<p>显然这个<code>FnOnce</code>的特点是：</p>
+<ul>
+<li>接受的参数只有一个</li>
+<li>这唯一的一个参数实现了<code>FromRequest</code></li>
+<li>该<code>FnOnce</code>返回一个<code>Future</code></li>
+<li>这个<code>Future</code>的<code>Output</code>实现了<code>IntoResponse</code>。</li>
+</ul>
+<p>对于这四个约束，再加上我们的我们<code>AppState</code>的约束，于是我们可以写出来一个具有五个泛型参数的签名。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 这些可真长，前四个泛型参数对应了我们的四个要求，最后一个S是对于我们的AppState的基本要求。
+impl&lt;F, T1, Fut, Res, S&gt; Handler&lt;S&gt; for F
+where
+    F: FnOnce(T1,) -&gt; Fut + Clone + Send + 'static,
+    Fut: Future&lt;Output = Res&gt; + Send,
+    Res: IntoResponse,
+    T1: FromRequest&lt;S&gt; + Send,
+    S: Send + Sync + 'static,
+{
+	fn call(self, req: Request, state: S) -&gt; BoxFuture {
+        Box::pin(async move {
+            // 我们直接调用from_request并传递给这个函数自己
+            let t1 = match T1::from_request(req, &amp;state) {
+                Ok(v) =&gt; v,
+                Err(e) =&gt; return Response(format!("400: {e}")),
+            };
+            self(t1,).await.into_response()
+        })
+    }
+}
+<span class="boring">}</span></code></pre>
+<p>这看着挺合理的，但是编译器上来就给了我们一巴掌：<strong>the type parameter <code>T1</code> is not constrained by the impl trait,self type, or predicates</strong>。</p>
+<p>啊，rust编译器多么令人讨厌啊！</p>
+<p>这是编译器在告诉我们，T1 决定了这份 impl 在描述哪一种函数，允许它只藏在 where 里，同一个 F 就可能对应好几个 T1，编译器没法选，要求我们强制把这个参数写到Handler中。</p>
+<p>于是我们可以这样稍微修改一下我们的代码，在Handler中添加一个参数，虽然我们根本没有用到这个参数，但是为了让编译器满意我们不得不这样做。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub trait Handler&lt;T1, S&gt;: Clone + Send + 'static {
+    fn call(self, req: Request, state: S) -&gt; BoxFuture;
+}
+
+impl&lt;F, T1, Fut, Res, S&gt; Handler&lt;T1, S&gt; for F // 后面的完全不变
+<span class="boring">}</span></code></pre>
+<hr>
+<p>让人满意！让我们来更进一步，<code>Header</code>、<code>Query</code>、<code>Db</code>实现的<code>FromRequestParts</code>，我们现在只有对于<code>FromRequest</code>的实现，那我们很自然会想——再写一份 impl 不就完了？于是我们写出来了这样的东西。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>impl&lt;F, T1, Fut, Res, S&gt; Handler&lt;T1, S&gt; for F where T1: FromRequest&lt;S&gt; { ... }
+impl&lt;F, T1, Fut, Res, S&gt; Handler&lt;T1, S&gt; for F where T1: FromRequestParts&lt;S&gt; { ... }
+<span class="boring">}</span></code></pre>
+<p>直觉上看是可以的，但是rust编译器会当场拒绝你，并说 <strong>conflicting implementations of trait <code>Handler&lt;_, _&gt;</code>！</strong></p>
+<p>这是为什么？因为我们违背了coherence 即一致性规则：对任意一个类型，一个trait最多只能有一个实现。 编译器在任何时候看到 x.foo()，都必须能唯一确定该调哪份代码，不能有二义。</p>
+<p>rust通过两个规则来维持这个确定性，其一是<strong>孤儿规则</strong>，这个是大家耳熟能详的，即对于<code>impl Trait for Type</code> 这样的代码，必须至少有一方是在当前 crate 定义的；另一个则是<strong>重叠检查</strong>，<strong>即两份 impl 会不会命中同一个类型。</strong></p>
+<p>编译器看到这些签名的时候，根本没看我们的 where 子句，它看的是<code>&lt;F, T1, Fut, Res, S&gt;</code>和<code>Handler&lt;T1, S&gt;</code>，这两份身份证完全一样，因此rust编译器认为这就是同一个 impl 的两个副本，这违背了<strong>重叠检查</strong>规则！</p>
+<hr>
+<p>这可麻烦了，<strong>既然这条路走不通，那我们只能想办法用一份实现来兼容两种trait了</strong>，这该怎么办呢？</p>
+<p>聪明的你肯定可以想到，只要我们要求让实现了 <code>FromRequestParts</code> 的东西同样也实现了 <code>FromRequest</code> 不就行了。只要我们手动为<code>FromRequest</code>实现一个泛型方法即可，这样，对于接受一个参数的<code>handler</code>我们应该就都能够兼容了。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>impl&lt;S, T&gt; FromRequest&lt;S&gt; for T
+where
+    T: FromRequestParts&lt;S&gt;,
+    S: Send + Sync,
+{
+    fn from_request(req: Request, s: &amp;S) -&gt; Result&lt;Self, String&gt; {
+        let (mut parts, _body) = req.into_parts();
+        T::from_request_parts(&amp;mut parts, s)
+    }
+}
+<span class="boring">}</span></code></pre>
+<p>一切看起来都让人满意了，但是当我们使用的时候，rust编译器又再次站出来给了我们一巴掌，他说：</p>
+<pre><code class="language-tex">error[E0119]: conflicting implementations of trait `FromRequest&lt;AppState&gt;`
+  |
+  | impl&lt;S, T&gt; FromRequest&lt;S&gt; for T where T: FromRequestParts&lt;S&gt;
+  | ------------------------------------------ first implementation here
+  | impl FromRequest&lt;AppState&gt; for JsonBody
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ conflicting implementation
+</code></pre>
+<p>这不讲道理啊，<code>JsonBody</code> 明明没实现 <code>FromRequestParts</code> 啊？为什么rust编译器会觉得这里有两份<code>FromRequest</code>的实现呢？</p>
+<p><strong>这是因为编译器的推理认为，<code>JsonBody</code> 虽然现在没实现<code>FromRequestParts</code>，但将来可能实现。我证明不了它不重叠，所以我拒绝编译。</strong></p>
+<p>这下又麻烦了，我们该怎么做才能对编译器保证<code>JsonBody</code>绝对不会实现<code>FromRequestParts</code>呢？</p>
+<p>要实现这个目的我们需要一点小技巧，我们需要引入一个用于标记的泛型参数。这个泛型参数对于具体的实现而言没有意义，它存在的目的只是为了告诉rust编译器，这两个实现不是同一个实现。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>mod private {
+    pub struct ViaParts;    // 第一组：只读 Parts
+    pub struct ViaRequest;  // 第二组：要吃整个 Request
+}
+
+// 我们给FromRequest增加一个标记M参数，这个参数只是在签名中出现
+pub trait FromRequest&lt;S, M = private::ViaRequest&gt;: Sized {
+    fn from_request(req: Request, state: &amp;S) -&gt; Result&lt;Self, String&gt;;
+}
+
+
+// 之前的用于给所有FromRequestParts实现FromRequest的代码，我们用private::ViaParts来标记
+impl&lt;S, T&gt; FromRequest&lt;S, private::ViaParts&gt; for T
+where T: FromRequestParts&lt;S&gt; { ... }              // 第一组
+
+// 对于JsonBody我们使用private::ViaRequest来标记
+impl FromRequest&lt;AppState&gt; for JsonBody { ... } 
+<span class="boring">}</span></code></pre>
+<hr>
+<p>一旦我们引入了<code>M</code>，我们的<code>handler</code>的签名同样也要进行修改了。同样这个<code>M</code>我们也要放进<code>Handler</code>的参数里，否则<code>M</code>又成了那个只活在 <code>where</code> 子句里的孤儿。</p>
+<p>第二个看起来没用的参数<code>Handler&lt;(M, T1,), S&gt;</code> 里的 <code>T</code>（那个元组）从哪来的呢？它就是一块给M和T1准备的合法席位，运行时没人读它。</p>
+<p>为什么我们要写成元组<code>(M, T1)</code>而不是 <code>Handler&lt;M, T1, S&gt;</code> 三个平铺参数呢？明明在单参数时看起来两者是等价的。</p>
+<p>因为下一节要一路支持到最多十三个参数，到那时<code>M</code>和 <code>T1..Tn</code>打包成元组最省事，<code>M</code> 就顺手蹲在第 0 位。</p>
+<h2 id="133-多参数注入"><a class="header" href="#133-多参数注入">13.3 多参数注入</a></h2>
+<p>处理好了单个参数，我们就可以顺理成章的拓展到最多能达到16个参数注入的<code>handler</code>了。</p>
+<p>这里我们以2个参数的handler为例。顺着单参数的写法，我们可以先写出来第一版的两个参数的handler版本。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>impl&lt;F, T1, T2, Fut, Res, S, M&gt; Handler&lt;(M, T1, T2,), S&gt; for F
+where
+    F: FnOnce(T1, T2,) -&gt; Fut + Clone + Send + 'static,
+    Fut: Future&lt;Output = Res&gt; + Send,
+    Res: IntoResponse,
+    T1: FromRequest&lt;S, M&gt; + Send,   // ← 照抄
+    T2: FromRequest&lt;S, M&gt; + Send,   // ← 照抄
+    S: Send + Sync + 'static,
+{
+    fn call(self, req: Request, state: S) -&gt; BoxFuture {
+        Box::pin(async move {
+            let t1 = match T1::from_request(req, &amp;state) {
+                Ok(v) =&gt; v,
+                Err(e) =&gt; return Response(format!("400: {e}")),
+            };
+            let t2 = match T2::from_request(req, &amp;state) {   // ← 
+                Ok(v) =&gt; v,
+                Err(e) =&gt; return Response(format!("400: {e}")),
+            };
+            self(t1, t2,).await.into_response()
+        })
+    }
+}
+<span class="boring">}</span></code></pre>
+<p>但是一到<code>async fn two_args(h: Header, db: Db)-&gt;impl IntoResponse;</code>的时候，就会遇到最让人讨厌的借用检查问题。</p>
+<pre><code class="language-tex">error[E0382]: use of moved value: `req`
+   |
+   |     let t1 = T1::from_request(req, &amp;state)?;
+   |                              --- value moved here
+   |     let t2 = T2::from_request(req, &amp;state)?;
+   |                              ^^^ value used here after move
+</code></pre>
+<p>要解决这个小问题，只需要我们稍微更改一下签名。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>impl&lt;F, T1, T2, Fut, Res, S, M&gt; Handler&lt;(M, T1, T2,), S&gt; for F
+where
+    F: FnOnce(T1, T2,) -&gt; Fut + Clone + Send + 'static,
+    Fut: Future&lt;Output = Res&gt; + Send,
+    Res: IntoResponse,
+    T1: FromRequestParts&lt;S&gt; + Send,       // ← 只读 Parts
+    T2: FromRequest&lt;S, M&gt; + Send,         // ← 唯一可以吃 body 的
+    S: Send + Sync + 'static,
+{
+    fn call(self, req: Request, state: S) -&gt; BoxFuture {
+        Box::pin(async move {
+            // 把 request 拆成"能借的"和"能移动的"
+            let (mut parts, body) = req.into_parts();
+
+            // 前面的参数：只借 &amp;mut parts，body 原地寄存
+            let t1 = match T1::from_request_parts(&amp;mut parts, &amp;state) {
+                Ok(v) =&gt; v,
+                Err(e) =&gt; return Response(format!("400: {e}")),
+            };
+
+            // 把 body 原封不动还回去，重新组成一个 Request
+            let req = Request::from_parts(parts, body);
+
+            // 最后一个参数：唯一一次 consume
+            let t2 = match T2::from_request(req, &amp;state) {
+                Ok(v) =&gt; v,
+                Err(e) =&gt; return Response(format!("400: {e}")),
+            };
+
+            self(t1, t2,).await.into_response()
+        })
+    }
+}
+<span class="boring">}</span></code></pre>
+<p>这里必须解释清楚 <code>from_parts</code> 那一步，<code>into_parts</code> 把 <code>request</code> 拆成两半之后，<code>body</code> 就寄存在局部变量里了。它既不能借给 t1（<code>T1</code> 的签名里没有 body），也不能凭空消失（后面 t2 还要）。<code>from_parts</code>是把 body 从寄存处取回来、交还给唯一那个有权消费它的人的唯一方式。</p>
+<p>对于3-16个参数的依赖注入，和这些几乎别无二致，无非就是继续增加T的个数罢了，这里就不再赘述了。</p>
+<h2 id="134-总结"><a class="header" href="#134-总结">13.4 总结</a></h2>
+<p>这一节实际上颇有难度，读者可能需要花点时间才能消化这些内容，因此觉得这些东西比较困难是很正常的，不必灰心。上面我们给出的这些，正是<code>axum</code>框架的核心机制的最精简的版本，从这些代码里我们也同样可以理解，为什么<code>axum</code>框架的使用文档里要强调body的提取器必须放最后这件事了。</p>
+<p>回过头来，我们花了整整一节，用 <code>http</code> 框架做例子，从 <code>Handler&lt;S&gt;</code> 一路推到 <code>Handler&lt;(M, T1, ..., Tn), S&gt;</code>。你可能觉得这是在讲别人的故事，毕竟这本书要讲的是 <code>Bevy</code>。但其实我们刚刚推导出来的，不是axum 的一个技巧，而是 rust 里做<strong>变长参数 + 泛型注入</strong>的标准解法。</p>
+<p><code>Bevy</code> 的 <code>bevy_ecs</code> 用的是同一个骨架，在这里我们提前将这种另一种形式的反射补充在这里。</p>
 
                     </main>
 

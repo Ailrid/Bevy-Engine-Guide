@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-8cf6e24d.js";
+            window.path_to_searchindex_js = "searchindex-3ca29663.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-f9cb3a18.js"></script>
+        <script src="toc-43a06fac.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -175,6 +175,7 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="5-2d"><a class="header" href="#5-2d">5 2D</a></h1>
 <h2 id="51-mesh2d"><a class="header" href="#51-mesh2d">5.1 Mesh2d</a></h2>
 <p>在Bevy中，有 <code>Mesh2d</code>与<code>Mesh3d</code>两种，前者是三角形、矩形、圆形等各种二维形状，后者代表立方体、网格模型等三维物体。<code>Mesh2d</code>与<code>Mesh3d</code>可以像一个普通的组件一样使用，就像下面一样。在这些代码里，我们生成了一个实体，并在其之上添加了一个<code>Mesh2d</code>与对应的<code>MeshMaterial2d</code>。同时，别忘了我们还需要指定一个<code>Camera2d</code>来渲染这些内容。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]

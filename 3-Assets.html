@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-8cf6e24d.js";
+            window.path_to_searchindex_js = "searchindex-3ca29663.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-f9cb3a18.js"></script>
+        <script src="toc-43a06fac.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -175,6 +175,7 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="3-assets"><a class="header" href="#3-assets">3 Assets</a></h1>
 <h2 id="31-回顾asset"><a class="header" href="#31-回顾asset">3.1 回顾Asset</a></h2>
 <p>资产是需要加载到游戏中的资源，通常来自于各种硬盘里的文件，例如图像、模型、材质、字体、音频等等等等。由于这些资源的加载往往需要耗费大量时间，因此Bevy里这些资产的加载往往都是以异步的形式以避免阻塞游戏循环。在Bevy中，我们可以使用<code>AssetServer</code>从硬盘里加载资产，使用<code>Assets&lt;T&gt;</code>来存储已经加载的各类资产。</p>
 <p>与资产相关的内容主要在bevy_asset这个crate中，要使用这些内容，<strong>必须在App上调用其中的<a href="https://docs.rs/bevy_asset/0.17.3/bevy_asset/struct.AssetPlugin.html">AssetPlugin</a>这个插件才能访问<code>AssetServer</code>、<code>Assets</code>等类型，这个插件还提供了一些额外的设置，例如指定模式和路径等，该插件已经在DefaultPlugin内，不需要我们再手动安装。</strong></p>

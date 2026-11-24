@@ -1,0 +1,540 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>第 13 章：泛型注入 - Bevy游戏引擎指南</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-2459343d.css">
+        <link rel="stylesheet" href="css/chrome-ae938929.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-3ca29663.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-43a06fac.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Bevy游戏引擎指南</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="13-generic-injection"><a class="header" href="#13-generic-injection">13 Generic Injection</a></h1>
+<h2 id="131-基础数据结构"><a class="header" href="#131-基础数据结构">13.1 基础数据结构</a></h2>
+<p>在正式介绍<code>bevy_reflect</code>和<code>bevy_ecs</code>的底层之前，我们还有需要额外的补充一点说明。</p>
+<p>在<code>bevy_ecs</code>中你将会看到这种，利用纯粹的rust泛型支持来实现依赖注入的技巧，这种实现依赖注入的方式完全依赖rust强大的泛型系统而无需过程宏。</p>
+<p>让我们以一个<code>http</code>框架的依赖注入系统为例子，来解释一下该如何利用纯粹的泛型实现依赖注入功能。</p>
+<p>假设我们的<code>Request</code>和<code>Response</code>结构体长这个样子，这是一个最简单的情况之一。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 这是我们的Request结构体，包含body和Parts，Parts包含了http的请求头
+pub struct Parts { pub headers: Vec&lt;String&gt; }
+pub struct Body(pub String);
+pub struct Request { parts: Parts, body: Body }
+
+impl Request {
+    fn new(headers: Vec&lt;String&gt;, body: &amp;str) -&gt; Self {
+        Request { parts: Parts { headers }, body: Body(body.to_owned()) }
+    }
+    fn into_parts(self) -&gt; (Parts, Body) { (self.parts, self.body) }
+    fn from_parts(parts: Parts, body: Body) -&gt; Self { Request { parts, body } }
+}
+
+
+// 下面是Response结构体以及IntoResponse trait
+// 我们为常见的类型String、&amp;'static str、Result等实现了IntoResponse trait，这样我们就可以在返回这些类型时自动转换为我们的Response结构体
+pub struct Response(pub String);
+
+pub trait IntoResponse { 
+    fn into_response(self) -&gt; Response; 
+}
+impl IntoResponse for Response { 
+    fn into_response(self) -&gt; Response { self } 
+}
+impl IntoResponse for String { 
+    fn into_response(self) -&gt; Response { Response(self) } 
+}
+impl IntoResponse for &amp;'static str {
+    fn into_response(self) -&gt; Response { Response(self.to_owned()) }
+}
+impl&lt;T: IntoResponse, E: IntoResponse&gt; IntoResponse for Result&lt;T, E&gt; {
+    fn into_response(self) -&gt; Response {
+        match self {
+            Ok(v) =&gt; v.into_response(),
+            Err(e) =&gt; e.into_response(),
+        }
+    }
+}
+<span class="boring">}</span></code></pre>
+<p>这些代码简单到不言而喻，除了一点——为什么我们要区分<code>Body</code>和<code>Parts</code>?</p>
+<p>这是因为，<code>Body</code>和<code>Parts</code>在一个<code>http</code>请求的里的地位就是不同的，<code>Body</code>是一个流，而<code>Parts</code>是一个完整的请求头。一个流是无法被重复读取和解析的，因为流不负责保存之前的数据，这就像“滚滚长江东逝水”，长江只负责让水流过去而不负责记录流过去的水都有哪些。用rust里的话来讲，<strong><code>body</code>被消费一次后就不应该再被使用了，也就是所有权转移了。</strong></p>
+<p>在其他语言的框架里，当你二次消费body时，要么会发生异常，要么会发生请求挂起。而在稍后你就可以看，只需要稍加利用rust的所有权系统，就能让rust编译器为我们保证这件事。</p>
+<hr>
+<p>现在让我们来继续设计下去，对于类似<code>Header</code>或者<code>Query</code>或者<code>Cookies</code>之类的数据，我们应该从<code>Parts</code>中获得，对于<code>Body</code>我们则经常以<code>Json</code>的形式来在前端发送并在后端反序列化，同时除了来自http的数据，我们还有本地的一些应给被共享的<code>State</code>，例如数据库。</p>
+<p>于是我们可以顺理成章的写出来<code>FromRequestParts</code>和<code>FromRequest</code>两个<code>trait</code>，其中前者用于从<code>Parts</code>里转换数据，**后者则消费掉整个<code>Request</code>，从<code>Body</code>中构造出我们需要的数据。**这样，rust编译器就会替我们保证<code>body</code>只会被消费一次了。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 一个泛型trait，从Parts中提取出自己
+pub trait FromRequestParts&lt;S&gt;: Sized {
+    fn from_request_parts(parts: &amp;mut Parts, state: &amp;S) -&gt; Result&lt;Self, String&gt;;
+}
+
+// 一个泛型trait，消耗整个Request并提取出自己
+pub trait FromRequest&lt;S&gt;: Sized {
+    fn from_request(req: Request, state: &amp;S) -&gt; Result&lt;Self, String&gt;;
+}
+
+// 这是我们的公共数据中心，假设里面有来自sqlx的PgPool，这是一个数据库连接池，是一个Arc的共享指针
+#[derive(Clone)]
+pub struct AppState { pub db: PgPool }
+
+// 从Parts中提取出Header
+pub struct Header(pub String);
+impl&lt;S&gt; FromRequestParts&lt;S&gt; for Header {
+    fn from_request_parts(parts: &amp;mut Parts, _s: &amp;S) -&gt; Result&lt;Self, String&gt; {
+        // 在这里使用parts来构造一个Header结构体，具体的提取代码我们在此处省略
+    }
+}
+
+
+// 从Parts中提取出Query
+pub struct Query(pub String);
+impl&lt;S&gt; FromRequestParts&lt;S&gt; for Query {
+    fn from_request_parts(parts: &amp;mut Parts, _s: &amp;S) -&gt; Result&lt;Self, String&gt; {
+        // 在这里使用parts来构造一个Query结构体，具体的提取代码我们在此处省略
+    }
+}
+
+// 从Body中提取出JsonBody
+pub struct JsonBody(pub String);
+impl&lt;S&gt; FromRequest&lt;S&gt; for JsonBody {
+    fn from_request(req: Request, _s: &amp;S) -&gt; Result&lt;Self, String&gt; {
+       // 注意这里我们的直接消费了整个Request
+       Ok(JsonBody(req.body.0))
+    }
+}
+    
+pub struct Db(pub PgPool);
+// 从我们的AppState中提取出pgpool
+impl FromRequestParts&lt;AppState&gt; for Db {
+    fn from_request_parts(_p: &amp;mut Parts, s: &amp;AppState) -&gt; Result&lt;Self, String&gt; {
+        Ok(Db(s.db.clone()))
+    }
+}
+<span class="boring">}</span></code></pre>
+<h2 id="132-单参数注入"><a class="header" href="#132-单参数注入">13.2 单参数注入</a></h2>
+<p>看起来好像一切都很好，假如我们能够用某种方法实现依赖注入的话，我们好像就可以让下面的这样的函数能被自动调用和转换响应，那么我们该怎么办呢？</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>async fn two_args(h: Header, db: Db)-&gt;impl IntoResponse;
+<span class="boring">}</span></code></pre>
+<hr>
+<p>要实现这个魔法的核心关键是，<strong>我们需要找到某种办法，让rust的泛型系统能够根据参数所实现的trait是<code>FromRequestParts</code>还是<code>FromRequest</code>来自动生成正确的调用的代码。</strong></p>
+<p>为了实现这个目的，我们尝试着来写一下。</p>
+<p>首先可以想到的是，我们应该为某些<code>FnOnce</code>类型实现一个自定义的<code>trait</code>，然后通过这个<code>trait</code>取代<code>FnOnce</code>的<code>call</code>方法，这样我们可以解决第一个问题：怎么将<code>FnOnce</code>五花八门的参数来统一成<code>Request</code>和我们的<code>AppState</code>。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub type BoxFuture = Pin&lt;Box&lt;dyn Future&lt;Output = Response&gt; + Send&gt;&gt;;
+
+// 之后我们就通过我们的Handler的call方法来调用FnOnce
+pub trait Handler&lt;S&gt;: Clone + Send + 'static {
+    fn call(self, req: Request, state: S) -&gt; BoxFuture;
+}
+<span class="boring">}</span></code></pre>
+<p>我们需要玩一点有意思的泛型魔法，这也是我们的依赖注入中最核心的一步。</p>
+<p>让我们来降低一下难度，我们<strong>先考虑对于只接受一个参数</strong>并且这个参数消费了<code>Request</code>的<code>http handler</code>函数，我们的这个函数应该长什么什么样子？</p>
+<p>显然这个<code>FnOnce</code>的特点是：</p>
+<ul>
+<li>接受的参数只有一个</li>
+<li>这唯一的一个参数实现了<code>FromRequest</code></li>
+<li>该<code>FnOnce</code>返回一个<code>Future</code></li>
+<li>这个<code>Future</code>的<code>Output</code>实现了<code>IntoResponse</code>。</li>
+</ul>
+<p>对于这四个约束，再加上我们的我们<code>AppState</code>的约束，于是我们可以写出来一个具有五个泛型参数的签名。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 这些可真长，前四个泛型参数对应了我们的四个要求，最后一个S是对于我们的AppState的基本要求。
+impl&lt;F, T1, Fut, Res, S&gt; Handler&lt;S&gt; for F
+where
+    F: FnOnce(T1,) -&gt; Fut + Clone + Send + 'static,
+    Fut: Future&lt;Output = Res&gt; + Send,
+    Res: IntoResponse,
+    T1: FromRequest&lt;S&gt; + Send,
+    S: Send + Sync + 'static,
+{
+	fn call(self, req: Request, state: S) -&gt; BoxFuture {
+        Box::pin(async move {
+            // 我们直接调用from_request并传递给这个函数自己
+            let t1 = match T1::from_request(req, &amp;state) {
+                Ok(v) =&gt; v,
+                Err(e) =&gt; return Response(format!("400: {e}")),
+            };
+            self(t1,).await.into_response()
+        })
+    }
+}
+<span class="boring">}</span></code></pre>
+<p>这看着挺合理的，但是编译器上来就给了我们一巴掌：<strong>the type parameter <code>T1</code> is not constrained by the impl trait,self type, or predicates</strong>。</p>
+<p>啊，rust编译器多么令人讨厌啊！</p>
+<p>这是编译器在告诉我们，T1 决定了这份 impl 在描述哪一种函数，允许它只藏在 where 里，同一个 F 就可能对应好几个 T1，编译器没法选，要求我们强制把这个参数写到Handler中。</p>
+<p>于是我们可以这样稍微修改一下我们的代码，在Handler中添加一个参数，虽然我们根本没有用到这个参数，但是为了让编译器满意我们不得不这样做。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub trait Handler&lt;T1, S&gt;: Clone + Send + 'static {
+    fn call(self, req: Request, state: S) -&gt; BoxFuture;
+}
+
+impl&lt;F, T1, Fut, Res, S&gt; Handler&lt;T1, S&gt; for F // 后面的完全不变
+<span class="boring">}</span></code></pre>
+<hr>
+<p>让人满意！让我们来更进一步，<code>Header</code>、<code>Query</code>、<code>Db</code>实现的<code>FromRequestParts</code>，我们现在只有对于<code>FromRequest</code>的实现，那我们很自然会想——再写一份 impl 不就完了？于是我们写出来了这样的东西。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>impl&lt;F, T1, Fut, Res, S&gt; Handler&lt;T1, S&gt; for F where T1: FromRequest&lt;S&gt; { ... }
+impl&lt;F, T1, Fut, Res, S&gt; Handler&lt;T1, S&gt; for F where T1: FromRequestParts&lt;S&gt; { ... }
+<span class="boring">}</span></code></pre>
+<p>直觉上看是可以的，但是rust编译器会当场拒绝你，并说 <strong>conflicting implementations of trait <code>Handler&lt;_, _&gt;</code>！</strong></p>
+<p>这是为什么？因为我们违背了coherence 即一致性规则：对任意一个类型，一个trait最多只能有一个实现。 编译器在任何时候看到 x.foo()，都必须能唯一确定该调哪份代码，不能有二义。</p>
+<p>rust通过两个规则来维持这个确定性，其一是<strong>孤儿规则</strong>，这个是大家耳熟能详的，即对于<code>impl Trait for Type</code> 这样的代码，必须至少有一方是在当前 crate 定义的；另一个则是<strong>重叠检查</strong>，<strong>即两份 impl 会不会命中同一个类型。</strong></p>
+<p>编译器看到这些签名的时候，根本没看我们的 where 子句，它看的是<code>&lt;F, T1, Fut, Res, S&gt;</code>和<code>Handler&lt;T1, S&gt;</code>，这两份身份证完全一样，因此rust编译器认为这就是同一个 impl 的两个副本，这违背了<strong>重叠检查</strong>规则！</p>
+<hr>
+<p>这可麻烦了，<strong>既然这条路走不通，那我们只能想办法用一份实现来兼容两种trait了</strong>，这该怎么办呢？</p>
+<p>聪明的你肯定可以想到，只要我们要求让实现了 <code>FromRequestParts</code> 的东西同样也实现了 <code>FromRequest</code> 不就行了。只要我们手动为<code>FromRequest</code>实现一个泛型方法即可，这样，对于接受一个参数的<code>handler</code>我们应该就都能够兼容了。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>impl&lt;S, T&gt; FromRequest&lt;S&gt; for T
+where
+    T: FromRequestParts&lt;S&gt;,
+    S: Send + Sync,
+{
+    fn from_request(req: Request, s: &amp;S) -&gt; Result&lt;Self, String&gt; {
+        let (mut parts, _body) = req.into_parts();
+        T::from_request_parts(&amp;mut parts, s)
+    }
+}
+<span class="boring">}</span></code></pre>
+<p>一切看起来都让人满意了，但是当我们使用的时候，rust编译器又再次站出来给了我们一巴掌，他说：</p>
+<pre><code class="language-tex">error[E0119]: conflicting implementations of trait `FromRequest&lt;AppState&gt;`
+  |
+  | impl&lt;S, T&gt; FromRequest&lt;S&gt; for T where T: FromRequestParts&lt;S&gt;
+  | ------------------------------------------ first implementation here
+  | impl FromRequest&lt;AppState&gt; for JsonBody
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ conflicting implementation
+</code></pre>
+<p>这不讲道理啊，<code>JsonBody</code> 明明没实现 <code>FromRequestParts</code> 啊？为什么rust编译器会觉得这里有两份<code>FromRequest</code>的实现呢？</p>
+<p><strong>这是因为编译器的推理认为，<code>JsonBody</code> 虽然现在没实现<code>FromRequestParts</code>，但将来可能实现。我证明不了它不重叠，所以我拒绝编译。</strong></p>
+<p>这下又麻烦了，我们该怎么做才能对编译器保证<code>JsonBody</code>绝对不会实现<code>FromRequestParts</code>呢？</p>
+<p>要实现这个目的我们需要一点小技巧，我们需要引入一个用于标记的泛型参数。这个泛型参数对于具体的实现而言没有意义，它存在的目的只是为了告诉rust编译器，这两个实现不是同一个实现。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>mod private {
+    pub struct ViaParts;    // 第一组：只读 Parts
+    pub struct ViaRequest;  // 第二组：要吃整个 Request
+}
+
+// 我们给FromRequest增加一个标记M参数，这个参数只是在签名中出现
+pub trait FromRequest&lt;S, M = private::ViaRequest&gt;: Sized {
+    fn from_request(req: Request, state: &amp;S) -&gt; Result&lt;Self, String&gt;;
+}
+
+
+// 之前的用于给所有FromRequestParts实现FromRequest的代码，我们用private::ViaParts来标记
+impl&lt;S, T&gt; FromRequest&lt;S, private::ViaParts&gt; for T
+where T: FromRequestParts&lt;S&gt; { ... }              // 第一组
+
+// 对于JsonBody我们使用private::ViaRequest来标记
+impl FromRequest&lt;AppState&gt; for JsonBody { ... } 
+<span class="boring">}</span></code></pre>
+<hr>
+<p>一旦我们引入了<code>M</code>，我们的<code>handler</code>的签名同样也要进行修改了。同样这个<code>M</code>我们也要放进<code>Handler</code>的参数里，否则<code>M</code>又成了那个只活在 <code>where</code> 子句里的孤儿。</p>
+<p>第二个看起来没用的参数<code>Handler&lt;(M, T1,), S&gt;</code> 里的 <code>T</code>（那个元组）从哪来的呢？它就是一块给M和T1准备的合法席位，运行时没人读它。</p>
+<p>为什么我们要写成元组<code>(M, T1)</code>而不是 <code>Handler&lt;M, T1, S&gt;</code> 三个平铺参数呢？明明在单参数时看起来两者是等价的。</p>
+<p>因为下一节要一路支持到最多十三个参数，到那时<code>M</code>和 <code>T1..Tn</code>打包成元组最省事，<code>M</code> 就顺手蹲在第 0 位。</p>
+<h2 id="133-多参数注入"><a class="header" href="#133-多参数注入">13.3 多参数注入</a></h2>
+<p>处理好了单个参数，我们就可以顺理成章的拓展到最多能达到16个参数注入的<code>handler</code>了。</p>
+<p>这里我们以2个参数的handler为例。顺着单参数的写法，我们可以先写出来第一版的两个参数的handler版本。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>impl&lt;F, T1, T2, Fut, Res, S, M&gt; Handler&lt;(M, T1, T2,), S&gt; for F
+where
+    F: FnOnce(T1, T2,) -&gt; Fut + Clone + Send + 'static,
+    Fut: Future&lt;Output = Res&gt; + Send,
+    Res: IntoResponse,
+    T1: FromRequest&lt;S, M&gt; + Send,   // ← 照抄
+    T2: FromRequest&lt;S, M&gt; + Send,   // ← 照抄
+    S: Send + Sync + 'static,
+{
+    fn call(self, req: Request, state: S) -&gt; BoxFuture {
+        Box::pin(async move {
+            let t1 = match T1::from_request(req, &amp;state) {
+                Ok(v) =&gt; v,
+                Err(e) =&gt; return Response(format!("400: {e}")),
+            };
+            let t2 = match T2::from_request(req, &amp;state) {   // ← 
+                Ok(v) =&gt; v,
+                Err(e) =&gt; return Response(format!("400: {e}")),
+            };
+            self(t1, t2,).await.into_response()
+        })
+    }
+}
+<span class="boring">}</span></code></pre>
+<p>但是一到<code>async fn two_args(h: Header, db: Db)-&gt;impl IntoResponse;</code>的时候，就会遇到最让人讨厌的借用检查问题。</p>
+<pre><code class="language-tex">error[E0382]: use of moved value: `req`
+   |
+   |     let t1 = T1::from_request(req, &amp;state)?;
+   |                              --- value moved here
+   |     let t2 = T2::from_request(req, &amp;state)?;
+   |                              ^^^ value used here after move
+</code></pre>
+<p>要解决这个小问题，只需要我们稍微更改一下签名。</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>impl&lt;F, T1, T2, Fut, Res, S, M&gt; Handler&lt;(M, T1, T2,), S&gt; for F
+where
+    F: FnOnce(T1, T2,) -&gt; Fut + Clone + Send + 'static,
+    Fut: Future&lt;Output = Res&gt; + Send,
+    Res: IntoResponse,
+    T1: FromRequestParts&lt;S&gt; + Send,       // ← 只读 Parts
+    T2: FromRequest&lt;S, M&gt; + Send,         // ← 唯一可以吃 body 的
+    S: Send + Sync + 'static,
+{
+    fn call(self, req: Request, state: S) -&gt; BoxFuture {
+        Box::pin(async move {
+            // 把 request 拆成"能借的"和"能移动的"
+            let (mut parts, body) = req.into_parts();
+
+            // 前面的参数：只借 &amp;mut parts，body 原地寄存
+            let t1 = match T1::from_request_parts(&amp;mut parts, &amp;state) {
+                Ok(v) =&gt; v,
+                Err(e) =&gt; return Response(format!("400: {e}")),
+            };
+
+            // 把 body 原封不动还回去，重新组成一个 Request
+            let req = Request::from_parts(parts, body);
+
+            // 最后一个参数：唯一一次 consume
+            let t2 = match T2::from_request(req, &amp;state) {
+                Ok(v) =&gt; v,
+                Err(e) =&gt; return Response(format!("400: {e}")),
+            };
+
+            self(t1, t2,).await.into_response()
+        })
+    }
+}
+<span class="boring">}</span></code></pre>
+<p>这里必须解释清楚 <code>from_parts</code> 那一步，<code>into_parts</code> 把 <code>request</code> 拆成两半之后，<code>body</code> 就寄存在局部变量里了。它既不能借给 t1（<code>T1</code> 的签名里没有 body），也不能凭空消失（后面 t2 还要）。<code>from_parts</code>是把 body 从寄存处取回来、交还给唯一那个有权消费它的人的唯一方式。</p>
+<p>对于3-16个参数的依赖注入，和这些几乎别无二致，无非就是继续增加T的个数罢了，这里就不再赘述了。</p>
+<h2 id="134-总结"><a class="header" href="#134-总结">13.4 总结</a></h2>
+<p>这一节实际上颇有难度，读者可能需要花点时间才能消化这些内容，因此觉得这些东西比较困难是很正常的，不必灰心。上面我们给出的这些，正是<code>axum</code>框架的核心机制的最精简的版本，从这些代码里我们也同样可以理解，为什么<code>axum</code>框架的使用文档里要强调body的提取器必须放最后这件事了。</p>
+<p>回过头来，我们花了整整一节，用 <code>http</code> 框架做例子，从 <code>Handler&lt;S&gt;</code> 一路推到 <code>Handler&lt;(M, T1, ..., Tn), S&gt;</code>。你可能觉得这是在讲别人的故事，毕竟这本书要讲的是 <code>Bevy</code>。但其实我们刚刚推导出来的，不是axum 的一个技巧，而是 rust 里做<strong>变长参数 + 泛型注入</strong>的标准解法。</p>
+<p><code>Bevy</code> 的 <code>bevy_ecs</code> 用的是同一个骨架，在这里我们提前将这种另一种形式的反射补充在这里。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="12-Procedural-Macro.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="12-Procedural-Macro.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-c2a407aa.js"></script>
+
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-a0b12cfe.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>
