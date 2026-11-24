@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-3ca29663.js";
+            window.path_to_searchindex_js = "searchindex-f380a98b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-43a06fac.js"></script>
@@ -180,7 +180,7 @@
 <h2 id="81-light"><a class="header" href="#81-light">8.1 Light</a></h2>
 <p>“上帝说：要有光，就有了光。”我们的三维世界也需要有光，否则渲染出来的屏幕将会漆黑一片。有关灯光的介绍是一个大主题，甚至能够写好几本书，在这里我们只会简要的介绍一下几种常见的灯光，以便我们能够首先看到点什么，剩下的内容将会在下一章内更仔细的介绍。</p>
 <h3 id="811-pointlight"><a class="header" href="#811-pointlight">8.1.1 PointLight</a></h3>
-<p><code>PointLight</code>是一种从中心点开始向各个方向发光的光源，其结构体定义如下。我们现在主要关心的是color、intensity、range、radius这几个参数。他们分别设定了光源的颜色、强度、范围、光点半径。</p>
+<p><code>PointLight</code>是一种从中心点开始向各个方向发光的光源，其结构体定义如下。我们现在主要关心的是<code>color</code>、<code>intensity</code>、<code>range</code>、<code>radius</code>这几个参数。他们分别设定了光源的颜色、强度、范围、光点半径。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>pub struct PointLight {
@@ -197,7 +197,7 @@
 }
 <span class="boring">}</span></code></pre>
 <h3 id="812-spotlight"><a class="header" href="#812-spotlight">8.1.2 SpotLight</a></h3>
-<p><code>SpotLight</code>是一种从某个点朝着某个方向发射的光源，一般也叫聚光灯，形状是一个从源点沿着方向为轴线的锥形，其结构体定义如下。除了color、intensity、range、radius等参数，我们还需要关心inner_angle和outer_angle这两个参数，</p>
+<p><code>SpotLight</code>是一种从某个点朝着某个方向发射的光源，一般也叫聚光灯，形状是一个从源点沿着方向为轴线的锥形，其结构体定义如下。除了<code>color</code>、<code>intensity</code>、<code>range</code>、<code>radius</code>等参数，我们还需要关心<code>inner_angle</code>和<code>outer_angle</code>这两个参数，</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>pub struct SpotLight {
@@ -215,9 +215,9 @@
     pub inner_angle: f32,
 }
 <span class="boring">}</span></code></pre>
-<p>这两个参数是两个角度，范围应该在0～90度之间，且inner_angle应当小于outer_angle，这两个参数看起来就像下面这样。outer_angle指定了聚光灯的范围，而位于inner_angle和outer_angle之间的光强度将会逐渐减小来呈现一种边缘的光更弱的效果。</p>
+<p>这两个参数是两个角度，范围应该在0～90度之间，且<code>inner_angle</code>应当小于<code>outer_angle</code>，这两个参数看起来就像下面这样。<code>outer_angle</code>指定了聚光灯的范围，而位于<code>inner_angle</code>和<code>outer_angle</code>之间的光强度将会逐渐减小来呈现一种边缘的光更弱的效果。</p>
 <p><img src="./image/chapter8/1.png" alt=""></p>
-<p>要使用<code>SpotLight</code>光指定<code>SpotLight</code>是不够的，我们还必须指定他的Position和Direction才行，但是定义中并没有提供我们相关的设置，我们要怎么办呢？当然，使用<code>Transform</code>即可。因此想要使用聚光灯，就要像下面这样，利用<code>Transform</code>组件来指定原点和方向。</p>
+<p>要使用<code>SpotLight</code>光指定<code>SpotLight</code>是不够的，我们还必须指定他的<code>Position</code>和<code>Direction</code>才行，但是定义中并没有提供我们相关的设置，我们要怎么办呢？当然，使用<code>Transform</code>即可。因此想要使用聚光灯，就要像下面这样，利用<code>Transform</code>组件来指定原点和方向。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>commands.spawn((
@@ -234,7 +234,7 @@
 <span class="boring">}</span></code></pre>
 <h3 id="813-directionallight"><a class="header" href="#813-directionallight">8.1.3 DirectionalLight</a></h3>
 <p><code>DirectionalLight</code>意为平行光，是一种理想的现实里不存在的光源，我们的太阳光也可以视为这种光源。这种光源的光线不像<code>SpotLight</code>或者<code>PointLight</code>那样由一个点发出，而是由一个平面发出，就好像由一组光源列阵一样。</p>
-<p>​	illuminance参数指定了照明的强度，但是这个单位与intensity不同。intensity以lumens（流明）为单位，而illuminance以lux（每平方米的流明）为单位。</p>
+<p><code>illuminance</code>参数指定了照明的强度，但是这个单位与<code>intensity</code>不同。<code>intensity</code>以<code>lumens</code>（流明）为单位，而<code>illuminance</code>以<code>lux</code>（每平方米的流明）为单位。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>pub struct DirectionalLight {
@@ -271,7 +271,7 @@
         meshes.add(Torus::default()),
         meshes.add(Cylinder::default()),
         meshes.add(Cone::default()),
-        meshes.add(ConicalFrustum::default()),
+        meshes.add(ConicalFRustum::default()),
         meshes.add(Sphere::default().mesh().ico(5).unwrap()),
         meshes.add(Sphere::default().mesh().uv(32, 18)),
         meshes.add(Segment3d::default()),
@@ -308,7 +308,7 @@
         },
         Transform::from_xyz(8.0, 16.0, 8.0),
     ));
-  
+
     commands.spawn((
       Camera3d::default(),
       Transform::from_xyz(0.0, 7., 14.0).looking_at(Vec3::new(0., 1., 0.), Vec3::Y),
@@ -317,9 +317,9 @@
 
 <span class="boring">}</span></code></pre>
 <h3 id="821-加载glbgltf"><a class="header" href="#821-加载glbgltf">8.2.1 加载glb/glTF</a></h3>
-<p>既然这一章讲得是3D，那么我们必须先好好讲明白如何把我们在blender中建模好的模型加载进bevy里并显示。bevy中的模型加载非常简单，但是也有些许的独特。</p>
-<p>在bevy中， glb和glTF文件是一等公民，虽然bevy也支持加载obj或者其他格式的模型，但是bevy对于glb和glTF的支持是最好的。这其中涉及到很多复杂的原因，但是，如果你的模型不是glb格式的，你可以现在blender里将其重新导出为glb模型，或者你也可以使用bevy_obj等crate直接加载obj模型。</p>
-<p>简单来说，<strong>GLB 是 GLTF 的二进制（Binary）版本</strong>，他们都通过bevy_gltf这个crate来进行加载。</p>
+<p>既然这一章讲得是3D，那么我们必须先好好讲明白如何把我们在Blender中建模好的模型加载进bevy里并显示。bevy中的模型加载非常简单，但是也有些许的独特。</p>
+<p>在Bevy中， glb和glTF文件是一等公民，虽然bevy也支持加载obj或者其他格式的模型，但是Bevy对于glb和glTF的支持是最好的。这其中涉及到很多复杂的原因，但是，如果你的模型不是glb格式的，你可以现在Blender里将其重新导出为glb模型，或者你也可以使用bevy_obj等crate直接加载obj模型。</p>
+<p>简单来说，<strong>GLB 是 GLTF 的二进制（Binary）版本</strong>，他们都通过<code>bevy_gltf</code>这个crate来进行加载。</p>
 <p>glTF通常是一个 <code>.gltf</code> 文件（一般是JSON 格式），旁边带着一堆些<code>.bin</code> 文件（存储顶点、几何数据的二进制包）和一堆 <code>.png/.jpg</code> 图片。其存储方式是按照类别来分类存储的（如下方表格所示）。</p>
 <p>glb只有一个单独的 <code>.glb</code> 文件。它把 JSON 说明书、二进制数据、贴图全部塞进了一个大包里，因为是全二进制存储，且省去了 Base64 编码的开销，通常比散装的 glTF 更小，而且加载更快，因此更推荐使用glb格式。</p>
 <p>模型一般约定放在asset/models文件夹下。因此，我们可以这样来加载模型。那么，下面的<code>SceneRoot</code>和<code>GltfAssetLabel</code>又是什么呢？简单来说，<code>SceneRoot</code>只是一个特殊的组件，代表了我们在使用 blender建模时的场景根，<code>GltfAssetLabel</code>则代表了各种可能的glb规范里的类型。</p>
@@ -329,7 +329,7 @@
     let gltf_scene: Handle&lt;Scene&gt; = asset_server.load(GltfAssetLabel::Scene(0).from_asset("models/FlightHelmet/FlightHelmet.gltf"));
     //或者，我们可以使用这种带后戳的格式化字符串
 	//let gltf_scene: Handle&lt;Scene&gt; = asset_server.load(format!("models/FlightHelmet/FlightHelmet.gltf#{}", GltfAssetLabel::Scene(0)));
-    commands.spawn(( 
+    commands.spawn((
         SceneRoot(gltf_scene),
         Transform::from_xyz(2.0, 0.0, -5.0),
     ));
@@ -390,63 +390,54 @@
 <p><img src="./image/chapter8/2.png" alt=""></p>
 <p>例如，一个Cube的glTF描述可能如下：</p>
 <pre><code class="language-json">{
-	"asset":{
-		"generator":"Khronos glTF Blender I/O v5.1.18",
-		"version":"2.0"
-	},
-	"scene":0,
-	"scenes":[
-		{
-			"name":"Scene",
-			"nodes":[
-				0
-			]
-		}
-	],
-	"nodes":[
-		{
-			"mesh":0,
-			"name":"Cube",
-			"scale":[
-				0.33985769748687744,
-				0.33985769748687744,
-				0.33985769748687744
-			]
-		}
-	],
-	"materials":[
-		{
-			"doubleSided":true,
-			"name":"Material",
-			"pbrMetallicRoughness":{
-				"baseColorFactor":[
-					0.800000011920929,
-					0.800000011920929,
-					0.800000011920929,
-					1
-				],
-				"metallicFactor":0,
-				"roughnessFactor":0.5
-			}
-		}
-	],
-	"meshes":[
-		{
-			"name":"Cube_geometry",
-			"primitives":[
-				{
-					"attributes":{
-						"POSITION":0,
-						"NORMAL":1,
-						"TEXCOORD_0":2
-					},
-					"indices":3,
-					"material":0
-				}
-			]
-		}
-	],
-	//...
+  "asset": {
+    "generator": "Khronos glTF Blender I/O v5.1.18",
+    "version": "2.0"
+  },
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "Scene",
+      "nodes": [0]
+    }
+  ],
+  "nodes": [
+    {
+      "mesh": 0,
+      "name": "Cube",
+      "scale": [0.33985769748687744, 0.33985769748687744, 0.33985769748687744]
+    }
+  ],
+  "materials": [
+    {
+      "doubleSided": true,
+      "name": "Material",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.800000011920929, 0.800000011920929, 0.800000011920929, 1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.5
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "Cube_geometry",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1,
+            "TEXCOORD_0": 2
+          },
+          "indices": 3,
+          "material": 0
+        }
+      ]
+    }
+  ]
+  //...
 }
 </code></pre>
 <p>利用<code>Qurey</code>系统和自动插入的<code>GltfMaterialName</code>，你可以直接这样来查询。并且根据名字来判断到底是不是你需要的那个<code>Mesh3d</code>。</p>
@@ -495,7 +486,7 @@ fn find_top_material_and_mesh(
     }
 }
 <span class="boring">}</span></code></pre>
-<p>对于后者，他们都是可选的。当你使用 <code>SceneRoot</code> 加载场景时，Bevy 会自动将以下 <code>extras</code> 挂载到生成的 <strong>Entity</strong> 上。这些extras基本是是一些用户自定义的元数据或者简单的名称等</p>
+<p>对于后者，他们都是可选的。当你使用 <code>SceneRoot</code> 加载场景时，Bevy 会自动将以下 <code>extras</code> 挂载到生成的 <strong>Entity</strong> 上。这些<code>extras</code>基本是是一些用户自定义的元数据或者简单的名称等</p>
 <div class="table-wrapper">
 <table>
 <thead>
@@ -509,7 +500,7 @@ fn find_top_material_and_mesh(
 </tbody>
 </table>
 </div>
-<p>在blender里，你可以这样去插入这些<code>extras</code>，比如材质的自定义属性如下。</p>
+<p>在Blender里，你可以这样去插入这些<code>extras</code>，比如材质的自定义属性如下。</p>
 <p><img src="./image/chapter8/3.png" alt=""></p>
 <p>在使用这自定义属性的时候，要特别注意应当用Option来进行Query，因为这些数据很有可能并不存在。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
@@ -753,18 +744,18 @@ commands.spacwn((
 }
 <span class="boring">}</span></code></pre>
 <p>看起来后五个值的作用都很相似？那么他们有什么区别呢？</p>
-<p>在<code>Blend</code>模式下，计算颜色公式是利用源图像和目标图像进行加权得到的，而这里的源图像的权值，就是我们透明通道的值。用公式表示为：
-<span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord text"><span class="mord">Final Color</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0715em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">src</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0037em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">src</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.0715em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">d</span><span class="mord mathnormal mtight">s</span><span class="mord mathnormal mtight">t</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0037em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">src</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">))</span></span></span></span></span>
-在<code>Premultiplied</code>模式下，将会假设你输入的图像已经与透明通道做了乘法，因此公式变为：
-<span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord text"><span class="mord">Final Color</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0715em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">src</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.0715em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">d</span><span class="mord mathnormal mtight">s</span><span class="mord mathnormal mtight">t</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0037em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">src</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">))</span></span></span></span></span>
-<code>Premultiplied</code>可以消除 <code>Blend</code> 模式中常见的黑色光环问题。</p>
+<p>在<code>Blend</code>模式下，计算颜色公式是利用源图像和目标图像进行加权得到的，而这里的源图像的权值，就是我们透明通道的值。用公式表示为：</p>
+<p><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord text"><span class="mord">Final Color</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0715em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">src</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0037em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">src</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.0715em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">d</span><span class="mord mathnormal mtight">s</span><span class="mord mathnormal mtight">t</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0037em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">src</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">))</span></span></span></span></span></p>
+<p>在<code>Premultiplied</code>模式下，将会假设你输入的图像已经与透明通道做了乘法，因此公式变为：</p>
+<p><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord text"><span class="mord">Final Color</span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0715em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">src</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:-0.0715em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">d</span><span class="mord mathnormal mtight">s</span><span class="mord mathnormal mtight">t</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0037em;">α</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.0037em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">src</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">))</span></span></span></span></span></p>
+<p><code>Premultiplied</code>可以消除 <code>Blend</code> 模式中常见的黑色光环问题。</p>
 <p>在<code>AlphaToCoverage</code>模式下的工作原理比较复杂，简而言之，它主要用于提高 多重采样抗锯齿（MSAA） 环境下，半透明或带遮罩边缘的渲染质量。因为在 MSAA 环境中，如果Blend模式导致一个像素被丢弃，它的所有 子样本也会被同时丢弃。这导致锯齿状的边缘非常明显，缺乏平滑过渡。</p>
 <p>在<code>Add</code>模式下，前一种颜色的值会和后一种颜色的值直接相加，由于颜色分量相加，最终的颜色值会大于或等于原始的背景颜色，从而产生发光、发亮的效果，因此在火焰、烟雾、光晕和粒子特效中经常使用这种模式。</p>
 <p>在<code>Multiply</code>模式下，源颜色和目标颜色的 RGB 分量被直接相乘。相乘的结果总是会比两个原始颜色中的任何一个都要暗。这可以产生一种褪色或者污渍的效果。</p>
 <h3 id="834-base_color_texture与uv_transform"><a class="header" href="#834-base_color_texture与uv_transform">8.3.4 base_color_texture与uv_transform</a></h3>
 <p>之前我们在讲2D的时候，曾说过“<code>uv_transform</code>要与<code>texture</code>一起使用时才能发挥作用”。而在这里的3D的情况，其实也是相同的，不过这两个参数稍有不同，变成了<code>base_color_texture</code>与<code>uv_transform</code>。</p>
 <p>如果你学习过一点blender，那你对uv肯定是再熟悉不过了，在这里我们不会去详细讨论这些概念，关于3维物体的图像材质与uv投影是一个很大的领域，这部分工作往往都是在建模软件里直接完成的，而不需要我们在bevy里做，我们也不应该在bevy里去做。</p>
-<p>这里的<code>uv_transform</code>与blender中的uv略有不同。细心的读者可以发现，这里的<code>uv_transform</code>居然是一个<code>Affine2</code>类型，查看文档，可以发现这样的描述：“The transform applied to the UVs corresponding to <code>ATTRIBUTE_UV_0</code> on the mesh before sampling. Default is identity.”</p>
+<p>这里的<code>uv_transform</code>与Blender中的uv略有不同。细心的读者可以发现，这里的<code>uv_transform</code>居然是一个<code>Affine2</code>类型，查看文档，可以发现这样的描述：“The transform applied to the UVs corresponding to <code>ATTRIBUTE_UV_0</code> on the mesh before sampling. Default is identity.”</p>
 <p>这说明，这里的<code>uv_transform</code>是<strong>对uv图像本身给进行变换</strong>。在99%的情况下，我们都不需要修改这些设置，因为在建模时已经对齐了。</p>
 <h2 id="84-wireframe"><a class="header" href="#84-wireframe">8.4 Wireframe</a></h2>
 <p>最后，让我们来介绍一下如何对3D模型进行简单的调试。当你兴致冲冲地加载了一个复杂的 glTF 模型，却发现屏幕上什么都没有，或者模型看起来扭曲得像个克苏鲁怪物时，你可能需要一种手段来观察它的骨架——也就是它的三角面片到底是怎么分布的。这就是**线框模式（Wireframe）**的用武之地。</p>

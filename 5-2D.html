@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-3ca29663.js";
+            window.path_to_searchindex_js = "searchindex-f380a98b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-43a06fac.js"></script>
@@ -197,7 +197,7 @@
 
 <span class="boring">}</span></code></pre>
 <p><code>Mesh</code>代表由点组成的集合，他们可能是一个模型、一条线段、或者只是一些点，Bevy，而<code>ColorMaterial</code>则代表代表这些形状的颜色、材质等。在Bevy中，二者以<code>Assets</code>的形式存在，当使用时，我们应当使用<code>ResMut</code>获得该资源并向其中添加真正的数据类型。在<code>Assets</code>中我们说过，Bevy加载<code>Assets</code>时将返回一个对应的句柄并在后台加载这些数据，因此，创建<code>Mesh2d</code>与<code>MeshMaterial2d</code>组件时，我们传递的也是一个对应的<code>Handler</code>。</p>
-<p>Bevy在bevy_math::primitives中为我们定义好了一组基本的几何形状，这些形状同样在preload中不需要我们再从bevy_math中导入，如上面的<code>Rectangle</code>就是其中的一个形状，这里不再一一赘述，读者可以查看<a href="https://doc.qu1x.dev/bevy_trackball/bevy_math/primitives/index.html">文档</a>详细了解每种形状的创建方式。</p>
+<p>Bevy在<code>bevy_math::primitives</code>中为我们定义好了一组基本的几何形状，这些形状同样在<code>preload</code>中不需要我们再从<code>bevy_math</code>中导入，如上面的<code>Rectangle</code>就是其中的一个形状，这里不再一一赘述，读者可以查看<a href="https://doc.qu1x.dev/bevy_trackball/bevy_math/primitives/index.html">文档</a>详细了解每种形状的创建方式。</p>
 <h2 id="52-meshmaterial2d"><a class="header" href="#52-meshmaterial2d">5.2 MeshMaterial2d</a></h2>
 <p><code>MeshMaterial2d</code>描述了Bevy应该如何渲染这些形状的具体信息，如果没有<code>MeshMaterial2d</code>只有<code>Mesh2d</code>，那么你会发现窗口上不会渲染任何东西。因此，不详细了解<code>MeshMaterial2d</code>，那么我们就无法掌握如何渲染这些形状。</p>
 <h3 id="521-colormaterial"><a class="header" href="#521-colormaterial">5.2.1 ColorMaterial</a></h3>
@@ -302,10 +302,10 @@ let vertex_colors: Vec&lt;[f32; 4]&gt; = vec![
 mesh.insert_attribute(Mesh::ATTRIBUTE_COLOR, vertex_colors);
 
 //现在，我们可以使用这个新的mesh作为Mesh2d
-let mesh_handle = meshes.add(mesh);	
+let mesh_handle = meshes.add(mesh);
 <span class="boring">}</span></code></pre>
 <h3 id="522-自定义材质"><a class="header" href="#522-自定义材质">5.2.2 自定义材质</a></h3>
-<p>与2d相关的内容主要储存在bevy_sprite_render这个crate中，其中包括渲染管道的组成、材质的定义的代码等。我们可以通过实现一个 <code>Material2d</code>特型来创建自己的材质。这涉及到了一些底层的wgpu与图形学内容，因此这一节应该属于渲染管线的内容，但是在这里我们将会简要提一下，感兴趣的读者可以查看<a href="https://docs.rs/bevy/0.17.3/bevy/sprite_render/trait.Material2d.html">文档</a>，或者等到学习自定义着色器时在反过来看这些内容。</p>
+<p>与2d相关的内容主要储存在<code>bevy_sprite_render</code>这个crate中，其中包括渲染管道的组成、材质的定义的代码等。我们可以通过实现一个 <code>Material2d</code>特型来创建自己的材质。这涉及到了一些底层的wgpu与图形学内容，因此这一节应该属于渲染管线的内容，但是在这里我们将会简要提一下，感兴趣的读者可以查看<a href="https://docs.rs/bevy/0.17.3/bevy/sprite_render/trait.Material2d.html">文档</a>，或者等到学习自定义着色器时在反过来看这些内容。</p>
 <h2 id="53-font"><a class="header" href="#53-font">5.3 Font</a></h2>
 <p>字体是2D显示的另一个方面，在Bevy中，我们可以加载自己的字体并显示。</p>
 <p>字体是后戳为ttf的一些文件，包含了文字应该如何在屏幕上绘制的信息，要加载这些字体，就如同加载普通的<code>Aeest</code>一样。</p>
@@ -330,7 +330,7 @@ commands.spawn((
 <span class="boring">}</span></code></pre>
 <p>在这其中涉及到了大量的字体相关的组件，例如<code>TextLayout</code>，<code>TextBackgroundColor</code>，<code>Text2dShadow</code>，他们的作用不言而喻，通过修改这些组件便可以影响字体的显示效果，读者可以查阅文档来获得详细的信息，这里不再赘述。</p>
 <h2 id="54-image"><a class="header" href="#54-image">5.4 Image</a></h2>
-<p>在前面，我们只是简单的使用了一下 <code>asset_server</code>来加载图像，但是我们还没有详细的介绍图像，在介绍Sprite相关的知识之前，有必要在介绍一下与图像相关的加载方式。在之前，我们知道了如何使用<code>asset_server</code>来加载图像，然后利用返回的handle，我们可以进行查询。</p>
+<p>在前面，我们只是简单的使用了一下 <code>asset_server</code>来加载图像，但是我们还没有详细的介绍图像，在介绍<code>Sprite</code>相关的知识之前，有必要在介绍一下与图像相关的加载方式。在之前，我们知道了如何使用<code>asset_server</code>来加载图像，然后利用返回的<code>handle</code>，我们可以进行查询。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>fn read_image_data(images: ResMut&lt;Assets&lt;Image&gt;&gt;, share_image: Res&lt;ShareImage&gt;) {
@@ -361,7 +361,7 @@ commands.spawn((
 </span><span class="boring">fn main() {
 </span>image.sampler = ImageSampler::nearest();
 <span class="boring">}</span></code></pre>
-<p>更进一步，不知道读者是否还记得，每一种资产加载时，我们可以传递一个setting选项，Bevy为我们提供了<code>ImageLoaderSettings</code>选项，其中就可以直接指定我们的采样方式。</p>
+<p>更进一步，不知道读者是否还记得，每一种资产加载时，我们可以传递一个<code>setting</code>选项，Bevy为我们提供了<code>ImageLoaderSettings</code>选项，其中就可以直接指定我们的采样方式。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>//加载图像时的一些可选配置
@@ -458,10 +458,10 @@ commands.spawn(sprite);
     }
 ));
 <span class="boring">}</span></code></pre>
-<p>​	下面是bevy示例sprite_scale中，每种缩放模式的效果。</p>
+<p>下面是bevy示例sprite_scale中，每种缩放模式的效果。</p>
 <p><img src="./image/chapter5/1.png" alt="1"></p>
 <h3 id="552-sprite-slice"><a class="header" href="#552-sprite-slice">5.5.2 sprite slice</a></h3>
-<p>要在加载时对图像进行切片，我们可以在加载时将其指定为<code>SpriteImageMode::Sliced</code>，其中的<code>TextureSlicer</code>类型如下。sliced是一种九宫格切片技术，关于该技术的详细介绍读者可以查看<a href="https://en.wikipedia.org/wiki/9-slice_scaling">百科</a>。简而言之，这是一直特殊的缩放技术，能够在缩放时尽可能合理保持图像的纹理。</p>
+<p>要在加载时对图像进行切片，我们可以在加载时将其指定为<code>SpriteImageMode::Sliced</code>，其中的<code>TextureSlicer</code>类型如下。<code>sliced</code>是一种九宫格切片技术，关于该技术的详细介绍读者可以查看<a href="https://en.wikipedia.org/wiki/9-slice_scaling">百科</a>。简而言之，这是一直特殊的缩放技术，能够在缩放时尽可能合理保持图像的纹理。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>pub struct TextureSlicer {
@@ -495,7 +495,7 @@ pub struct BorderRect {
     pub bottom: f32,
 }
 <span class="boring">}</span></code></pre>
-<p>同样，我们在使用这种缩放模式的时候，也必须指定尺寸的大小。然后，就可以这样创建不同大小的切片。下图中的效果来自bevy的sprite_slice示例。</p>
+<p>同样，我们在使用这种缩放模式的时候，也必须指定尺寸的大小。然后，就可以这样创建不同大小的切片。下图中的效果来自 Bevy的sprite_slice示例。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span> commands.spawn((
@@ -555,7 +555,7 @@ pub struct TextureAtlasLayout {
     pub size: UVec2,
   	//图像里每一帧的大小
     pub textures: Vec&lt;URect&gt;,
-}	
+}
 <span class="boring">}</span></code></pre>
 <p>由于<code>TextureAtlasLayout</code>是一种Assets，因此我们还需要将其添加到bevy内置的资产中。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
@@ -650,7 +650,7 @@ enum AppState {
 
 fn main() {
     App::new()
-        .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest())) 
+        .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()))
   			//注册我们的state
         .init_state::&lt;AppState&gt;()
   			//当进入Setup状态时，我们调用load_textures加载整个文件夹下的内容

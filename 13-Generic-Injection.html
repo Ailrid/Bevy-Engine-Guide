@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-3ca29663.js";
+            window.path_to_searchindex_js = "searchindex-f380a98b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-43a06fac.js"></script>
@@ -178,7 +178,7 @@
 <h1 id="13-generic-injection"><a class="header" href="#13-generic-injection">13 Generic Injection</a></h1>
 <h2 id="131-基础数据结构"><a class="header" href="#131-基础数据结构">13.1 基础数据结构</a></h2>
 <p>在正式介绍<code>bevy_reflect</code>和<code>bevy_ecs</code>的底层之前，我们还有需要额外的补充一点说明。</p>
-<p>在<code>bevy_ecs</code>中你将会看到这种，利用纯粹的rust泛型支持来实现依赖注入的技巧，这种实现依赖注入的方式完全依赖rust强大的泛型系统而无需过程宏。</p>
+<p>在<code>bevy_ecs</code>中你将会看到这种，利用纯粹的Rust泛型支持来实现依赖注入的技巧，这种实现依赖注入的方式完全依赖Rust强大的泛型系统而无需过程宏。</p>
 <p>让我们以一个<code>http</code>框架的依赖注入系统为例子，来解释一下该如何利用纯粹的泛型实现依赖注入功能。</p>
 <p>假设我们的<code>Request</code>和<code>Response</code>结构体长这个样子，这是一个最简单的情况之一。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
@@ -201,14 +201,14 @@ impl Request {
 // 我们为常见的类型String、&amp;'static str、Result等实现了IntoResponse trait，这样我们就可以在返回这些类型时自动转换为我们的Response结构体
 pub struct Response(pub String);
 
-pub trait IntoResponse { 
-    fn into_response(self) -&gt; Response; 
+pub trait IntoResponse {
+    fn into_response(self) -&gt; Response;
 }
-impl IntoResponse for Response { 
-    fn into_response(self) -&gt; Response { self } 
+impl IntoResponse for Response {
+    fn into_response(self) -&gt; Response { self }
 }
-impl IntoResponse for String { 
-    fn into_response(self) -&gt; Response { Response(self) } 
+impl IntoResponse for String {
+    fn into_response(self) -&gt; Response { Response(self) }
 }
 impl IntoResponse for &amp;'static str {
     fn into_response(self) -&gt; Response { Response(self.to_owned()) }
@@ -223,11 +223,11 @@ impl&lt;T: IntoResponse, E: IntoResponse&gt; IntoResponse for Result&lt;T, E&gt;
 }
 <span class="boring">}</span></code></pre>
 <p>这些代码简单到不言而喻，除了一点——为什么我们要区分<code>Body</code>和<code>Parts</code>?</p>
-<p>这是因为，<code>Body</code>和<code>Parts</code>在一个<code>http</code>请求的里的地位就是不同的，<code>Body</code>是一个流，而<code>Parts</code>是一个完整的请求头。一个流是无法被重复读取和解析的，因为流不负责保存之前的数据，这就像“滚滚长江东逝水”，长江只负责让水流过去而不负责记录流过去的水都有哪些。用rust里的话来讲，<strong><code>body</code>被消费一次后就不应该再被使用了，也就是所有权转移了。</strong></p>
-<p>在其他语言的框架里，当你二次消费body时，要么会发生异常，要么会发生请求挂起。而在稍后你就可以看，只需要稍加利用rust的所有权系统，就能让rust编译器为我们保证这件事。</p>
+<p>这是因为，<code>Body</code>和<code>Parts</code>在一个<code>http</code>请求的里的地位就是不同的，<code>Body</code>是一个流，而<code>Parts</code>是一个完整的请求头。一个流是无法被重复读取和解析的，因为流不负责保存之前的数据，这就像“滚滚长江东逝水”，长江只负责让水流过去而不负责记录流过去的水都有哪些。用Rust里的话来讲，<strong>body被消费一次后就不应该再被使用了，也就是所有权转移了。</strong></p>
+<p>在其他语言的框架里，当你二次消费body时，要么会发生异常，要么会发生请求挂起。而在稍后你就可以看，只需要稍加利用Rust的所有权系统，就能让Rust编译器为我们保证这件事。</p>
 <hr>
 <p>现在让我们来继续设计下去，对于类似<code>Header</code>或者<code>Query</code>或者<code>Cookies</code>之类的数据，我们应该从<code>Parts</code>中获得，对于<code>Body</code>我们则经常以<code>Json</code>的形式来在前端发送并在后端反序列化，同时除了来自http的数据，我们还有本地的一些应给被共享的<code>State</code>，例如数据库。</p>
-<p>于是我们可以顺理成章的写出来<code>FromRequestParts</code>和<code>FromRequest</code>两个<code>trait</code>，其中前者用于从<code>Parts</code>里转换数据，**后者则消费掉整个<code>Request</code>，从<code>Body</code>中构造出我们需要的数据。**这样，rust编译器就会替我们保证<code>body</code>只会被消费一次了。</p>
+<p>于是我们可以顺理成章的写出来<code>FromRequestParts</code>和<code>FromRequest</code>两个<code>trait</code>，其中前者用于从<code>Parts</code>里转换数据，**后者则消费掉整个<code>Request</code>，从<code>Body</code>中构造出我们需要的数据。**这样，Rust编译器就会替我们保证<code>body</code>只会被消费一次了。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// 一个泛型trait，从Parts中提取出自己
@@ -269,7 +269,7 @@ impl&lt;S&gt; FromRequest&lt;S&gt; for JsonBody {
        Ok(JsonBody(req.body.0))
     }
 }
-    
+
 pub struct Db(pub PgPool);
 // 从我们的AppState中提取出pgpool
 impl FromRequestParts&lt;AppState&gt; for Db {
@@ -285,7 +285,7 @@ impl FromRequestParts&lt;AppState&gt; for Db {
 </span>async fn two_args(h: Header, db: Db)-&gt;impl IntoResponse;
 <span class="boring">}</span></code></pre>
 <hr>
-<p>要实现这个魔法的核心关键是，<strong>我们需要找到某种办法，让rust的泛型系统能够根据参数所实现的trait是<code>FromRequestParts</code>还是<code>FromRequest</code>来自动生成正确的调用的代码。</strong></p>
+<p>要实现这个魔法的核心关键是，<strong>我们需要找到某种办法，让Rust的泛型系统能够根据参数所实现的trait是<code>FromRequestParts</code>还是<code>FromRequest</code>来自动生成正确的调用的代码。</strong></p>
 <p>为了实现这个目的，我们尝试着来写一下。</p>
 <p>首先可以想到的是，我们应该为某些<code>FnOnce</code>类型实现一个自定义的<code>trait</code>，然后通过这个<code>trait</code>取代<code>FnOnce</code>的<code>call</code>方法，这样我们可以解决第一个问题：怎么将<code>FnOnce</code>五花八门的参数来统一成<code>Request</code>和我们的<code>AppState</code>。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
@@ -331,9 +331,9 @@ where
 }
 <span class="boring">}</span></code></pre>
 <p>这看着挺合理的，但是编译器上来就给了我们一巴掌：<strong>the type parameter <code>T1</code> is not constrained by the impl trait,self type, or predicates</strong>。</p>
-<p>啊，rust编译器多么令人讨厌啊！</p>
-<p>这是编译器在告诉我们，T1 决定了这份 impl 在描述哪一种函数，允许它只藏在 where 里，同一个 F 就可能对应好几个 T1，编译器没法选，要求我们强制把这个参数写到Handler中。</p>
-<p>于是我们可以这样稍微修改一下我们的代码，在Handler中添加一个参数，虽然我们根本没有用到这个参数，但是为了让编译器满意我们不得不这样做。</p>
+<p>啊，Rust编译器多么令人讨厌啊！</p>
+<p>这是编译器在告诉我们，<code>T1</code> 决定了这份 <code>impl</code> 在描述哪一种函数，允许它只藏在 <code>where</code> 里，同一个 <code>F</code> 就可能对应好几个 <code>T1</code>，编译器没法选，要求我们强制把这个参数写到<code>Handler</code>中。</p>
+<p>于是我们可以这样稍微修改一下我们的代码，在<code>Handler</code>中添加一个参数，虽然我们根本没有用到这个参数，但是为了让编译器满意我们不得不这样做。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>pub trait Handler&lt;T1, S&gt;: Clone + Send + 'static {
@@ -343,16 +343,16 @@ where
 impl&lt;F, T1, Fut, Res, S&gt; Handler&lt;T1, S&gt; for F // 后面的完全不变
 <span class="boring">}</span></code></pre>
 <hr>
-<p>让人满意！让我们来更进一步，<code>Header</code>、<code>Query</code>、<code>Db</code>实现的<code>FromRequestParts</code>，我们现在只有对于<code>FromRequest</code>的实现，那我们很自然会想——再写一份 impl 不就完了？于是我们写出来了这样的东西。</p>
+<p>让人满意！让我们来更进一步，<code>Header</code>、<code>Query</code>、<code>Db</code>实现的<code>FromRequestParts</code>，我们现在只有对于<code>FromRequest</code>的实现，那我们很自然会想——再写一份 <code>impl</code> 不就完了？于是我们写出来了这样的东西。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>impl&lt;F, T1, Fut, Res, S&gt; Handler&lt;T1, S&gt; for F where T1: FromRequest&lt;S&gt; { ... }
 impl&lt;F, T1, Fut, Res, S&gt; Handler&lt;T1, S&gt; for F where T1: FromRequestParts&lt;S&gt; { ... }
 <span class="boring">}</span></code></pre>
-<p>直觉上看是可以的，但是rust编译器会当场拒绝你，并说 <strong>conflicting implementations of trait <code>Handler&lt;_, _&gt;</code>！</strong></p>
-<p>这是为什么？因为我们违背了coherence 即一致性规则：对任意一个类型，一个trait最多只能有一个实现。 编译器在任何时候看到 x.foo()，都必须能唯一确定该调哪份代码，不能有二义。</p>
-<p>rust通过两个规则来维持这个确定性，其一是<strong>孤儿规则</strong>，这个是大家耳熟能详的，即对于<code>impl Trait for Type</code> 这样的代码，必须至少有一方是在当前 crate 定义的；另一个则是<strong>重叠检查</strong>，<strong>即两份 impl 会不会命中同一个类型。</strong></p>
-<p>编译器看到这些签名的时候，根本没看我们的 where 子句，它看的是<code>&lt;F, T1, Fut, Res, S&gt;</code>和<code>Handler&lt;T1, S&gt;</code>，这两份身份证完全一样，因此rust编译器认为这就是同一个 impl 的两个副本，这违背了<strong>重叠检查</strong>规则！</p>
+<p>直觉上看是可以的，但是Rust编译器会当场拒绝你，并说 <strong>conflicting implementations of trait <code>Handler&lt;_, _&gt;</code>！</strong></p>
+<p>这是为什么？因为我们违背了coherence 即一致性规则：对任意一个类型，一个<code>trait</code>最多只能有一个实现。 编译器在任何时候看到 <code>x.foo()</code>，都必须能唯一确定该调哪份代码，不能有二义。</p>
+<p>Rust通过两个规则来维持这个确定性，其一是<strong>孤儿规则</strong>，这个是大家耳熟能详的，即对于<code>impl Trait for Type</code> 这样的代码，必须至少有一方是在当前 crate 定义的；另一个则是<strong>重叠检查</strong>，<strong>即两份 impl 会不会命中同一个类型。</strong></p>
+<p>编译器看到这些签名的时候，根本没看我们的 <code>where</code> 子句，它看的是<code>&lt;F, T1, Fut, Res, S&gt;</code>和<code>Handler&lt;T1, S&gt;</code>，这两份身份证完全一样，因此Rust编译器认为这就是同一个 <code>impl</code> 的两个副本，这违背了<strong>重叠检查</strong>规则！</p>
 <hr>
 <p>这可麻烦了，<strong>既然这条路走不通，那我们只能想办法用一份实现来兼容两种trait了</strong>，这该怎么办呢？</p>
 <p>聪明的你肯定可以想到，只要我们要求让实现了 <code>FromRequestParts</code> 的东西同样也实现了 <code>FromRequest</code> 不就行了。只要我们手动为<code>FromRequest</code>实现一个泛型方法即可，这样，对于接受一个参数的<code>handler</code>我们应该就都能够兼容了。</p>
@@ -369,7 +369,7 @@ where
     }
 }
 <span class="boring">}</span></code></pre>
-<p>一切看起来都让人满意了，但是当我们使用的时候，rust编译器又再次站出来给了我们一巴掌，他说：</p>
+<p>一切看起来都让人满意了，但是当我们使用的时候，Rust编译器又再次站出来给了我们一巴掌，他说：</p>
 <pre><code class="language-tex">error[E0119]: conflicting implementations of trait `FromRequest&lt;AppState&gt;`
   |
   | impl&lt;S, T&gt; FromRequest&lt;S&gt; for T where T: FromRequestParts&lt;S&gt;
@@ -377,10 +377,10 @@ where
   | impl FromRequest&lt;AppState&gt; for JsonBody
   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ conflicting implementation
 </code></pre>
-<p>这不讲道理啊，<code>JsonBody</code> 明明没实现 <code>FromRequestParts</code> 啊？为什么rust编译器会觉得这里有两份<code>FromRequest</code>的实现呢？</p>
+<p>这不讲道理啊，<code>JsonBody</code> 明明没实现 <code>FromRequestParts</code> 啊？为什么Rust编译器会觉得这里有两份<code>FromRequest</code>的实现呢？</p>
 <p><strong>这是因为编译器的推理认为，<code>JsonBody</code> 虽然现在没实现<code>FromRequestParts</code>，但将来可能实现。我证明不了它不重叠，所以我拒绝编译。</strong></p>
 <p>这下又麻烦了，我们该怎么做才能对编译器保证<code>JsonBody</code>绝对不会实现<code>FromRequestParts</code>呢？</p>
-<p>要实现这个目的我们需要一点小技巧，我们需要引入一个用于标记的泛型参数。这个泛型参数对于具体的实现而言没有意义，它存在的目的只是为了告诉rust编译器，这两个实现不是同一个实现。</p>
+<p>要实现这个目的我们需要一点小技巧，我们需要引入一个用于标记的泛型参数。这个泛型参数对于具体的实现而言没有意义，它存在的目的只是为了告诉Rust编译器，这两个实现不是同一个实现。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>mod private {
@@ -399,16 +399,16 @@ impl&lt;S, T&gt; FromRequest&lt;S, private::ViaParts&gt; for T
 where T: FromRequestParts&lt;S&gt; { ... }              // 第一组
 
 // 对于JsonBody我们使用private::ViaRequest来标记
-impl FromRequest&lt;AppState&gt; for JsonBody { ... } 
+impl FromRequest&lt;AppState&gt; for JsonBody { ... }
 <span class="boring">}</span></code></pre>
 <hr>
 <p>一旦我们引入了<code>M</code>，我们的<code>handler</code>的签名同样也要进行修改了。同样这个<code>M</code>我们也要放进<code>Handler</code>的参数里，否则<code>M</code>又成了那个只活在 <code>where</code> 子句里的孤儿。</p>
 <p>第二个看起来没用的参数<code>Handler&lt;(M, T1,), S&gt;</code> 里的 <code>T</code>（那个元组）从哪来的呢？它就是一块给M和T1准备的合法席位，运行时没人读它。</p>
 <p>为什么我们要写成元组<code>(M, T1)</code>而不是 <code>Handler&lt;M, T1, S&gt;</code> 三个平铺参数呢？明明在单参数时看起来两者是等价的。</p>
-<p>因为下一节要一路支持到最多十三个参数，到那时<code>M</code>和 <code>T1..Tn</code>打包成元组最省事，<code>M</code> 就顺手蹲在第 0 位。</p>
+<p>因为下一节要一路支持到最多16个参数，到那时<code>M</code>和 <code>T1..Tn</code>打包成元组最省事，<code>M</code> 就顺手蹲在第 0 位。</p>
 <h2 id="133-多参数注入"><a class="header" href="#133-多参数注入">13.3 多参数注入</a></h2>
 <p>处理好了单个参数，我们就可以顺理成章的拓展到最多能达到16个参数注入的<code>handler</code>了。</p>
-<p>这里我们以2个参数的handler为例。顺着单参数的写法，我们可以先写出来第一版的两个参数的handler版本。</p>
+<p>这里我们以2个参数的handler为例。顺着单参数的写法，我们可以先写出来第一版的两个参数的<code>handler</code>版本。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>impl&lt;F, T1, T2, Fut, Res, S, M&gt; Handler&lt;(M, T1, T2,), S&gt; for F
@@ -426,7 +426,7 @@ where
                 Ok(v) =&gt; v,
                 Err(e) =&gt; return Response(format!("400: {e}")),
             };
-            let t2 = match T2::from_request(req, &amp;state) {   // ← 
+            let t2 = match T2::from_request(req, &amp;state) {   // ←
                 Ok(v) =&gt; v,
                 Err(e) =&gt; return Response(format!("400: {e}")),
             };
@@ -483,9 +483,10 @@ where
 <p>这里必须解释清楚 <code>from_parts</code> 那一步，<code>into_parts</code> 把 <code>request</code> 拆成两半之后，<code>body</code> 就寄存在局部变量里了。它既不能借给 t1（<code>T1</code> 的签名里没有 body），也不能凭空消失（后面 t2 还要）。<code>from_parts</code>是把 body 从寄存处取回来、交还给唯一那个有权消费它的人的唯一方式。</p>
 <p>对于3-16个参数的依赖注入，和这些几乎别无二致，无非就是继续增加T的个数罢了，这里就不再赘述了。</p>
 <h2 id="134-总结"><a class="header" href="#134-总结">13.4 总结</a></h2>
-<p>这一节实际上颇有难度，读者可能需要花点时间才能消化这些内容，因此觉得这些东西比较困难是很正常的，不必灰心。上面我们给出的这些，正是<code>axum</code>框架的核心机制的最精简的版本，从这些代码里我们也同样可以理解，为什么<code>axum</code>框架的使用文档里要强调body的提取器必须放最后这件事了。</p>
-<p>回过头来，我们花了整整一节，用 <code>http</code> 框架做例子，从 <code>Handler&lt;S&gt;</code> 一路推到 <code>Handler&lt;(M, T1, ..., Tn), S&gt;</code>。你可能觉得这是在讲别人的故事，毕竟这本书要讲的是 <code>Bevy</code>。但其实我们刚刚推导出来的，不是axum 的一个技巧，而是 rust 里做<strong>变长参数 + 泛型注入</strong>的标准解法。</p>
-<p><code>Bevy</code> 的 <code>bevy_ecs</code> 用的是同一个骨架，在这里我们提前将这种另一种形式的反射补充在这里。</p>
+<p>这一节章实际上颇有难度，读者可能需要花点时间才能消化这些内容，因此觉得这些东西比较困难是很正常的，不必灰心。上面我们给出的这些，正是<code>axum</code>框架的核心机制的最精简的版本，从这些代码里我们也同样可以理解，为什么<code>axum</code>框架的使用文档里要强调body的提取器必须放最后这件事了。</p>
+<p>回过头来，我们花了整整一章，用 <code>http</code> 框架做例子，从 <code>Handler&lt;S&gt;</code> 一路推到 <code>Handler&lt;(M, T1, ..., Tn), S&gt;</code>。你可能觉得这是在讲别人的故事，毕竟这本书要讲的是 <code>Bevy</code>。</p>
+<p>但其实我们刚刚推导出来的，不是<code>axum</code> 的一个技巧，而是 Rust 里做<strong>变长参数 + 泛型注入</strong>的标准解法。<code>Bevy</code> 的 <code>bevy_ecs</code> 用的是同一个骨架，因此在这里我才将这另一种形式的反射补充在这里。</p>
+<p>至此，我们已经自上而下的讲完了我们所需要的所有工具，在之后，我们将自下而上的开始分析<code>bevy_reflect</code>和<code>bevy_ecs</code>的核心实现，这将会花费相当多的篇幅，但是相信我，能看到这里你已经拥有这样的能力了。</p>
 
                     </main>
 

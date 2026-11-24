@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-3ca29663.js";
+            window.path_to_searchindex_js = "searchindex-f380a98b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-43a06fac.js"></script>
@@ -178,12 +178,12 @@
 <h1 id="11-bevy-reflect"><a class="header" href="#11-bevy-reflect">11 Bevy Reflect</a></h1>
 <h2 id="111-bevy中的反射"><a class="header" href="#111-bevy中的反射">11.1 Bevy中的反射</a></h2>
 <p>在前面我们说到，元编程的实现类型多种多样，有运行时反射、编译期宏、还有UE5那样的外挂反射和Zig这种独树一帜的<code>comptime</code>关键字等等。那么Bevy里主要利用了什么？</p>
-<p>答案是前两种。Bevy即为我们提供了运行时反射的能力，又利用宏和Rust强大的泛型能力实现了<strong>编译期单态化与静态分发</strong>。其中前者由bevy_reflect这个crate提供，后者则主要在bevy_ecs中实现。</p>
+<p>答案是前两种。Bevy即为我们提供了运行时反射的能力，又利用宏和Rust强大的泛型能力实现了<strong>编译期单态化与静态分发</strong>。其中前者由<code>bevy_reflect</code>这个crate提供，后者则主要在<code>bevy_ecs</code>中实现。</p>
 <blockquote class="blockquote-tag blockquote-tag-note">
 <p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
 <p>想一想，为什么bevy要把他们分开，分别使用运行时反射和编译期宏？（提示：运行时反射的优点和代价是什么）</p>
 </blockquote>
-<p>首先让我们从比较容易理解的运行时反射来研究一下, bevy_reflect该如何使用？他的内部工作原理又是什么？</p>
+<p>首先让我们从比较容易理解的运行时反射来研究一下, <code>bevy_reflect</code>该如何使用？他的内部工作原理又是什么？</p>
 <h2 id="112-基本概念"><a class="header" href="#112-基本概念">11.2 基本概念</a></h2>
 <h3 id="1121-reflect与partialreflect"><a class="header" href="#1121-reflect与partialreflect">11.2.1 Reflect与PartialReflect</a></h3>
 <p>bevy_reflect的功能建立在两个<code>trait</code>上，即<code>Reflect</code>和<code>PartialReflect</code>，并且利用类型擦除来存储实现了这些trait并且需要反射的数据，要认识反射就必须先搞懂这两个<code>trait</code>到底是用来做什么的。</p>
@@ -257,7 +257,7 @@ struct MyStruct {
 <li><code>#[reflect(@expr)]</code>。注入自定义元数据。接受<code>@</code>符号后的任何表达式，该表达式解析为实现该表达式的值<code>Reflect</code>。如果注册了两个相同类型的属性，则后注册的属性会覆盖前者。</li>
 </ul>
 <h2 id="113-反射用例"><a class="header" href="#113-反射用例">11.3 反射用例</a></h2>
-<p>现在，让我们来真正看看到底该如何真正的使用bevy_reflect吧。</p>
+<p>现在，让我们来真正看看到底该如何真正的使用<code>bevy_reflect</code>吧。</p>
 <h3 id="1131-结构体枚举元组反射"><a class="header" href="#1131-结构体枚举元组反射">11.3.1 结构体/枚举/元组反射</a></h3>
 <p>首先，让我们来看看如何利用反射来给结构体和枚举等添加一些自定义属性，利用这个功能我们可以方便的添加一些附加元数据在结构体上，观看以下示例：</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
@@ -317,7 +317,7 @@ assert_eq!(
 );
 <span class="boring">}</span></code></pre>
 <p>另外，让我们再补充一下，所谓的<code>TypeInfo</code>和<code>TypeId</code>到底是什么？</p>
-<p>对于<code>TypeInfo</code>，这是bevy_reflect里用于标识元数据属性信息的一个枚举，就类似于之前我们看到的<code>ReflectRef</code>那样，让我们能够将一个类型的元数据属性信息转换成正确的形式。</p>
+<p>对于<code>TypeInfo</code>，这是<code>bevy_reflect</code>里用于标识元数据属性信息的一个枚举，就类似于之前我们看到的<code>ReflectRef</code>那样，让我们能够将一个类型的元数据属性信息转换成正确的形式。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>pub enum TypeInfo {
@@ -347,7 +347,7 @@ assert_eq!(
 <p><a href="https://docs.rs/bevy_reflect/latest/bevy_reflect/struct.TypeRegistry.html#method.get_type_info"><code>TypeRegistry::get_type_info</code></a></p>
 </li>
 </ul>
-<p>而<code>TypeId</code> 是Rust标准库提供的一个极其底层的机制，大多数时候你都不用接触他，但一旦要用到它时就变得非常重要。简而言之，<code>TypeId</code> 就是Rust编译器在编译期为每一个类型生成的唯一身份证号（u128类型）。比如在Bevy中，所有的Component都存放在<code>World</code>里。<code>World</code> 底层的哈希表就是以<code>TypeId</code>作为Key的。</p>
+<p>而<code>TypeId</code> 是Rust标准库提供的一个极其底层的机制，大多数时候你都不用接触他，但一旦要用到它时就变得非常重要。简而言之，<code>TypeId</code> 就是Rust编译器在编译期为每一个类型生成的唯一身份证号（u128类型）。比如在Bevy中，所有的<code>Component</code>都存放在<code>World</code>里。<code>World</code> 底层的哈希表就是以<code>TypeId</code>作为Key的。</p>
 <p>而上面的 <code>tooltip.downcast_ref::&lt;Tooltip&gt;()</code>这一行代码，实际上就是在比较泛型参数 <code>Tooltip</code> 的 <code>TypeId::of::&lt;Tooltip&gt;()</code>和内部的Id是否一致。</p>
 <blockquote class="blockquote-tag blockquote-tag-caution">
 <p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M4.47.22A.749.749 0 0 1 5 0h6c.199 0 .389.079.53.22l4.25 4.25c.141.14.22.331.22.53v6a.749.749 0 0 1-.22.53l-4.25 4.25A.749.749 0 0 1 11 16H5a.749.749 0 0 1-.53-.22L.22 11.53A.749.749 0 0 1 0 11V5c0-.199.079-.389.22-.53Zm.84 1.28L1.5 5.31v5.38l3.81 3.81h5.38l3.81-3.81V5.31L10.69 1.5ZM8 4a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 8 4Zm0 8a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Caution</p>
@@ -373,7 +373,7 @@ let cloned: Box&lt;dyn Reflect&gt; = reflected.reflect_clone().unwrap();
 assert_eq!(cloned.downcast_ref::&lt;Player&gt;(), Some(&amp;Player { id: 123 }));
 <span class="boring">}</span></code></pre>
 <p>在前面我们说，<code>Reflect</code>宏会根据你的类型形态，自动实现<code>Struct</code>、<code>TupleStruct</code>或 <code>Enum</code>。</p>
-<p>这里说的<code>Struct</code>和其他的到底是什么呢？这是bevy_reflect中的一个用来代表数据类型的<code>Trait</code>（“继承”自<code>PartialReflect</code>）。通过将某些类型的特定操作包装成一个<code>Trait</code>，这样就可以将一个<code>PartialReflect</code>当作相应的Rust中的原生类型并提供一些特定的方法，这样就不用在通用的<code>PartialReflect</code>进行很多危险的操作了。</p>
+<p>这里说的<code>Struct</code>和其他的到底是什么呢？这是<code>bevy_reflect</code>中的一个用来代表数据类型的<code>Trait</code>（“继承”自<code>PartialReflect</code>）。通过将某些类型的特定操作包装成一个<code>Trait</code>，这样就可以将一个<code>PartialReflect</code>当作相应的Rust中的原生类型并提供一些特定的方法，这样就不用在通用的<code>PartialReflect</code>进行很多危险的操作了。</p>
 <p>具体而言，我们拥有如下的这些<code>trait</code>，他们均“继承”自<code>PartialReflect</code>。</p>
 <ul>
 <li><a href="https://docs.rs/bevy/latest/bevy/reflect/tuple/trait.Tuple.html"><code>Tuple</code></a></li>
@@ -452,7 +452,7 @@ assert!(dynamic.try_as_reflect().is_none());
 <span class="boring">}</span></code></pre>
 <p><strong>这里的关键是，为什么需要动态类型？他内部又是怎样工作的？</strong></p>
 <p>前面我们在<code>pub trait Struct: PartialReflect</code>中并没有看到任何能够添加或者删除字段的方法，但有一个方法格外的显眼：<code>fn to_dynamic_struct(&amp;self) -&gt; DynamicStruct { ... }</code>。</p>
-<p>这说明，bevy_reflect其实为前面我们说的每一种类型的<code>trait</code>都实现了对应的动态类型，所以自然而然的，我们拥有下面这些：</p>
+<p>这说明，<code>bevy_reflect</code>其实为前面我们说的每一种类型的<code>trait</code>都实现了对应的动态类型，所以自然而然的，我们拥有下面这些：</p>
 <ul>
 <li><a href="https://docs.rs/bevy/latest/bevy/reflect/tuple/struct.DynamicTuple.html"><code>DynamicTuple</code></a></li>
 <li><a href="https://docs.rs/bevy/latest/bevy/reflect/array/struct.DynamicArray.html"><code>DynamicArray</code></a></li>
@@ -576,7 +576,7 @@ let return_info:&amp;ReturnInfo = signatures.return_info();
 // 而且，他还有pub fn name(&amp;self) -&gt; Option&lt;&amp;Cow&lt;'static, str&gt;&gt;方法
 // 于是我们可以发现一件事，DynamicFunction上的这两个方法实际上都只是简单的调用了 SignatureInfo 而已
 <span class="boring">}</span></code></pre>
-<p><a href="https://docs.rs/bevy/latest/bevy/reflect/func/args/struct.ArgInfo.html">ArgInfo</a>类型代表了一个确切的函数参数的信息，通过他，我们终于可以获得一个参数的类型信息、名称、在参数表中的位置了。bevy_reflect为我们提供了非常多有用的方法，包括下面这些。</p>
+<p><a href="https://docs.rs/bevy/latest/bevy/reflect/func/args/struct.ArgInfo.html">ArgInfo</a>类型代表了一个确切的函数参数的信息，通过他，我们终于可以获得一个参数的类型信息、名称、在参数表中的位置了。<code>bevy_reflect</code>为我们提供了非常多有用的方法，包括下面这些。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>for arg in args.iter(){
@@ -584,9 +584,9 @@ let return_info:&amp;ReturnInfo = signatures.return_info();
     arg.index();
     // fn ty(&amp;self) -&gt; &amp;Type 返回参数的Rust底层类型
     arg.ty();
-    // fn type_id(&amp;self) -&gt; TypeId 返回参数类型的TypeId 
+    // fn type_id(&amp;self) -&gt; TypeId 返回参数类型的TypeId
     arg.type_id();
-    // 检查给出的类型是否匹配,这只比较了类型之间的 TypeId，并未验证它们是否共享相同的类型路径 
+    // 检查给出的类型是否匹配,这只比较了类型之间的 TypeId，并未验证它们是否共享相同的类型路径
     arg.is::&lt;T&gt;();
     // 检查参数是引用/可变引用还是所有权转移
     args.ownership();
@@ -600,7 +600,7 @@ let return_info:&amp;ReturnInfo = signatures.return_info();
 <span class="boring">}</span></code></pre>
 <p>对于<a href="https://docs.rs/bevy/latest/bevy/reflect/func/struct.ReturnInfo.html">ReturnInfo</a>，和<code>ArgInfo</code>的区别主要在于，其没有<code>index()</code>方法，因为函数的返回值一般只能有一个。</p>
 <hr>
-<p>在rust中，对于闭包的区分我们有<code>Fn</code>和 <code>FnMut</code>和<code>FnOnce</code>，你可能已经猜到了，我们前面的<code>DynamicFunction</code>对应的其实就是<code>Fn</code>，而<code>FnMut</code>，当然也有一个<code>DynamicFunctionMut</code>！</p>
+<p>在Rust中，对于闭包的区分我们有<code>Fn</code>和 <code>FnMut</code>和<code>FnOnce</code>，你可能已经猜到了，我们前面的<code>DynamicFunction</code>对应的其实就是<code>Fn</code>，而<code>FnMut</code>，当然也有一个<code>DynamicFunctionMut</code>！</p>
 <p>他们的区别和<code>Fn</code>和 <code>FnMut</code>的区别几乎是一样的，当我们的闭包需要修改外部的变量时，我们就需要使用<code>into_function_mut()</code>方法生成一个<code>DynamicFunctionMut</code>。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -611,7 +611,7 @@ let return_info:&amp;ReturnInfo = signatures.return_info();
 <p>对于其余的获取参数和各种信息的方法，二者基本上是没有区别的，这里就不再赘述。</p>
 <hr>
 <p>现在，我们还要做另一件事。既然我们已经知道了怎么通过反射查询一个函数的参数信息，那我们便可以通过这些信息组装成一个合适的参数列表，然后动态调用函数。可是，<strong>我们该怎么组装这样一个列表然后调用这个反射的函数对象呢？</strong></p>
-<p>bevy_reflect为我们提供了一个<a href="https://docs.rs/bevy/latest/bevy/reflect/func/struct.ArgList.html">ArgList</a>类型，这就是我们需要的，一份可以传递给 <code>DynamicFunction</code>或<code>DynamicFunctionMut</code>的参数列表。我们可以像这样，创建一个参数列表。</p>
+<p><code>bevy_reflect</code>为我们提供了一个<a href="https://docs.rs/bevy/latest/bevy/reflect/func/struct.ArgList.html">ArgList</a>类型，这就是我们需要的，一份可以传递给 <code>DynamicFunction</code>或<code>DynamicFunctionMut</code>的参数列表。我们可以像这样，创建一个参数列表。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let foo = 123;
@@ -655,7 +655,7 @@ dbg!(closure.call_once(args).unwrap());
 <span class="boring">}</span></code></pre>
 <hr>
 <p>现在，让我们补充介绍一下，<strong>对于函数重载和泛型函数这些情况下该如何正确使用反射呢？</strong></p>
-<p>其实按照正确的说法，rust本身是<strong>不支持函数重载</strong>的。但是在bevy_reflect中，通过一些魔法，我们可以做到函数重载的功能。即一个<code>DynamicFunction</code>对象，能够拥有多个<code>SignatureInfo</code>和相应的实现，这和C++中的函数重载是相同的。</p>
+<p>其实按照正确的说法，Rust本身是<strong>不支持函数重载</strong>的。但是在<code>bevy_reflect</code>中，通过一些魔法，我们可以做到函数重载的功能。即一个<code>DynamicFunction</code>对象，能够拥有多个<code>SignatureInfo</code>和相应的实现，这和C++中的函数重载是相同的。</p>
 <p><code>DynamicFunction</code>和<code>DynamicFunctionMut</code>上有一个构造函数方法，其签名如下。这里的F是一个实现了<code>IntoFunction</code>的类型。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -670,7 +670,7 @@ where
     'env: 'a,
     F: IntoFunctionMut&lt;'a, Marker&gt;
 <span class="boring">}</span></code></pre>
-<p>前面我们说到，bevy_reflect为0-15个参数的函数均实现了<code>IntoFunction</code>，也就是说，我们完全可以把任何一个函数拿过来，将两个函数完全<strong>合二为一</strong>，哪怕他们在rust里根本不是一个函数！于是我们就可以写出下面这样<strong>魔鬼般的代码。</strong></p>
+<p>前面我们说到，<code>bevy_reflect</code>为0-15个参数的函数均实现了<code>IntoFunction</code>，也就是说，我们完全可以把任何一个函数拿过来，将两个函数完全<strong>合二为一</strong>，哪怕他们在Rust里根本不是一个函数！于是我们就可以写出下面这样<strong>魔鬼般的代码。</strong></p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>fn add&lt;T: Add&lt;Output = T&gt;&gt;(a: T, b: T) -&gt; T {
@@ -717,7 +717,7 @@ let args = ArgList::default()
 let result = func.call(args).unwrap().unwrap_owned();
 assert_eq!(result.try_take::&lt;i32&gt;().unwrap(), 200);
 <span class="boring">}</span></code></pre>
-<p>而对于泛型函数，遗憾的是bevy_reflect无法直接对泛型函数进行反射，泛型函数在 Rust 里不是一个函数，而是一个<strong>函数模板</strong>。它没有独立的 <code>TypeId</code>，也没有唯一的签名。不过这并不是完全无法做到的，实际上正如我们能前面的代码中写的那样，<strong>通过手动单态化，仍然可以对单态化之后的泛型函数进行反射。</strong></p>
+<p>而对于泛型函数，遗憾的是<code>bevy_reflect</code>无法直接对泛型函数进行反射，泛型函数在 Rust 里不是一个函数，而是一个<strong>函数模板</strong>。它没有独立的 <code>TypeId</code>，也没有唯一的签名。不过这并不是完全无法做到的，实际上正如我们能前面的代码中写的那样，<strong>通过手动单态化，仍然可以对单态化之后的泛型函数进行反射。</strong></p>
 <h3 id="1133-trait反射"><a class="header" href="#1133-trait反射">11.3.3 trait反射</a></h3>
 <p><code>trait</code>在编译后有两种形态，这两种形态决定了对于<code>trait</code>的反射是更加棘手的。</p>
 <p>在静态分发时，<code>trait</code>的约束在编译期用掉了，对于编译之后的代码而言，所有的调用都直接内联成了具体的函数地址，在这一点上他和普通的函数是一致的，我们在这里丢掉了<code>trait</code>本身的信息。</p>
@@ -752,10 +752,10 @@ impl Damageable for Zombie {
 // value.damage(10);
 <span class="boring">}</span></code></pre>
 <p>如何才能曲线救国呢？不管怎么样，我们必须通过某种方式把这个<code>trait</code>相关的信息保存到和类型<code>Zombie</code>相关的某种数据结构上。</p>
-<p>bevy_reflect为我们提供了这样一种数据结构，即<a href="https://docs.rs/bevy/latest/bevy/reflect/struct.TypeRegistry.html"><code>TypeRegistry</code></a>。用一句话来概括：一个<code>TypeRegistry</code>的核心是一个键为<code>TypeId</code>值为 <a href="https://docs.rs/bevy_reflect/latest/bevy_reflect/struct.TypeRegistration.html"><code>TypeRegistration</code></a> 的<code>HashMap</code>，而一个<code>TypeRegistration</code> 则是一个键为<code>TypeId</code>值为Box&lt;dyn  <a href="https://docs.rs/bevy_reflect/latest/bevy_reflect/trait.TypeData.html"><code>TypeData</code></a> &gt;的<code>HashMap</code>。</p>
+<p><code>bevy_reflect</code>为我们提供了这样一种数据结构，即<a href="https://docs.rs/bevy/latest/bevy/reflect/struct.TypeRegistry.html"><code>TypeRegistry</code></a>。用一句话来概括：一个<code>TypeRegistry</code>的核心是一个键为<code>TypeId</code>值为 <a href="https://docs.rs/bevy_reflect/latest/bevy_reflect/struct.TypeRegistration.html"><code>TypeRegistration</code></a> 的<code>HashMap</code>，而一个<code>TypeRegistration</code> 则是一个键为<code>TypeId</code>值为Box&lt;dyn <a href="https://docs.rs/bevy_reflect/latest/bevy_reflect/trait.TypeData.html"><code>TypeData</code></a> &gt;的<code>HashMap</code>。</p>
 <p>然而我们在前面说到，<code>trait</code>并不是一个具体的结构，甚至在静态分发下编译后直接消失了，我们该怎么保存这些数据呢？</p>
 <p>聪明的你肯定能想到，如果我们能够编写一个结构体，并为结构体实现一些方法，然后在结构体的这些方法内把调用转发给<code>trait</code>，我们就可以做到把<strong>无形变有形</strong>，这样以来就能够保存这些<code>trait</code>数据了。而<strong>这个用曲线保存trait信息的结构体，在这里就叫做<code>TypeData</code>。顾名思义，这是一个用来保存类型的数据结构，虽然其是一个结构体。</strong></p>
-<p>bevy_reflect为我们提供了这样一个泛型，只要我们实现他，bevy_reflect就可以为我们自动从一个struct里提取出一个</p>
+<p><code>bevy_reflect</code>为我们提供了这样一个泛型，只要我们实现他，<code>bevy_reflect</code>就可以为我们自动从一个<code>struct</code>里提取出一个</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>pub trait CreateTypeData&lt;T, Input = ()&gt;: TypeData {
@@ -769,8 +769,8 @@ pub trait TypeData: Downcast + Send + Sync {
 <span class="boring">}</span></code></pre>
 <hr>
 <p>那么，让我们来尝试一下，应该如何来写这些代码呢？</p>
-<p>我们可不想为每个用到<code>Damageable</code>的<code>struct</code>都编写一个相应的适配，所以该怎么让才能让rust自己为我们来编写呢？在前面我们说到，一个<code>dyn Reflect</code>可以被<code>downcast_mut</code>为一个具体的类型，而这个方法正好是一个泛型，或许我们能够利用泛型参数来解决这个问题。</p>
-<p>让我们先拼凑出这些代码。当使用时，我们让rust编译器为我们根据泛型参数自动推断出应该转换为什么类型。可是这里的T应该是个什么类型才能让我们调用<code>trait</code>上的方法呢？嗯，没错，这里的T应该是我们上面说到的<code>TypeData</code>，我们先把这件事记下。</p>
+<p>我们可不想为每个用到<code>Damageable</code>的<code>struct</code>都编写一个相应的适配，所以该怎么让才能让Rust自己为我们来编写呢？在前面我们说到，一个<code>dyn Reflect</code>可以被<code>downcast_mut</code>为一个具体的类型，而这个方法正好是一个泛型，或许我们能够利用泛型参数来解决这个问题。</p>
+<p>让我们先拼凑出这些代码。当使用时，我们让Rust编译器为我们根据泛型参数自动推断出应该转换为什么类型。可是这里的T应该是个什么类型才能让我们调用<code>trait</code>上的方法呢？嗯，没错，这里的<code>T</code>应该是我们上面说到的<code>TypeData</code>，我们先把这件事记下。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// 这里的T应该是什么类型呢？他应该是我们的TypeData，这个TypeData应该能够转发damage方法调用给真正的trait
@@ -793,7 +793,7 @@ where
         Self {
             damage: |reflect, damage| {
                 let damageable = reflect.downcast_mut::&lt;T&gt;().unwrap();
-                let damage = damage.take::&lt;T::Health&gt;().unwrap(); 
+                let damage = damage.take::&lt;T::Health&gt;().unwrap();
                 damageable.damage(damage);
             },
         }
@@ -823,7 +823,7 @@ impl ReflectDamageable {
 <span class="boring">}</span></code></pre>
 <p>一旦我们完成了这些，我们就可以写出下面这些代码来。注意这里的约束是如何传递的。</p>
 <p><strong>impl ReflectDamageable中damage →struct ReflectDamageable中的damage</strong></p>
-<p>其中后者是bevy_reflect自动调用我们编写的<code>create_type_data</code>生成的。这时我们通过泛型紧箍咒强行把<code>Damageable</code>添加到了其中，这时rust编译器将从这里把这个约束传播并求解，于是编译器将会反推出 <code>Zombie: Reflect + Damageable</code> 必须成立。</p>
+<p>其中后者是<code>bevy_reflect</code>自动调用我们编写的<code>create_type_data</code>生成的。这时我们通过泛型紧箍咒强行把<code>Damageable</code>添加到了其中，这时Rust编译器将从这里把这个约束传播并求解，于是编译器将会反推出 <code>Zombie: Reflect + Damageable</code> 必须成立。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// 把这些信息注册到一个TypeRegistry里
@@ -871,7 +871,7 @@ assert_eq!(value.health(), 50);
 <span class="boring">}</span></code></pre>
 <p>解决！</p>
 <h3 id="1134-序列化"><a class="header" href="#1134-序列化">11.3.4 序列化</a></h3>
-<p>反射最直接的应用就是序列化，例如著名的 <a href="https://docs.rs/serde/1.0.229/x86_64-unknown-linux-gnu/serde/index.html"><code>serde</code></a> 库，就是依赖宏来对结构体实现反射以添加序列化保存和读取功能的。bevy_reflect同样为我们提供的更强的反射功能，通过反射，我们可实现从文本中读取数据并动态<code>spwan</code>实体与组件。</p>
+<p>反射最直接的应用就是序列化，例如著名的 <a href="https://docs.rs/serde/1.0.229/x86_64-unknown-linux-gnu/serde/index.html"><code>serde</code></a> 库，就是依赖宏来对结构体实现反射以添加序列化保存和读取功能的。<code>bevy_reflect</code>同样为我们提供的更强的反射功能，通过反射，我们可实现从文本中读取数据并动态<code>spwan</code>实体与组件。</p>
 <p>首先来让我们看看如何序列化一个实体与之上的组件。要做到这件事，我们需要用到一个序列化器，bevy为我们提供了两种：<a href="https://docs.rs/bevy_reflect/latest/bevy_reflect/serde/struct.ReflectSerializer.html"><code>ReflectSerializer</code></a>与<a href="https://docs.rs/bevy_reflect/latest/bevy_reflect/serde/struct.TypedReflectSerializer.html"><code>TypedReflectSerializer</code></a>。从名称就可以直接看出，后一种序列化器会保存类型信息。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -939,7 +939,7 @@ assert_eq!(output, r#"(value:123)"#);
     where
         S: Serializer,
     {
-       	// 让我们忽略这之前的代码  
+       	// 让我们忽略这之前的代码
 
         let output = match self.value.reflect_ref() {
             ReflectRef::Struct(struct_value) =&gt; StructSerializer {
@@ -1035,7 +1035,7 @@ impl&lt;P: ReflectSerializerProcessor&gt; Serialize for StructSerializer&lt;'_, 
             .registry
             .get(type_info.type_id())
             .and_then(|registration| registration.data::&lt;SerializationData&gt;());
-        
+
         let ignored_len = serialization_data.map(SerializationData::len).unwrap_or(0);
         let mut state = serializer.serialize_struct(
             struct_info.type_path_table().ident().unwrap(),

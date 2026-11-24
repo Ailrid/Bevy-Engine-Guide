@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-3ca29663.js";
+            window.path_to_searchindex_js = "searchindex-f380a98b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-43a06fac.js"></script>
@@ -177,8 +177,8 @@
                         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="10-meta-programming"><a class="header" href="#10-meta-programming">10 Meta Programming</a></h1>
 <p><em>首先，谢谢你能陪我一直读到这里，。</em></p>
-<p><em>现在，你已经对bevy有了更详细的认知，凭借之前的知识，现在你应该可以自己写出一些简单的游戏了。不过如果你细心，那你可能察觉到我漏掉了关于物理引擎的这一部分，我们在本书中不会详细介绍，因为这不属于bevy的组成部分（或许以后我可能会专门再写一本书研究如何从0写一个物理引擎&gt;-&lt;），读者可以查看别的相关资料，我们这里就不再赘述了。</em></p>
-<p><em>在这里我们正式进入第二部分，即bevy最复杂最核心的反射与ecs系统，我将会花几个章节的篇幅先把反射讲清楚，然后揭开bevy_reflect与bevy_ecs的核心秘密。</em></p>
+<p><em>现在，你已经对Bevy有了更详细的认知，凭借之前的知识，现在你应该可以自己写出一些简单的游戏了。不过如果你细心，那你可能察觉到我漏掉了关于物理引擎的这一部分，我们在本书中不会详细介绍，因为这不属于bevy的组成部分（或许以后我可能会专门再写一本书研究如何从0写一个物理引擎&gt;-&lt;），读者可以查看别的相关资料，我们这里就不再赘述了。</em></p>
+<p><em>在这里我们正式进入第二部分，即bevy最复杂最核心的反射与ecs系统，我将会花几个章节的篇幅先把反射讲清楚，然后揭开<code>bevy_reflect</code>与<code>bevy_ecs</code>的核心秘密。</em></p>
 <p><em>让我们把话题拉到更宏大历史进程中，来进一步认识我们平时的工作吧！Bevy 的反射与 ECS 极其复杂，是出了名的难懂，这是因为它在试图解决『图灵机的并发安全困境』与『静态语言缺乏运行时灵活度』这两个大难题。</em></p>
 <p><em>而解答这两个难题的钥匙，就是函数式编程与元编程。（以下话题大多数为闲聊话题，非代码部分，如果不想看也可以不看，不过看了之后会帮助你对于编程有一个全新的理解）。</em></p>
 <h2 id="101-函数式编程"><a class="header" href="#101-函数式编程">10.1 函数式编程</a></h2>
@@ -294,8 +294,8 @@
 // 加上 move！把 local_data 的所有权彻底剥夺，转移进异步任务内部
 tokio::spawn(async move {
     // 此时这个数据完全属于这个异步任务了，它爱活多久活多久
-    println!("{}", local_data); 
-}); 
+    println!("{}", local_data);
+});
 <span class="boring">}</span></code></pre>
 <p>回到<code>React</code>闭包地狱的本质，其根源是同一个变量，外面在变，闭包里拿的是旧的，从而产生了冲突，React创造了<code>useEffect</code>。而Rust的<code>move</code>机制直接从物理上消灭了这种冲突的可能性。</p>
 <p>但代价就是，一旦被捕获，外面的世界就彻底失去它了。因此如果你既想把数据传给异步任务，又想让外面的代码继续用，该怎么办？只能拷贝。</p>
@@ -357,7 +357,7 @@ impl UIWidget {
     .collect::&lt;std::collections::HashSet&lt;_&gt;&gt;()
     .into_iter()
     .take(3)
-    .collect(); 
+    .collect();
 // 哦等等，还要排序？迭代器没有 sort()，又得 collect 出来排，再处理……
 <span class="boring">}</span></code></pre>
 <p>正如人月神话里说的，软件开发中没有银弹。其实这句话放到编程语言里也是相同的。没有一种编程风格能够解决所有的设计问题。很多人误以为函数式编程比OOP更加优美，是因为他们只看到了高阶函数在字面上的简练。真正的函数式编程之所以敢如此自由传递和嵌套函数，是因为它强制要求函数是“纯”的。但我们在前端、在Rust、在Go里用的，大多是多范式语言而不是真正的纯粹的函数式语言。因此，硬币的另一面就是：自由的代价往往就是混乱。</p>
@@ -420,10 +420,14 @@ const container = new Map&lt;any, any&gt;();
 
 // 往大Map里塞点原材料
 class ApiService {
-    fetchData() { return "从服务器捞出的核心数据"; }
+  fetchData() {
+    return "从服务器捞出的核心数据";
+  }
 }
 class LoggerService {
-    log(msg: string) { console.log(`[日志]: ${msg}`); }
+  log(msg: string) {
+    console.log(`[日志]: ${msg}`);
+  }
 }
 
 container.set(ApiService, new ApiService());
@@ -432,49 +436,51 @@ container.set(LoggerService, new LoggerService());
 <p>TS有个设定，只有被装饰器修饰的类或方法，编译器才会配合地保存这个类或方法的参数和类型信息。所以我们先写一个最简单的装饰器，哪怕它什么都不干。</p>
 <pre><code class="language-ts">// 这是一个空壳装饰器，单纯为了告诉 TS 编译器
 function Injectable(): ClassDecorator {
-    return (target) =&gt; {
-    };
+  return (target) =&gt; {};
 }
 </code></pre>
 <p>现在，我们要写一个万能的自动实例化函数 <code>resolve</code>。它会去照镜子（反射），看看目标类需要什么参数，然后从大 Map 里捞出来塞进去。这里的关键是，由于在之前引入了<code>import "reflect-metadata";</code>，这个库会在全局的<code>Reflect</code>对象上添加一个<code>getMetadata</code>方法，其本质其实是一个巨大的<code>WeakMap</code>。利用这个方法，你可以获得一个含有当前对象元数据的数组。</p>
 <pre><code class="language-ts">function resolve&lt;T&gt;(target: new (...args: any[]) =&gt; T): T {
-    // 核心反射：向 Reflect 索要这个类的构造函数参数类型图纸
-    // "design:paramtypes" 是TS内置的key，用来获取参数的类型数组
-    const paramTypes: any[] = Reflect.getMetadata("design:paramtypes", target) || [];
+  // 核心反射：向 Reflect 索要这个类的构造函数参数类型图纸
+  // "design:paramtypes" 是TS内置的key，用来获取参数的类型数组
+  const paramTypes: any[] =
+    Reflect.getMetadata("design:paramtypes", target) || [];
 
-    console.log(`[反射自审]: 发现类 ${target.name} 的构造函数需要 ${paramTypes.length} 个参数。`);
-    // 打印出来的 paramTypes 看起来像这样：[ [class ApiService], [class LoggerService] ]
-    paramTypes.forEach((type, index) =&gt; {
-        console.log(`           参数 ${index + 1} 的类型是: ${type.name}`);
-    });
+  console.log(
+    `[反射自审]: 发现类 ${target.name} 的构造函数需要 ${paramTypes.length} 个参数。`,
+  );
+  // 打印出来的 paramTypes 看起来像这样：[ [class ApiService], [class LoggerService] ]
+  paramTypes.forEach((type, index) =&gt; {
+    console.log(`           参数 ${index + 1} 的类型是: ${type.name}`);
+  });
 
-    // 现在你可以根据类型参数，从刚才的大Map里捞出对应的依赖
-    const dependencies = paramTypes.map(type =&gt; {
-        const dependency = container.get(type);
-        if (!dependency) {
-            throw new Error(`找不到依赖的类型: ${type.name}，请先塞进大 Map 中！`);
-        }
-        return dependency;
-    });
+  // 现在你可以根据类型参数，从刚才的大Map里捞出对应的依赖
+  const dependencies = paramTypes.map((type) =&gt; {
+    const dependency = container.get(type);
+    if (!dependency) {
+      throw new Error(`找不到依赖的类型: ${type.name}，请先塞进大 Map 中！`);
+    }
+    return dependency;
+  });
 
-    // 把捞出来的参数作为构造函数参数塞进去，返回新实例
-    return new target(...dependencies);
+  // 把捞出来的参数作为构造函数参数塞进去，返回新实例
+  return new target(...dependencies);
 }
 </code></pre>
 <p>现在我们写一个业务类 <code>UserController</code>，它假装自己不知道参数怎么来，只管伸手要：</p>
 <pre><code class="language-ts">@Injectable() // 打上标记，让TS编译器保存参数
 class UserController {
-    // 声明我需要 ApiService 和 LoggerService，参数数量：2
-    constructor(
-        private api: ApiService,
-        private logger: LoggerService
-    ) {}
+  // 声明我需要 ApiService 和 LoggerService，参数数量：2
+  constructor(
+    private api: ApiService,
+    private logger: LoggerService,
+  ) {}
 
-    public handleRequest() {
-        this.logger.log("开始处理用户请求...");
-        const data = this.api.fetchData();
-        console.log(`[控制器响应]: ${data}`);
-    }
+  public handleRequest() {
+    this.logger.log("开始处理用户请求...");
+    const data = this.api.fetchData();
+    console.log(`[控制器响应]: ${data}`);
+  }
 }
 
 // 我们不需要手动 new UserController(new ApiService(), new LoggerService()) 了

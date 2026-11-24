@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-3ca29663.js";
+            window.path_to_searchindex_js = "searchindex-f380a98b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-43a06fac.js"></script>
@@ -177,16 +177,16 @@
                         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="12-procedural-macro"><a class="header" href="#12-procedural-macro">12 Procedural Macro</a></h1>
 <h2 id="121-过程宏"><a class="header" href="#121-过程宏">12.1 过程宏</a></h2>
-<p>在前面我们说到，bevy依赖rust中的宏来实现反射，现在就让我们来真正看看到底一个宏是如何实现反射的吧。</p>
+<p>在前面我们说到，bevy依赖Rust中的宏来实现反射，现在就让我们来真正看看到底一个宏是如何实现反射的吧。</p>
 <p>首先让我们来简明扼要的介绍一下过程宏，这个过程我不会过多的去讲解，因为这里已经有一本足够优秀的书更详细的讨论了关于宏的问题，<strong>如果读者不够熟悉宏，强烈建议阅读本章前先学习：</strong><a href="https://lukaswirth.dev/tlborm/introduction.html">The Little Book of Rust Macros</a>。</p>
 <p>首先来让我们回忆一下《编译原理》课程（如果你没有学过，那我强烈建议你应该学习一下）中所学的知识。</p>
-<p>rust编译器可以被当作一个llvm的巨大前端，他包括了一个编译器前端应该有的几个部分：词法分析器、语法分析器、中间代码生成器等。</p>
+<p>Rust编译器可以被当作一个llvm的巨大前端，他包括了一个编译器前端应该有的几个部分：词法分析器、语法分析器、中间代码生成器等。</p>
 <p>在词法分析器中，我们写的代会被词法分析器解析为token流，我们写下的代码变成了一个个标识符、字面值、关键字、符号等不同的token，这是编译器的最小解析单元。</p>
 <p>在语法分析器中，这些token会被一个转换为一棵抽象语法树(常被简写为AST)，这是一个树形结构，其树形结构的组织表明了我们缩写的代码的嵌套层级，这时每个节点都有一个明确的语法结构。</p>
-<p>在词法分析和语法分析中间，往往还存在着另一个中间数据结构，这个数据结构被称之为标记树（Token Tree），与AST的区别是，标记树只负责描述token的组织结构，而不含有真正的语义和约束信息。<strong>rust中的宏，主要是处理标记树的。</strong></p>
-<p>为什么需要这样设计呢？因为rust编译器极其复杂，AST这样的数据结构经常需要根据rust的版本演进而发生变化，通过把这样一个中间的树形结构暴露出来，并保持稳定，同时这将宏可以处理的语法和AST彻底分开——这意味着你甚至可以用宏写一个编译器，把宏处理的字符串直接翻译成rust代码，在rust里写别的语言，slint就是这么干的！</p>
+<p>在词法分析和语法分析中间，往往还存在着另一个中间数据结构，这个数据结构被称之为标记树（Token Tree），与AST的区别是，标记树只负责描述token的组织结构，而不含有真正的语义和约束信息。<strong>Rust中的宏，主要是处理标记树的。</strong></p>
+<p>为什么需要这样设计呢？因为Rust编译器极其复杂，AST这样的数据结构经常需要根据Rust的版本演进而发生变化，通过把这样一个中间的树形结构暴露出来，并保持稳定，同时这将宏可以处理的语法和AST彻底分开——这意味着你甚至可以用宏写一个编译器，把宏处理的字符串直接翻译成Rust代码，在Rust里写别的语言，slint就是这么干的！</p>
 <hr>
-<p>粗略的来分，rust中的宏可以分为声明宏和过程宏两种，而后者又可以细分为三种，因此如果把所有宏的子类型都算上，rust中一共有四种宏。而我们在这里关心的则是后面细分的三种过程宏：<strong>函数宏、属性宏、derive宏（也被叫做派生宏，不过我喜欢直接叫做derive宏）</strong>。</p>
+<p>粗略的来分，Rust中的宏可以分为声明宏和过程宏两种，而后者又可以细分为三种，因此如果把所有宏的子类型都算上，Rust中一共有四种宏。而我们在这里关心的则是后面细分的三种过程宏：<strong>函数宏、属性宏、derive宏（也被叫做派生宏，不过我喜欢直接叫做derive宏）</strong>。</p>
 <p>每个宏的基本结构是相同的，一个标记了一个属性的公有函数，这个属性定义了它的过程性宏类型，然后函数返回一个 <code>TokenStream</code>。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -281,7 +281,7 @@ fn main() {
     },
 ]
 </code></pre>
-<p><code>syn</code>这个crate为我们提供了一种统一的<code>AST</code>构建工具，<code>syn</code> 把扁平 token 重新组装成了一棵有语义的rust语法树。这个数据结构是一个<code>DeriveInput</code>类型，他的定义大概像这样。</p>
+<p><code>syn</code>这个crate为我们提供了一种统一的<code>AST</code>构建工具，<code>syn</code> 把扁平 token 重新组装成了一棵有语义的Rust语法树。这个数据结构是一个<code>DeriveInput</code>类型，他的定义大概像这样。</p>
 <p>我们前面说过程宏下面只能是 <code>enum</code>、<code>struct</code>、<code>union</code> 类型，因此这里我们可以直接推断，这个<code>DeriveInput</code>结构必然是对于这两种类型的描述。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -293,7 +293,7 @@ fn main() {
     pub data: Data, // 主要数据，包含字段信息
 }
 <span class="boring">}</span></code></pre>
-<p>如果你细心，你必然会觉得这一行代码很奇怪：<code>let ast = parse_macro_input!(input as DeriveInput);</code>。因为如果<code>AST</code>是一个<code>DeriveInput</code>类型，那么这里的<code>input as DeriveInput</code>就会有一些脱裤子放屁的意味。如果你真的较真去看看<code>parse_macro_input</code>这个宏，你就会发现这里<code>as</code>并非我们在rust中的<code>as</code>。</p>
+<p>如果你细心，你必然会觉得这一行代码很奇怪：<code>let ast = parse_macro_input!(input as DeriveInput);</code>。因为如果<code>AST</code>是一个<code>DeriveInput</code>类型，那么这里的<code>input as DeriveInput</code>就会有一些脱裤子放屁的意味。如果你真的较真去看看<code>parse_macro_input</code>这个宏，你就会发现这里<code>as</code>并非我们在Rust中的<code>as</code>。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>macro_rules! parse_macro_input {
@@ -302,11 +302,11 @@ fn main() {
     ($tokenstream:ident) =&gt; { ... };
 }
 <span class="boring">}</span></code></pre>
-<p>豁然开朗，这里的<code>as</code>是宏内部的一个关键词，是这个宏自己的语法，而<strong>不是 Rust 的 <code>as</code> 运算符</strong>。所以<code>input as DeriveInput</code>实际上不是在告诉rust，而是告诉<code>parse_macro_input</code>宏，把这个<code>TokenStream</code>转换成<code>DeriveInput</code>。</p>
+<p>豁然开朗，这里的<code>as</code>是宏内部的一个关键词，是这个宏自己的语法，而<strong>不是 Rust 的 <code>as</code> 运算符</strong>。所以<code>input as DeriveInput</code>实际上不是在告诉Rust，而是告诉<code>parse_macro_input</code>宏，把这个<code>TokenStream</code>转换成<code>DeriveInput</code>。</p>
 <hr>
 <p>现在我们知道了输入的<code>TokenStream</code>的结构，也知道了如何转换成<code>DeriveInput</code>，那我们该怎样生成代码，又该如何把这些代码重新转换为<code>TokenStream</code>输出回去呢？</p>
 <p><code>quote</code>这个crate为我们提供了一个便捷的方法。这些代码的作用几乎哪怕我们还没介绍quote就能看得出来，我们从抽象语法树中获得了标识符，然后用标识符和 <code>quote!</code> 生成了一组代码，最后转换为了<code>TokenStream</code>。</p>
-<p>而<code>quote</code>给我们提供的便利就是，我们可以直接用熟悉的rust语法来编写新的代码，同时不需要在关心如何转换成为<code>TokenStream</code>。</p>
+<p>而<code>quote</code>给我们提供的便利就是，我们可以直接用熟悉的Rust语法来编写新的代码，同时不需要在关心如何转换成为<code>TokenStream</code>。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let name = &amp;ast.ident;

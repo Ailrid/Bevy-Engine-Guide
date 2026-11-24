@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-3ca29663.js";
+            window.path_to_searchindex_js = "searchindex-f380a98b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-43a06fac.js"></script>
@@ -175,10 +175,10 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
-<h1 id="1-总览"><a class="header" href="#1-总览">1 总览</a></h1>
+<h1 id="1--overview"><a class="header" href="#1--overview">1 -Overview</a></h1>
 <h2 id="11-章节序言"><a class="header" href="#11-章节序言">1.1 章节序言</a></h2>
 <p><em>孔明在荆州，与石广元、徐元直、孟公威俱游学，三人务于精熟，而亮独观其大略。</em> <em>—— 《魏略》</em></p>
-<p>笔者一直认为，学习一件事要由粗入细，由浅入深，因此本章的目标主要是快速让读者对于Bevy能有一个大概的印象，了解Bevy程序的主要组成部分。大量的细节部分我都将略去，因此读者如现在遇到不理解的地方可以不求甚解，后续的章节将会依次仔细展开各个部分进行详细的介绍。</p>
+<p>笔者一直认为，学习一件事要由粗入细，由浅入深，因此本章的目标主要是快速让读者对于<code>Bevy</code>能有一个大概的印象，了解<code>Bevy</code>程序的主要组成部分。大量的细节部分我都将略去，因此读者如现在遇到不理解的地方可以不求甚解，后续的章节将会依次仔细展开各个部分进行详细的介绍。</p>
 <h2 id="12-hello-bevy"><a class="header" href="#12-hello-bevy">1.2 Hello Bevy!</a></h2>
 <p>将Bevy作为一个依赖项，新建一个Rust项目，输入以下代码让我们开始吧</p>
 <pre class="playground"><code class="language-rust">use bevy::prelude::*;
@@ -194,7 +194,7 @@ fn hello_world() {
 }</code></pre>
 <p>上面的这些代码的含义不言而喻，我们实例化了一个<code>App</code>，然后在系统<strong>更新时</strong>调用<code>hello_world</code>函数，最后运行。使用cargo命令运行这些代码，预想中的游戏窗口和界面并未出现，而是在终端上打印了一条“hello_world“后程序就关闭了，这是怎么回事？</p>
 <h3 id="121-窗口与循环"><a class="header" href="#121-窗口与循环">1.2.1 窗口与循环</a></h3>
-<p>Bevy的设计理念是插件化的，这意味着每一项功能对于Bevy来说都是以插件的形式启用的，因此窗口的显示、游戏的循环逻辑等功能都需要引入插件。在上面的代码中，我们未添加任何插件，只是简单的声明了 <code>App</code>后调用了<code>hello_world</code>函数，因此程序将在终端中打印一条消息，然后立刻退出。</p>
+<p>Bevy的设计理念是插件化的，这意味着每一项功能对于<code>Bevy</code>来说都是以插件的形式启用的，因此窗口的显示、游戏的循环逻辑等功能都需要引入插件。在上面的代码中，我们未添加任何插件，只是简单的声明了 <code>App</code>后调用了<code>hello_world</code>函数，因此程序将在终端中打印一条消息，然后立刻退出。</p>
 <p>然而，由于窗口和游戏循环的创建和管理几乎是必选项，除非你想让你的应用在无窗口模式下运行。因此Bevy提供了一组默认的插件用来启用这些功能，更改我们的代码如下，再运行一次，窗口就会显示出来了，同时控制台将不断打印“hello_world“。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -239,7 +239,7 @@ bevy_render:::RenderPlugin,
 <img src="./image/chapter1/1.png" alt="1" style="zoom:25%;" />
 <p>将渲染步骤剥离出来，划分为主世界与渲染世界，并在其中添加Extract同步系统，即可将其变为并行工作的系统提高效率。这便是主世界与渲染世界的由来，这种分离的方式将游戏划分为三部分并分别独立出来，能够使得系统解偶的同时提高并行化。</p>
 <img src="./image/chapter1/2.png" alt="2" style="zoom: 25%;" />
-<p>在游戏的主要逻辑中，我们主要需要关注的就是Main中的逻辑，如果需要进行高级图形处理定制化渲染效果，则需要对Extract和Render过程进行修改。在Main调度中，又分为以下10个步骤，其含义不言而喻，<code>Startup</code>的三个过程在启动中只会执行一次，然后游戏将在一个<code>Update</code>循环中不断运行，之前我们在运行<code>hello_world</code>时所指定的<code>Update</code>就是这里。</p>
+<p>在游戏的主要逻辑中，我们主要需要关注的就是<code>Main</code>中的逻辑，如果需要进行高级图形处理定制化渲染效果，则需要对<code>Extract</code>和<code>Render</code>过程进行修改。在<code>Main</code>调度中，又分为以下10个步骤，其含义不言而喻，<code>Startup</code>的三个过程在启动中只会执行一次，然后游戏将在一个<code>Update</code>循环中不断运行，之前我们在运行<code>hello_world</code>时所指定的<code>Update</code>就是这里。</p>
 <img src="./image/chapter1/3.png" alt="3" style="zoom:25%;" />
 <p>在这其中，除了<code>RunFixedMainLoop</code>外，几乎所有的步骤都是不言而喻的，那么<code>RunFixedMainLoop</code>是什么？</p>
 <p>一般而言，在游戏逻辑中，存在着两种更新方式：</p>
@@ -335,7 +335,7 @@ fn move(mut Players:Query&lt;&amp;mut Player&gt;){
   ....//some actions
 }
 <span class="boring">}</span></code></pre>
-<p>既然<code>Component</code>和<code>System</code>都能找到对应与对象的部分，那么<code>Entity</code>又是什么呢？**简单来说，<code>Entity</code>只是一个简单的标识符，用于标识唯一的实体。**在大多数时候，不需要关心此值让Bevy为我们自动生成即可。</p>
+<p>既然<code>Component</code>和<code>System</code>都能找到对应与对象的部分，那么<code>Entity</code>又是什么呢？**简单来说，<code>Entity</code>只是一个简单的标识符，用于标识唯一的实体。**在大多数时候，不需要关心此值让<code>Bevy</code>为我们自动生成即可。</p>
 <p>在大量的参考手册中，都使用数据库的例子与ECS系统进行类比，不过二者在多种层次上的相似性确实令人惊叹。学习过数据库的读者应该知道，在关系数据库的一张表中，每一行是一个记录，而每一列则是一个属性，其中每一行都应当有一个唯一的标识ID。</p>
 <p>我们可以将ECS中的<code>Entity</code>想象为一张表的标识ID列，其他的<code>Component</code>作为属性列，二者共同标识了游戏世界中唯一的一个实体和实体的各种数据。不过有些许不同的是，数据库的每张表所拥有的属性列是固定的，而不同实体拥有的属性的数目则不需要一样。</p>
 <h3 id="132-commands与query"><a class="header" href="#132-commands与query">1.3.2 Commands与Query</a></h3>
@@ -349,7 +349,7 @@ fn move(mut Players:Query&lt;&amp;mut Player&gt;){
 commands.spawn((FpsCounter::default(),))
 <span class="boring">}</span></code></pre>
 <p>利用<code>Query</code>，我们可以在行级别的范围内修改数据，即我们可以得到某些实体然后修改他们相关联的组件。下面的代码中，我们使用<code>Query</code>尝试获取主世界中那些拥有<code>FpsCounter</code>组件的实体的<code>FpsCounter</code>的<strong>可变引用</strong>作为参数，然后在函数中进行修改。</p>
-<p><code>Query</code>类似于一个包含着查询结果的vec，这是因为所能查询到的组件有可能有很多个，若我们断定只有一个，可以使用<code>single_mut()</code>方法将其转换为单一结果。当然，Bevy中也拥有其他更方便的方式来实现这样的目标，但是作为对于ECS模式的第一次粗略介绍，笔者认为还是尽量不应使用各种方便的技巧，重点是让读者认识到ECS模式的工作流程。此外，<strong>Query的第二个泛型可以接受<code>With</code>和<code>Without</code>参数，以实现过滤查询，这类似于数据库中<code>Where</code>子句。</strong></p>
+<p><code>Query</code>类似于一个包含着查询结果的<code>vec</code>，这是因为所能查询到的组件有可能有很多个，若我们断定只有一个，可以使用<code>single_mut()</code>方法将其转换为单一结果。当然，Bevy中也拥有其他更方便的方式来实现这样的目标，但是作为对于ECS模式的第一次粗略介绍，笔者认为还是尽量不应使用各种方便的技巧，重点是让读者认识到ECS模式的工作流程。此外，<strong>Query的第二个泛型可以接受<code>With</code>和<code>Without</code>参数，以实现过滤查询，这类似于数据库中<code>Where</code>子句。</strong></p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>//查询拥有Player组件标识的实体的Health的内容
@@ -403,7 +403,7 @@ fn some_system(score: Res&lt;Score&gt;)
 fn some_system(mut score: Option&lt;ResMut&lt;Score&gt;&gt;)
 <span class="boring">}</span></code></pre>
 <h3 id="143-默认resource"><a class="header" href="#143-默认resource">1.4.3 默认Resource</a></h3>
-<p>除了我们自己创建的一些资产外，Bevy内存在着一些非常重要的内置全局资产，他们包括游戏经过的时间、键盘或鼠标的状态、网格、材质等，这些信息在游戏中是如此的常用。我们现在只粗略介绍一些，目的在于让读者明白Bevy中是通过<code>Resource</code>来管理这些重要数据的，后续章节中将会继续详细介绍其中使用方法。</p>
+<p>除了我们自己创建的一些资产外，Bevy内存在着一些非常重要的内置全局资产，他们包括游戏经过的时间、键盘或鼠标的状态、网格、材质等，这些信息在游戏中是如此的常用。我们现在只粗略介绍一些，目的在于让读者明白<code>Bevy</code>中是通过<code>Resource</code>来管理这些重要数据的，后续章节中将会继续详细介绍其中使用方法。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>Res&lt;Time&gt; //自应用启动以来的时间，以及上一帧逝去的时间
@@ -414,7 +414,7 @@ Res&lt;ButtonInput&lt;B&gt;&gt; //用于查询键盘或者鼠标的状态
 <span class="boring">}</span></code></pre>
 <h2 id="15-资产assets"><a class="header" href="#15-资产assets">1.5 资产Assets</a></h2>
 <p>资产是需要加载到游戏中的资源，通常来自于各种硬盘里的文件，例如图像、模型、材质、字体、音频等等等等。由于这些资源的加载往往需要耗费大量时间，因此Bevy里这些资产的加载往往都是以异步的形式以避免阻塞游戏循环。</p>
-<p>在Bevy中，我们可以使用<code>AssetServer</code>从硬盘里加载资产，使用<code>Assets&lt;T&gt;</code>来存储已经加载的各类资产。</p>
+<p>在<code>Bevy</code>中，我们可以使用<code>AssetServer</code>从硬盘里加载资产，使用<code>Assets&lt;T&gt;</code>来存储已经加载的各类资产。</p>
 <h3 id="151-assetserver"><a class="header" href="#151-assetserver">1.5.1 AssetServer</a></h3>
 <p><code>AssetServer</code>作为一种全局资源，可以使用之前我们加载资源的方式以<code>Res</code>来获取。默认情况下，加载的资产都相对于项目目录下的assets文件夹，要修改这个默认行为，可以修改<code>BEVY_ASSET_ROOT</code>环境变量来指定加载资产的目录。下面展示了一个常用的加载资产并共享的方式。</p>
 <p>首先，我们使用<code>AssetServer</code>加载了一个图像并获得其句柄，然后将其句柄储存在一个全局资源<code>ShareImage</code>上，这样，我们之后便可以通过 <code>Res&lt;ShareImage&gt;</code>来获得其句柄以便进行操作。</p>
@@ -539,7 +539,7 @@ fn load_pointcloud(
   let point_cloud_handler = asset_server.load::&lt;PointCloud&gt;("pointCloud.las");
 }</code></pre>
 <h2 id="16-相机"><a class="header" href="#16-相机">1.6 相机</a></h2>
-<p><code>Camera</code>是一个虚拟的三维场景摄像机，想象一下一个人手持相机在一个三维场景中不断变换位置的过程，在不同的位置和不同的角度，<code>Camera</code>上所呈现的画面也会不同。在游戏中，<code>Camera</code>的各种参数决定了所能够看见的画面是怎样的，但是<code>Camera</code>本身往往是相对于游戏中的各种场景所独立的，Bevy中内置了两种类型的相机：<code>Camera2d</code>和<code>Camera3d</code>，不言而喻，前者用于2D画面的渲染，后者用于3D画面的渲染。</p>
+<p><code>Camera</code>是一个虚拟的三维场景摄像机，想象一下一个人手持相机在一个三维场景中不断变换位置的过程，在不同的位置和不同的角度，<code>Camera</code>上所呈现的画面也会不同。在游戏中，<code>Camera</code>的各种参数决定了所能够看见的画面是怎样的，但是<code>Camera</code>本身往往是相对于游戏中的各种场景所独立的，<code>Bevy</code>中内置了两种类型的相机：<code>Camera2d</code>和<code>Camera3d</code>，不言而喻，前者用于2D画面的渲染，后者用于3D画面的渲染。</p>
 <p>在Bevy中，<code>Camera2d</code>和<code>Camera3d</code>作为两个内置组件直接使用即可，将以下代码替换掉<code>Startup</code>调度中原来的函数，即可在屏幕上绘制一个立方体。虽然我们尚未介绍灯光、变换、材质的具体相关内容，但是你现在也应该能够大致理解这些代码中每一行的作用。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -641,7 +641,7 @@ fn load_pointcloud(
 <span class="boring">}</span></code></pre>
 <p>看到这里读者可能会有疑问，为何对于鼠标只介绍了按键的判断，鼠标的移动、拖动、滑轮滑动等事件如何进行处理呢？答案很明显，既然已经用事件来形容这些输入，那么自然就要在事件系统中进行处理。</p>
 <h2 id="18-事件"><a class="header" href="#18-事件">1.8 事件</a></h2>
-<p>事件用于<strong>多个系统之间的通讯</strong>，他可以由某些系统或者Bevy发出，在另一些系统中得到处理。Bevy中有两种类型的事件。</p>
+<p>事件用于<strong>多个系统之间的通讯</strong>，他可以由某些系统或者<code>Bevy</code>发出，在另一些系统中得到处理。<code>Bevy</code>中有两种类型的事件。</p>
 <ol>
 <li><code>Message</code>用于系统之间的通信</li>
 <li><code>Event</code>用户触发立即行为<code>EntityEvent</code>的<strong>观察者</strong></li>
@@ -769,7 +769,7 @@ fn set_up(mut commands: Commands) {
 <span class="boring">}</span></code></pre>
 <h2 id="19-ui"><a class="header" href="#19-ui">1.9 UI</a></h2>
 <p>GUI的编写是一项繁杂的工作，到目前为止 (0.17.2)利用Bevy自身的UI系统来构建UI都是一件麻烦事。不过，UI系统已经被开发人员们提上<a href="https://github.com/bevyengine/bevy/pull/20158">日程</a>且重点讨论，相信在不久的将来Bevy将经过一次重大更新并给出一个符合人体工程学的UI系统。</p>
-<p>在后面的章节中，我们将使用<a href="https://github.com/mvlabat/bevy_egui"><code>bevy_egui</code></a>来构建UI，这是<code>egui</code>的Bevy绑定，<code>egui</code>是一个以简洁易用而出名的立即式UI框架，相信我，不需要太多学习你便能掌握它。</p>
+<p>我们在本书中不会过多的涉及UI，其不只是因为UI在Bevy中还不完善，更是因为在整个Rust生态中编写UI至今都没有一个足够好的和完善的解决方案，某种程度上这是由于闭合多态导致的表达式问题导致的。</p>
 <h2 id="110-音频"><a class="header" href="#110-音频">1.10 音频</a></h2>
 <h3 id="1101-音频播放"><a class="header" href="#1101-音频播放">1.10.1 音频播放</a></h3>
 <p>Bevy中播放音频只需要加载资产后使用<code>AudioPlayer</code>和<code>PlaybackSettings</code>即可控制音频的播放。前者用于与系统交互播放音频，后者负责初始化的设置。</p>
@@ -835,7 +835,7 @@ impl Plugin for CustomPlugin {
 <h2 id="112-物理引擎"><a class="header" href="#112-物理引擎">1.12 物理引擎</a></h2>
 <p>通过前面的介绍你可能已经注意到了，我们的目光一直放在如何显示和操控上，而并没有关心真正的物理效应例如碰撞，重力等，而这些物理效果和交互，则是由物理引擎来进行处理。</p>
 <p>物理引擎是一种用于在虚拟环境中模拟现实世界物理现象的核心软件组件。 它负责处理物体间的碰撞检测、动力学模拟、刚体运动、重力、摩擦力、关节约束等物理效果，使得游戏中的物体能够以真实或符合游戏设定的方式相互作用。</p>
-<p>Bevy没有官方的物理引擎，其将物理引擎的选择交给了用户，用户可以自由选择rust生态中的一些物理引擎，不过主流的选择是<code>Avian</code>或<code>Rapier</code>，其前者致力于与Bevy进行集成，后者则是与Bevy分离的单独项目。读者可以自行阅读文档进行学习。</p>
+<p><code>Bevy</code>没有官方的物理引擎，其将物理引擎的选择交给了用户，用户可以自由选择Rust生态中的一些物理引擎，不过主流的选择是<code>Avian</code>或<code>Rapier</code>，其前者致力于与Bevy进行集成，后者则是与Bevy分离的单独项目。读者可以自行阅读文档进行学习。</p>
 <h2 id="113-反射与依赖注入"><a class="header" href="#113-反射与依赖注入">1.13 反射与依赖注入</a></h2>
 <p>反射指的是程序在运行时能够访问、检测和修改程序本身状态或行为的一种能力。通过反射，我们<strong>可以在程序运行时修改类型的内容并使用字符串进行动态的字段访问。</strong></p>
 <p>在Bevy中，广泛使用了一种叫<strong>依赖注入</strong>的技术，这种技术使我们在编译时能够抹除数据的真实类型而在程序运行时动态的指定数据，其就是利用了反射来实现这样的效果。这也就是为什么虽然我们在编写<code>System</code>时并没有告诉Bevy其参数的个数与类型而仅只是声明在了函数定义中，但是Bevy仍然能够将正确的参数传递给<code>System</code>的原因。</p>

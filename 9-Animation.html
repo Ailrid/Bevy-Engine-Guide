@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-3ca29663.js";
+            window.path_to_searchindex_js = "searchindex-f380a98b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-43a06fac.js"></script>
@@ -197,7 +197,7 @@ struct Fox(Handle&lt;Gltf&gt;);
     //....
 }
 <span class="boring">}</span></code></pre>
-<p>在这里，我们将用上我们在第2章中介绍的条件运行(参见2.3.2 run_if)。我们希望在资源加载完成并且配置完成之前，不要运行我们的动画系统。（或者，我们也可以采用<code>state</code>的方法来切换系统的运行，你能想到怎么做吗？）</p>
+<p>在这里，我们将用上我们在第2章中介绍的条件运行(参见2.3.2 <code>run_if</code>)。我们希望在资源加载完成并且配置完成之前，不要运行我们的动画系统。（或者，我们也可以采用<code>state</code>的方法来切换系统的运行，你能想到怎么做吗？）</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// 存储动画相关的资源
@@ -453,8 +453,8 @@ commands
 <p><strong>WEIGHTS_0</strong>: [0.7, 0.3, 0, 0] （小臂占 70% 权重，手腕占 30% 权重）</p>
 </li>
 </ul>
-<p>在这种情况下，这个变换就可以表示为。
-<span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:3em;vertical-align:-1.25em;"></span><span class="mord"><span class="mtable"><span class="col-align-r"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.75em;"><span style="top:-3.91em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord cjk_fallback">顶点最终位置</span></span></span></span><span style="top:-2.41em;"><span class="pstrut" style="height:3em;"></span><span class="mord"></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.25em;"><span></span></span></span></span></span><span class="col-align-l"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.75em;"><span style="top:-3.91em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord"><span class="mord mathbf">0.7</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="minner"><span class="mopen delimcenter" style="top:0em;">(</span><span class="mord text"><span class="mord">1</span><span class="mord cjk_fallback">号骨骼当前动画矩阵</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord text"><span class="mord">1</span><span class="mord cjk_fallback">号骨骼逆绑定矩阵</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord text"><span class="mord cjk_fallback">顶点初始位置</span></span><span class="mclose delimcenter" style="top:0em;">)</span></span></span></span><span style="top:-2.41em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord"><span class="mord mathbf">0.3</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="minner"><span class="mopen delimcenter" style="top:0em;">(</span><span class="mord text"><span class="mord">2</span><span class="mord cjk_fallback">号骨骼当前动画矩阵</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord text"><span class="mord">2</span><span class="mord cjk_fallback">号骨骼逆绑定矩阵</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord text"><span class="mord cjk_fallback">顶点初始位置</span></span><span class="mclose delimcenter" style="top:0em;">)</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.25em;"><span></span></span></span></span></span></span></span></span></span></span></span></p>
+<p>在这种情况下，这个变换就可以表示为。</p>
+<p><span class="katex-display"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:3em;vertical-align:-1.25em;"></span><span class="mord"><span class="mtable"><span class="col-align-r"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.75em;"><span style="top:-3.91em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord cjk_fallback">顶点最终位置</span></span></span></span><span style="top:-2.41em;"><span class="pstrut" style="height:3em;"></span><span class="mord"></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.25em;"><span></span></span></span></span></span><span class="col-align-l"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.75em;"><span style="top:-3.91em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord"><span class="mord mathbf">0.7</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="minner"><span class="mopen delimcenter" style="top:0em;">(</span><span class="mord text"><span class="mord">1</span><span class="mord cjk_fallback">号骨骼当前动画矩阵</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord text"><span class="mord">1</span><span class="mord cjk_fallback">号骨骼逆绑定矩阵</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord text"><span class="mord cjk_fallback">顶点初始位置</span></span><span class="mclose delimcenter" style="top:0em;">)</span></span></span></span><span style="top:-2.41em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord"><span class="mord mathbf">0.3</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="minner"><span class="mopen delimcenter" style="top:0em;">(</span><span class="mord text"><span class="mord">2</span><span class="mord cjk_fallback">号骨骼当前动画矩阵</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord text"><span class="mord">2</span><span class="mord cjk_fallback">号骨骼逆绑定矩阵</span></span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mord text"><span class="mord cjk_fallback">顶点初始位置</span></span><span class="mclose delimcenter" style="top:0em;">)</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.25em;"><span></span></span></span></span></span></span></span></span></span></span></span></p>
 <hr>
 <p>说到这里我们终于说完了最基本的骨骼知识，那么让我们回到正题，为什么我们需要<code>AnimationGraph</code>？</p>
 <p>因为 gltf 里，一个动画就是一段固定的、写死的数据采样流（例如从 0 秒到 1 秒，骨骼 A 旋转 45 度）。动画师不可能穷尽所有的动画可能，必须由游戏引擎在运行时利用动画师的这些已经写好的动画，拼接出新的动画。</p>
@@ -474,7 +474,7 @@ commands
 <p>一个典型的游戏角色动画图在内存中可以是这样组合的。底层的两个 <strong><code>Clip</code></strong> 负责提供 <code>Walk</code> 和 <code>Run</code> 的原始骨骼矩阵。中间的 <strong><code>Blend</code></strong> 按照当前移动速度，把两者插值混合成一个自然快走姿势。顶层的 <strong><code>Add</code></strong> 节点直接把 <code>Attack</code> 的右手挥剑差值数据“加”在刚刚混合好的姿势上，最终算出送往顶点着色器（Vertex Shader）的骨骼矩阵。</p>
 <pre><code class="language-tex">                 [ 最终输出到骨骼 (Final Output) ]
                                │
-                       [ Add 叠加节点 ] 
+                       [ Add 叠加节点 ]
                          /          \
                         /            \  (加性叠加右手动作)
            [ Blend 混合节点 ]        [ Clip: 挥剑攻击 (Attack) ]
@@ -521,7 +521,7 @@ commands
 
         // 在 AnimationPlayer 上开始播放该动画图
         player.play(node_add).repeat();
-        
+
         commands.entity(entity).insert(CharacterAnimation {
             graph_handle,
             node_walk,
@@ -564,7 +564,7 @@ fn sync_weights(mut query: Query&lt;(&amp;mut AnimationPlayer, &amp;ExampleAnima
 }
 
 <span class="boring">}</span></code></pre>
-<p><code>ActiveAnimation</code> 是 bevy 用来实时追踪和控制单个正在运行（或暂停）的动画实例的底层状态。里面存储了非常多有用的信息，并且暴露了很多有用的调整方法。读者可以查看<a href="https://docs.rs/bevy/latest/bevy/animation/struct.ActiveAnimation.html">文档</a>。</p>
+<p><code>ActiveAnimation</code> 是 Bevy 用来实时追踪和控制单个正在运行（或暂停）的动画实例的底层状态。里面存储了非常多有用的信息，并且暴露了很多有用的调整方法。读者可以查看<a href="https://docs.rs/bevy/latest/bevy/animation/struct.ActiveAnimation.html">文档</a>。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>pub struct ActiveAnimation {

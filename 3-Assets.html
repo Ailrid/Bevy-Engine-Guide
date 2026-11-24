@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-3ca29663.js";
+            window.path_to_searchindex_js = "searchindex-f380a98b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-43a06fac.js"></script>
@@ -178,8 +178,8 @@
 <h1 id="3-assets"><a class="header" href="#3-assets">3 Assets</a></h1>
 <h2 id="31-回顾asset"><a class="header" href="#31-回顾asset">3.1 回顾Asset</a></h2>
 <p>资产是需要加载到游戏中的资源，通常来自于各种硬盘里的文件，例如图像、模型、材质、字体、音频等等等等。由于这些资源的加载往往需要耗费大量时间，因此Bevy里这些资产的加载往往都是以异步的形式以避免阻塞游戏循环。在Bevy中，我们可以使用<code>AssetServer</code>从硬盘里加载资产，使用<code>Assets&lt;T&gt;</code>来存储已经加载的各类资产。</p>
-<p>与资产相关的内容主要在bevy_asset这个crate中，要使用这些内容，<strong>必须在App上调用其中的<a href="https://docs.rs/bevy_asset/0.17.3/bevy_asset/struct.AssetPlugin.html">AssetPlugin</a>这个插件才能访问<code>AssetServer</code>、<code>Assets</code>等类型，这个插件还提供了一些额外的设置，例如指定模式和路径等，该插件已经在DefaultPlugin内，不需要我们再手动安装。</strong></p>
-<p>与Asset相关的类型和结构很多，不过大多数时候我们都不需要和他们打交道，如果仅仅是使用，我们只需要和<code>AssetServer</code>还有<code>Assets&lt;T&gt;</code>接触就足够了。</p>
+<p>与资产相关的内容主要在<code>bevy_asset</code>这个crate中，要使用这些内容，<strong>必须在App上调用其中的<a href="https://docs.rs/bevy_asset/0.17.3/bevy_asset/struct.AssetPlugin.html">AssetPlugin</a>这个插件才能访问<code>AssetServer</code>、<code>Assets</code>等类型，这个插件还提供了一些额外的设置，例如指定模式和路径等，该插件已经在DefaultPlugin内，不需要我们再手动安装。</strong></p>
+<p>与<code>Asset</code>相关的类型和结构很多，不过大多数时候我们都不需要和他们打交道，如果仅仅是使用，我们只需要和<code>AssetServer</code>还有<code>Assets&lt;T&gt;</code>接触就足够了。</p>
 <h3 id="311-assetserver"><a class="header" href="#311-assetserver">3.1.1 AssetServer</a></h3>
 <p><code>AssetServer</code>作为一种全局资源，可以使用之前我们加载资源的方式以<code>Res</code>来获取。默认情况下，加载的资产都相对于项目目录下的assets文件夹，要修改这个默认行为，可以修改<code>BEVY_ASSET_ROOT</code>环境变量来指定加载资产的目录。</p>
 <p>首先，我们使用<code>AssetServer</code>加载了一个图像并获得其句柄，句柄类似于一个对资产的引用计数指针，但能被克隆为强句柄和弱句柄，当不再存在资产的强句柄时，Bevy能够自动将其回收并销毁以释放内存。所以，<strong>为了保证资产的持续存在，必须将句柄存储在一个<code>Resource</code>或者<code>Component</code>中。</strong></p>
@@ -211,7 +211,7 @@ fn load_image(asset_server: Res&lt;AssetServer&gt;, mut share_image: ResMut&lt;S
     }
 }
 <span class="boring">}</span></code></pre>
-<h3 id="312--assets"><a class="header" href="#312--assets">3.1.2  Assets</a></h3>
+<h3 id="312-assets"><a class="header" href="#312-assets">3.1.2 Assets</a></h3>
 <p><strong><code>Assets&lt;T&gt;</code></strong> 是一个键值对集合，存储了特定类型 <code>T</code> 的所有<strong>实际资产数据</strong>。当<code>AssetServer</code><strong>成功加载资源后</strong>，将会将真正的数据保存在对应的**<code>Assets&lt;T&gt;</code>** 中，如果需要获得真正的数据，则需要使用相关的句柄和对应类型的<code>Assets</code></p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -279,7 +279,7 @@ impl AssetLoader for LasLoader {
       let mut bin_data = Vec::new();
       reader.read_to_end(&amp;mut bin_data).await?;
       //在这里编写真正加载数据的逻辑
-      //let points = ..... 
+      //let points = .....
       //然后返回一个资产
       Ok(PointCloud { points })
   }
@@ -352,7 +352,7 @@ fn load_pointcloud(
       let mut bin_data = Vec::new();
       reader.read_to_end(&amp;mut bin_data).await?;
       //在这里编写真正加载数据的逻辑
-      //let points = ..... 
+      //let points = .....
       //然后返回一个资产
       Ok(PointCloud { points })
   }
@@ -395,7 +395,7 @@ let shader = asset_server.load::&lt;Shader&gt;("embedded://bevy_rock/render/rock
 <span class="boring">}</span></code></pre>
 <p>在Bevy 0.12之前，你可能会看到名为<code>load_internal_asset!</code>的宏，该宏的作用和上面是一样的，不过目前已经被<code>embedded_asset!</code>取代，因此不建议继续使用。</p>
 <h3 id="332-web资产"><a class="header" href="#332-web资产">3.3.2 web资产</a></h3>
-<p>另一类比较特殊的资产就是从web上加载的资产，在网络上加载一些内如，我们需要一点额外的支持：引入<code>WebAssetPlugin</code>插件并开启http特征。</p>
+<p>另一类比较特殊的资产就是从web上加载的资产，在网络上加载一些内如，我们需要一点额外的支持：引入<code>WebAssetPlugin</code>插件并开启<code>http</code>特征。</p>
 <pre class="playground"><code class="language-rust">use bevy::{asset::io::web::WebAssetPlugin, prelude::*};
 
 fn main() {
@@ -417,7 +417,7 @@ fn main() {
 
 <span class="boring">}</span></code></pre>
 <h2 id="34-资产事件"><a class="header" href="#34-资产事件">3.4 资产事件</a></h2>
-<p>资产会在加载的过程中发出一系列Message，如果你需要对这些事件做出一些响应，在bevy中这些事件是一个AssetEvent的枚举类型，可以看到当资产被添加、更改、移除、加载完成时都会发出一些事件，并且在其中保存了对应的资产的ID。</p>
+<p>资产会在加载的过程中发出一系列<code>Message</code>，如果你需要对这些事件做出一些响应，在Bevy中这些事件是一个<code>AssetEvent</code>的枚举类型，可以看到当资产被添加、更改、移除、加载完成时都会发出一些事件，并且在其中保存了对应的资产的ID。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>pub enum AssetEvent&lt;A: Asset&gt; {

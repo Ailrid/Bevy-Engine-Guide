@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-3ca29663.js";
+            window.path_to_searchindex_js = "searchindex-f380a98b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-43a06fac.js"></script>
@@ -214,7 +214,7 @@ commands.spawn((Car, ChildOf(player)));
   .with_children(|parent| {
 			parent.spawn((Car,));
   });
-   
+
 //也可以使用宏来完成
 commands.spawn((Player),
   children![
@@ -322,7 +322,7 @@ struct SomeComponent;
 </tbody>
 </table>
 </div>
-<p>​	现在，我们可以将其分为两个<code>Archetype</code>并引用上面表中的数据。当我们需要找到拥有<code>Player</code>的实体时，我们可以根据原型直接排除第一个<code>Archetype</code>上的所有实体。完美！现在我们的查询系统可以通过<code>Archetype</code>知道那些实体拥有同样的结构以此来对操作进行并行加速了。</p>
+<p>现在，我们可以将其分为两个<code>Archetype</code>并引用上面表中的数据。当我们需要找到拥有<code>Player</code>的实体时，我们可以根据原型直接排除第一个<code>Archetype</code>上的所有实体。完美！现在我们的查询系统可以通过<code>Archetype</code>知道那些实体拥有同样的结构以此来对操作进行并行加速了。</p>
 <div class="table-wrapper">
 <table>
 <thead>
@@ -512,7 +512,7 @@ some_system.run_if(
   )
 )
 <span class="boring">}</span></code></pre>
-<p>同时，Bevy也为我们提供了一些常用的判断条件，这些条件函数将在以后的章节中依次介绍，与ECS系统相关的条件函数可以在<a href="https://docs.rs/bevy/0.17.3/bevy/ecs/prelude/index.html">文档</a>里的Functions部分下找到。</p>
+<p>同时，Bevy也为我们提供了一些常用的判断条件，这些条件函数将在以后的章节中依次介绍，与ECS系统相关的条件函数可以在<a href="https://docs.rs/bevy/0.17.3/bevy/ecs/prelude/index.html">文档</a>里的<code>Functions</code>部分下找到。</p>
 <h3 id="233-system-set"><a class="header" href="#233-system-set">2.3.3 System Set</a></h3>
 <p>当我们的系统越来越多时，如何管理和有条件的运行一批系统是至关重要的，例如我们希望用户在游戏中按下某个按键之后只运行系统的UI设置系统来渲染页面，而暂停游戏的逻辑。我们该如何有条件的运行和管理系统呢？Bevy中引入了<code>SystemSet</code>的概念，通过<code>SystemSet</code>我们可以将系统的运行阶段进行划分以更好的分组控制。</p>
 <p>要使用<code>SystemSet</code>，首先要定义一个<code>enum</code>类型，派生 <code>SystemSet</code>并继承一系列必需的标准 Rust 特征：</p>
@@ -631,7 +631,7 @@ add_systems(OnEnter(MyState::StateOne), || {
     println!("Entered State Two");
 })
 <span class="boring">}</span></code></pre>
-<h3 id="235--systemparam"><a class="header" href="#235--systemparam">2.3.5  SystemParam</a></h3>
+<h3 id="235-systemparam"><a class="header" href="#235-systemparam">2.3.5 SystemParam</a></h3>
 <p>在前面定义系统时，我们直接将参数作为系统函数的参数，这样做固然方便，但当系统的参数越来越多时会导致我们的参数越来越多也越来越复杂，如果我们能够将其参数单独定义成一个结构体，那么就能将其分离。</p>
 <p>利用指令<code>SystemParam</code>来让Bevy为我们自动实现结构体的<code>SystemParam</code>特型，这样我们就可以将原来的多个参数转移到结构体中，并使用结构体作为我们的参数。不过，当我们这样做时必须指定正确的生命周期，具体的生命周期类型，可以查看<a href="https://doc.qu1x.dev/bevy_trackball/bevy/ecs/system/trait.SystemParam.html">文档</a>。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
@@ -667,7 +667,7 @@ fn count_players(mut counter: PlayerCounter) {
 <h3 id="241-querydata"><a class="header" href="#241-querydata">2.4.1 QueryData</a></h3>
 <p>查看<code>Query</code>的定义，可以发现其有两个参数，<code>QueryData</code>和<code>QueryFilter</code>。</p>
 <p><code>QueryData</code>是查询获取的数据类型，将作为查询项返回。只有与请求数据匹配的实体才会生成查询项。
-​	<code>QueryFilter</code>是一组可选条件，用于确定查询项应保留还是丢弃。默认值为unit，表示不会应用其他过滤器。</p>
+​ <code>QueryFilter</code>是一组可选条件，用于确定查询项应保留还是丢弃。默认值为unit，表示不会应用其他过滤器。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>pub struct Query&lt;'world, 'state, D, F = ()&gt;where
@@ -693,7 +693,7 @@ fn multiple_query(query: Query&lt;(&amp;mut ComponentA,Player)&gt;) {
     // ...
 }
 <span class="boring">}</span></code></pre>
-<p>Query返回的类型是一个<strong>迭代器</strong>，如果想要真正修改这些组件，我们就必须遍历其中的内容。除了使用常见的for循环，Query上还提供了很多便利的方法来获取其内容。</p>
+<p><code>Query</code>返回的类型是一个<strong>迭代器</strong>，如果想要真正修改这些组件，我们就必须遍历其中的内容。除了使用常见的for循环，<code>Query</code>上还提供了很多便利的方法来获取其内容。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>fn multiple_query(query: Query&lt;(&amp;mut ComponentA,Player)&gt;) {
@@ -803,7 +803,7 @@ fn change_detect(query: Query&lt;Ref&lt;Player&gt;&gt;) {
 <span class="boring">}</span></code></pre>
 <h3 id="242-queryfilter"><a class="header" href="#242-queryfilter">2.4.2 QueryFilter</a></h3>
 <p>在前面，我们只使用了<code>QueryData</code>进行查询，如果你细心，你可以发现在查询时虽然我们指定了一些组件，但是这些组件仅用于标识一些实体，而在实际获得后我们并不需要这些组件，也就是说，这些组件仅用于查询过滤条件。</p>
-<p>利用Query的第二个泛型参数<code>QueryFilter</code>，我们可以将其分离开来，其同样支持以元组的形式指定多个条件，并且具有很多的便捷类型能够使得我们的查询更容易编写，这些类型包括：</p>
+<p>利用<code>Query</code>的第二个泛型参数<code>QueryFilter</code>，我们可以将其分离开来，其同样支持以元组的形式指定多个条件，并且具有很多的便捷类型能够使得我们的查询更容易编写，这些类型包括：</p>
 <div class="table-wrapper">
 <table>
 <thead>
@@ -818,7 +818,7 @@ fn change_detect(query: Query&lt;Ref&lt;Player&gt;&gt;) {
 </tbody>
 </table>
 </div>
-<p>​	我们仅介绍一下<code>Changed</code>类型，此过滤器的常见用途是避免值未改变时的冗余工作。就性能和效果而言，以下的两个系统是大致等价的。</p>
+<p>我们仅介绍一下<code>Changed</code>类型，此过滤器的常见用途是避免值未改变时的冗余工作。就性能和效果而言，以下的两个系统是大致等价的。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>fn system1(q: Query&lt;&amp;MyComponent, Changed&lt;Transform&gt;&gt;) {
@@ -833,7 +833,7 @@ fn system2(q: Query&lt;(&amp;MyComponent, Ref&lt;Transform&gt;)&gt;) {
 <span class="boring">}</span></code></pre>
 <h3 id="243-自定义查询参数"><a class="header" href="#243-自定义查询参数">2.4.3 自定义查询参数</a></h3>
 <p>Bevy虽然有强大的查询系统，不过当查询需要的条件越来越多时就会出现一些不可避免的问题。由于Rust的限制，最多只能存在15个参数，虽然我们可以对元组进行嵌套来解决这个问题，不过如果我们能够定义自己的查询类型，那么我们的代码就能够漂亮的多。该部分内容读者可查看<a href="https://doc.qu1x.dev/bevy_trackball/bevy/ecs/query/trait.QueryData.html">文档</a>，Bevy对此已有详细的说明。</p>
-<h2 id="25--resource"><a class="header" href="#25--resource">2.5  Resource</a></h2>
+<h2 id="25-resource"><a class="header" href="#25-resource">2.5 Resource</a></h2>
 <p>在第一章中写到<code>Resource</code>是一个全局单例。用于保存一些在游戏的整个生命周期里都存在的数据，例如游戏设置等。</p>
 <p>要创建一个<code>Resource</code>，只需要使用<code>Resource</code>指令即可，然后我们便可以声明一个单例并初始化。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
@@ -858,11 +858,11 @@ fn add_score(mut commands: Commands) {
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>//获得资产的可变引用以便更改
-fn some_system(mut score: ResMut&lt;Score&gt;) 
+fn some_system(mut score: ResMut&lt;Score&gt;)
 //只获得共享引用
-fn some_system(score: Res&lt;Score&gt;) 
+fn some_system(score: Res&lt;Score&gt;)
 //如果资产可能尚未创建，那么需要使用Option使之变为可选
-fn some_system(mut score: Option&lt;ResMut&lt;Score&gt;&gt;) 
+fn some_system(mut score: Option&lt;ResMut&lt;Score&gt;&gt;)
 <span class="boring">}</span></code></pre>
 <p>除了作为一个可以在系统中共享的数据单例，Bevy中许多功能的实现也都是基于<code>Resource</code>来实现的，在前面我们能已经介绍了一部分，这些内容如下。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
@@ -882,7 +882,7 @@ Res&lt;ButtonInput&lt;B&gt;&gt; //用于查询键盘或者鼠标的状态
 <p>Bevy里还为我们提供了一组与<code>Resource</code>相关的conditions，这些可以在<a href="https://docs.rs/bevy/0.17.3/bevy/ecs/prelude/index.html">文档</a>里的Functions部分下找到，这些条件包括：<a href="https://docs.rs/bevy/0.17.3/bevy/ecs/prelude/fn.resource_added.html">resource_added</a>、<a href="https://docs.rs/bevy/0.17.3/bevy/ecs/prelude/fn.resource_changed.html">resource_changed</a>、<a href="https://docs.rs/bevy/0.17.3/bevy/ecs/prelude/fn.resource_exists.html">resource_exists</a>等等等等</p>
 <h2 id="26-message"><a class="header" href="#26-message">2.6 Message</a></h2>
 <h3 id="261-用法回顾"><a class="header" href="#261-用法回顾">2.6.1 用法回顾</a></h3>
-<p>在前面，我们曾简单的介绍过如何使用<code>Message</code>来在多个系统之间进行消息的传递，其最简单的使用方式如下。我们首先使用<code>Message</code>宏定义了消息，然后在App中注册了消息，最后我们使用<code>MessageWriter</code>和<code>MessageReader</code>来进行消息的发送和读取。</p>
+<p>在前面，我们曾简单的介绍过如何使用<code>Message</code>来在多个系统之间进行消息的传递，其最简单的使用方式如下。我们首先使用<code>Message</code>宏定义了消息，然后在<code>App</code>中注册了消息，最后我们使用<code>MessageWriter</code>和<code>MessageReader</code>来进行消息的发送和读取。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>//在这里定义消息
@@ -920,7 +920,7 @@ fn read_message(mut messages: MessageReader&lt;CustomMessage&gt;) {
 }
 <span class="boring">}</span></code></pre>
 <h3 id="262-message"><a class="header" href="#262-message">2.6.2 Message</a></h3>
-<p>使用<code>Message</code>宏会自动为结构体实现<code>Message</code> <code>trait</code>。实际的消息是存储在一个<a href="https://docs.rs/bevy_ecs/0.17.3/bevy_ecs/message/struct.Messages.html"><code>Messages</code></a>资源中，在bevy_ecs中其实定义如下，其包含两个队列用来存储消息，我们写入的消息就是存储在了这两个队列中。</p>
+<p>使用<code>Message</code>宏会自动为结构体实现<code>Message</code> <code>trait</code>。实际的消息是存储在一个<a href="https://docs.rs/bevy_ecs/0.17.3/bevy_ecs/message/struct.Messages.html"><code>Messages</code></a>资源中，在<code>bevy_ecs</code>中其实定义如下，其包含两个队列用来存储消息，我们写入的消息就是存储在了这两个队列中。</p>
 <p><code>messages_a</code>中存储了上一帧中的消息，<code>messages_b</code>中存储了当前帧插入的消息。</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -1114,11 +1114,11 @@ fn main() {
 <p>实际上，这些所有的调度，包括下面这张图内的所有阶段，都是在<code>App</code>内注册的，因此我们说，<code>App</code>才是提供游戏循环、时间管理、插件的真正实现之处，单纯的<code>World</code>能实现的内容是相当有限的。</p>
 <img src="./image/chapter1/3.png" alt="3" style="zoom:25%;" />
 <h2 id="210-章节回顾"><a class="header" href="#210-章节回顾">2.10 章节回顾</a></h2>
-<p>在这一章里，介绍了整个bevy_ecs crate中的主要内容，该部分是bevy能够运行的基石，同时也提供了强大的功能。利用依赖注入和ecs模式，bevy为我们搭建好了整个游戏的基础框架，使得我们不必再花费精力在状态管理和游戏循环以及并发之中。</p>
-<p>阅读完这些内容，你现在应该已经能够看懂bevy储存库下example中的相当多内容了。虽然我们没有对ecs进行全面的细节介绍，但是通过这些介绍，你也应该能够自己自主探索剩下的内容了。仔细阅读example下的ecs示例，你会有新的收获。</p>
+<p>在这一章里，介绍了整个<code>bevy_ecs</code> crate中的主要内容，该部分是bevy能够运行的基石，同时也提供了强大的功能。利用依赖注入和ecs模式，Bevy为我们搭建好了整个游戏的基础框架，使得我们不必再花费精力在状态管理和游戏循环以及并发之中。</p>
+<p>阅读完这些内容，你现在应该已经能够看懂Bevy储存库下example中的相当多内容了。虽然我们没有对ecs进行全面的细节介绍，但是通过这些介绍，你也应该能够自己自主探索剩下的内容了。仔细阅读example下的ecs示例，你会有新的收获。</p>
 <blockquote class="blockquote-tag blockquote-tag-note">
 <p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
-<p>其实利用bevy_app、bevy_ecs、bevy_time三个crate，就能实现一个最基本的应用程序框架，有时候这是非常有用的。</p>
+<p>其实利用<code>bevy_app</code>、<code>bevy_ecs</code>、<code>bevy_time</code>三个crate，就能实现一个最基本的应用程序框架，有时候这是非常有用的。</p>
 <p>例如你想编写一个没有窗口但是又不停运行的系统，但是又不想使用while和状态机来进行麻烦的状态管理，那么使用这三个crate就能解决你的问题。</p>
 </blockquote>
 
